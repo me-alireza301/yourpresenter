@@ -1,0 +1,49 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+	<rich:popupPanel id="dialogSongEdit" modal="true" autosized="true"
+		resizeable="false"
+		onmaskclick="#{rich:component('dialogSongEdit')}.hide()">
+
+		<h:form id="dialogSongEditForm">
+			<a4j:outputPanel id="dialogSongEditPanel">
+				<f:facet name="header">
+					<h:outputText value="Add/edit song" />
+				</f:facet>
+				<f:facet name="controls">
+					<h:outputLink value="#"
+						onclick="#{rich:component('dialogSongEdit')}.hide(); return false;">
+                    	X
+                </h:outputLink>
+				</f:facet>
+
+				<h:panelGrid columns="1" cellspacing="3">
+					<h:outputLabel for="dialogSongEditName" value="Name: " />
+					<h:inputText id="dialogSongEditName"
+						value="#{songEditView.song.name}" required="true" />
+
+					<h:outputLabel for="dialogSongText" value="Text: " />
+					<h:inputTextarea id="dialogSongText" rows="15" cols="40"
+						value="#{songEditView.song.text}" />
+
+					<h:panelGrid columns="2" cellspacing="3">
+						<a4j:commandButton value="OK" action="#{songEditView.update}"
+							oncomplete="#{rich:component('dialogSongEdit')}.hide(); return true;"
+							 render="songs" type="submit" />
+							<!-- render="songs"  -->
+						<a4j:commandButton value="Cancel"
+							oncomplete="#{rich:component('dialogSongEdit')}.hide(); return false;" />
+					</h:panelGrid>
+				</h:panelGrid>
+
+			</a4j:outputPanel>
+		</h:form>
+
+	</rich:popupPanel>
+
+</ui:composition>

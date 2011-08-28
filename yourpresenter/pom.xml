@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.google.code.yourpresenter</groupId>
+	<artifactId>yourpresenter</artifactId>
+	<packaging>war</packaging>
+	<name>Yourpresenter: remote presentation software</name>
+	<version>0.1-SNAPSHOT</version>
+	<properties>
+		<org.springframework-version>3.0.5.RELEASE</org.springframework-version>
+		<!-- <org.springframework.security-version>3.0.2.RELEASE</org.springframework.security-version> -->
+		<org.slf4j-version>1.5.10</org.slf4j-version>
+		<!-- <jsf-version>2.0.3</jsf-version> -->
+		<!-- layouts not working correctly with old primefaces -->
+		<!-- <primefaces-version>3.0.M2</primefaces-version> -->
+		<!-- <primefaces-version>2.2.1</primefaces-version> -->
+		<org.richfaces.bom.version>4.0.0.Final</org.richfaces.bom.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- richfaces -->
+			<dependency>
+				<groupId>org.richfaces</groupId>
+				<artifactId>richfaces-bom</artifactId>
+				<version>${org.richfaces.bom.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<dependencies>
+		<!-- Spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${org.springframework-version}</version>
+			<exclusions>
+				<!-- Exclude Commons Logging in favor of SLF4j -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>1.5.8</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.5.8</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.5.8</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.14</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+		<!-- <dependency> <groupId>org.springframework.webflow</groupId> <artifactId>spring-faces</artifactId> 
+			<version>${org.springframework.webflow-version}</version> </dependency> -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${org.springframework-version}</version>
+			<exclusions>
+				<!-- Exclude Commons Logging in favor of SLF4j -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${org.springframework-version}</version>
+			<exclusions>
+				<!-- Exclude Commons Logging in favor of SLF4j -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- Database, JPA -->
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>1.8.0.10</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>3.5.0-Final</version>
+		</dependency>
+		<!-- JSF: Mojarra, PrimeFaces -->
+		<dependency>
+			<groupId>com.sun.faces</groupId>
+			<artifactId>jsf-api</artifactId>
+			<!-- version defined by richfaces already -->
+			<!-- <version>${jsf-version}</version> -->
+		</dependency>
+		<dependency>
+			<groupId>com.sun.faces</groupId>
+			<artifactId>jsf-impl</artifactId>
+			<!-- version defined by richfaces already -->
+			<!-- <version>${jsf-version}</version> -->
+		</dependency>
+
+		<!-- primefaces -->
+		<!-- <dependency> <groupId>org.primefaces</groupId> <artifactId>primefaces</artifactId> 
+			<version>${primefaces-version}</version> </dependency> <dependency> <groupId>org.primefaces</groupId> 
+			<artifactId>primefaces</artifactId> <version>${primefaces-version}</version> 
+			</dependency> -->
+
+
+		<!-- richfaces related -->
+		<dependency>
+			<groupId>org.richfaces.ui</groupId>
+			<artifactId>richfaces-components-ui</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.richfaces.core</groupId>
+			<artifactId>richfaces-core-impl</artifactId>
+		</dependency>
+
+		<!-- <dependency> <groupId>org.richfaces.cdk</groupId> <artifactId>annotations</artifactId> 
+			<scope>provided</scope> </dependency> -->
+
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${org.slf4j-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${org.slf4j-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.15</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.mail</groupId>
+					<artifactId>mail</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.jms</groupId>
+					<artifactId>jms</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jdmk</groupId>
+					<artifactId>jmxtools</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+			</exclusions>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- Servlet -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- JSR 303 with Hibernate Validator -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>4.0.2.GA</version>
+		</dependency>
+		<!-- JAXB is needed when running on Java 5. In this environment these dependencies 
+			have to be added (unless xml configuration is explicitly disabled via Configuration.ignoreXmlConfiguration) 
+			On Java 6 jaxb is part of the runtime environment. -->
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.1</version>
+		</dependency>
+		<!-- Test -->
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<version>2.5.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${org.springframework-version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<repositories>
+		<!-- Maven Central -->
+		<repository>
+			<id>org.maven.central</id>
+			<name>Maven Central Repository</name>
+			<url>http://repo1.maven.org/maven2</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<!-- For testing against latest Spring snapshots -->
+		<repository>
+			<id>org.springframework.maven.snapshot</id>
+			<name>Spring Maven Snapshot Repository</name>
+			<url>http://maven.springframework.org/snapshot</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<!-- For developing against latest Spring milestones -->
+		<repository>
+			<id>org.springframework.maven.milestone</id>
+			<name>Spring Maven Milestone Repository</name>
+			<url>http://maven.springframework.org/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<!-- For Mojarra 2.x -->
+		<repository>
+			<id>java.net.release</id>
+			<name>Repository for Projects On Hosted on java.net</name>
+			<url>http://download.java.net/maven/2</url>
+		</repository>
+		<!-- PrimeFaces -->
+		<!-- <repository> <id>primefaces</id> <name>Prime Technology Maven Repository</name> 
+			<url>http://repository.prime.com.tr</url> <layout>default</layout> </repository> -->
+
+		<repository>
+			<id>jboss-public-repository-group</id>
+			<name>JBoss Public Maven Repository Group</name>
+			<url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+			<layout>default</layout>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+		</repository>
+	</repositories>
+
+	<profiles>
+		<profile>
+			<id>developer</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<catalina.home>D:/app/java/apache-tomcat-7.0.16</catalina.home>
+			</properties>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.cargo</groupId>
+						<artifactId>cargo-maven2-plugin</artifactId>
+						<configuration>
+							<container>
+								<containerId>tomcat7x</containerId>
+								<!-- Type == Installed means that you want to deploy to a container 
+									that's installed on your computer -->
+								<type>installed</type>
+								<!-- The home folder for your local Tomcat -->
+								<home>D:/app/java/apache-tomcat-7.0.16</home>
+							</container>
+
+							<configuration>
+								<type>existing</type>
+								<home>D:/app/java/apache-tomcat-7.0.16</home>
+								<properties>
+									<cargo.servlet.port>8080</cargo.servlet.port>
+									<cargo.rmi.port>1099</cargo.rmi.port>
+									<cargo.logging>high</cargo.logging>
+								</properties>
+							</configuration>
+							<!-- This is another one that confused me for long. Its not enough 
+								to specify 'installed' in the container tag. You have to now specify another 
+								configuration with type == existing and re-issue the home path -->
+							<deployer>
+								<!-- You have to again specify that the type for the deployer -->
+								<type>installed</type>
+								<deployables>
+									<!-- This deployable specifies the webapp you want to deploy -->
+									<deployable>
+										<groupId>${project.groupId}</groupId>
+										<artifactId>${project.artifactId}</artifactId>
+										<type>war</type>
+									</deployable>
+								</deployables>
+							</deployer>
+						</configuration>
+					</plugin>
+
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>continuous-integration</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.cargo</groupId>
+						<artifactId>cargo-maven2-plugin</artifactId>
+						<configuration>
+							<container>
+								<containerId>tomcat7x</containerId>
+								<zipUrlInstaller>
+									<url>http://sk.freebsd.org/pub/apache/dist/tomcat/tomcat-7/v7.0.16/bin/apache-tomcat-7.0.16.zip</url>
+									<!-- Careful: As described in the ZipUrlInstaller documentation, 
+										Cargo versions older than 1.1.0 accept only installDir, you therefore need 
+										to set installDir instead of downloadDir and extractDir. -->
+									<downloadDir>${project.build.directory}/downloads</downloadDir>
+									<extractDir>${project.build.directory}/extracts</extractDir>
+								</zipUrlInstaller>
+
+								<!-- Type == Installed means that you want to deploy to a container 
+									that's installed on your computer -->
+								<!-- <type>installed</type> -->
+								<type>installed</type>
+								<!-- The home folder for your local Tomcat -->
+								<home>D:/app/java/apache-tomcat-7.0.16</home>
+							</container>
+
+							<configuration>
+								<type>existing</type>
+								<home>D:/app/java/apache-tomcat-7.0.16</home>
+								<properties>
+									<cargo.servlet.port>8080</cargo.servlet.port>
+									<cargo.rmi.port>1099</cargo.rmi.port>
+									<cargo.logging>high</cargo.logging>
+								</properties>
+							</configuration>
+							<executions>
+								<execution>
+									<id>start-container</id>
+									<phase>pre-integration-test</phase>
+									<goals>
+										<goal>start</goal>
+									</goals>
+								</execution>
+								<execution>
+									<id>stop-container</id>
+									<phase>post-integration-test</phase>
+									<goals>
+										<goal>stop</goal>
+									</goals>
+								</execution>
+							</executions>
+							<!-- This is another one that confused me for long. Its not enough 
+								to specify 'installed' in the container tag. You have to now specify another 
+								configuration with type == existing and re-issue the home path -->
+							<deployer>
+								<!-- You have to again specify that the type for the deployer -->
+								<type>standalone</type>
+								<deployables>
+									<!-- This deployable specifies the webapp you want to deploy -->
+									<deployable>
+										<groupId>${project.groupId}</groupId>
+										<artifactId>${project.artifactId}</artifactId>
+										<type>war</type>
+									</deployable>
+								</deployables>
+							</deployer>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	<build>
+		<finalName>yourpresenter</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-surefire-plugin</artifactId> 
+				<configuration> <junitArtifactName>junit:junit</junitArtifactName> <includes> 
+				<include>**/*Tests.java</include> </includes> </configuration> </plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<configuration>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>false</downloadJavadocs>
+					<wtpversion>2.0</wtpversion>
+				</configuration>
+			</plugin>
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.3.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-eclipse-plugin</artifactId>
+					<version>2.8</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.cargo</groupId>
+					<artifactId>cargo-maven2-plugin</artifactId>
+					<version>1.1.1</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+
+	</build>
+
+</project>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8081/" />
+<title>add2Songs</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">add2Songs</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/yourpresenter/presenter/main.jsf</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=j_idt12:j_idt18</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=dialogSongEditForm:dialogSongEditName</td>
+	<td>Odložil si svoj majestát</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=dialogSongEditForm:dialogSongText</td>
+	<td><br />Odložil si svoj majestát, <br />pre mňa všetkého sa vzdal, <br />trpels' od ľudí,<br />čo stvorením <br />sú Tvojím<br /><br />Slide<br /><br />Ty si všetok môj <br />hriech vzal, <br />keď si zomrel, <br />z hrobu vstal, <br />dnes však vládu máš<br />na nebi aj na zemi<br /><br />Slide<br /><br />Zo srdca, Pane, <br />ja ťa chválim, ctím, <br />získal si ma, <br />Tebe len patrím, <br />chcem <br />s Tebou večne žiť, <br />Teba ľúbiť<br /><br />Slide <br /><br />Ty jediný si za mňa <br />život dal, <br />Ty si moja sloboda, <br />preto Tebe, Pane môj,<br /> ja spievam <br />pieseň chvál<br /><br /></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=dialogSongEditForm:j_idt28</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@id='j_idt12:j_idt18']/span[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=dialogSongEditForm:dialogSongEditName</td>
+	<td>Stvoril si ma k chvále</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=dialogSongEditForm:dialogSongText</td>
+	<td>Stvoril si ma k chvále,<br />k sláve svojej výsosti,<br />môj Pán,<br />aby som stále<br />mal plné srdce vďaky.<br />Slide<br />Som, aby som ľúbil,<br />kráčal v šľapajách Tvojich,<br />môj Pán,<br />uctieval tým, čo mám,<br />sám seba Ti dám.<br />Slide<br />Večne budem chváliť<br />slávu Tvojej výsosti,<br />môj Pán,<br />budem mať stále<br />plné srdce vďaky.<br />Slide<br />Večne budem ľúbiť,<br />kráčať v šľapajách Tvojich, môj Pán,<br />uctievať tým, čo mám,<br />sám seba Ti dám.</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=dialogSongEditForm:j_idt28</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>

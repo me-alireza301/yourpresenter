@@ -1,0 +1,253 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+<f:view contentType="text/html">
+	<h:head>
+		<title><ui:insert name="title">Yourpresenter</ui:insert>
+		</title>
+		<meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+		<link type="text/css" rel="stylesheet"
+			href="#{request.contextPath}/themes/#{preferencesView.theme}/skin.css" />
+
+		<style type="text/css">
+
+/* [BEGIN] drag and drop */
+.panel-draggable {
+	cursor: pointer;
+}
+
+.dropTargetPanel {
+	width: 90%;
+}
+
+.rf-ind-drag.default {
+	background-image:
+		url("#{facesContext.externalContext.requestContextPath}/images/dnd/default.gif");
+	background-position: 5px;
+	background-repeat: no-repeat;
+	padding-left: 30px;
+	border: 2px solid red;
+	/* as we use jQuery Layout make sure what's dragged is displayed */
+	z-index: 20 !important;
+	overflow: visible;
+}
+
+.rf-ind-drag.accept {
+	background-image:
+		url("#{facesContext.externalContext.requestContextPath}/images/dnd/accept.gif");
+	background-position: 5px;
+	background-repeat: no-repeat;
+	border: 2px solid green;
+	/* as we use jQuery Layout make sure what's dragged is displayed */
+	z-index: 20 !important;
+	overflow: visible;
+}
+
+.rf-ind-drag.reject {
+	background-image:
+		url("#{facesContext.externalContext.requestContextPath}/images/dnd/reject.gif");
+	background-position: 5px;
+	background-repeat: no-repeat;
+	border: 2px solid red;
+	/* as we use jQuery Layout make sure what's dragged is displayed */
+	z-index: 20 !important;
+	overflow: visible;
+}
+/* [END] drag and drop */
+
+/* [BEGIN] songTable styles */
+.songTable-even-row {
+	background-color: #FCFFFE;
+}
+
+.songTable-odd-row {
+	background-color: #ECF3FE;
+}
+
+.songTable-active-row {
+	background-color: #FFEBDA !important;
+	cursor: pointer;
+}
+
+/* [END] songTable styles */
+
+.label {
+    font-weight: bold;
+}
+.rf-dg, .rf-dg-c{
+    border:none;
+}
+
+/* 		.ui-widget {
+			font-size: 75%;
+		}
+
+        .nestedUnit {
+            border:0px none !important
+        }
+
+        .ui-layout-center .ui-layout-resizer {
+            border:1px solid #A8A8A8;
+        }
+
+        .ui-layout-north {
+            z-index:20 !important;
+            overflow:visible;
+        }
+
+        .ui-layout-north .ui-layout-unit-content {
+            overflow:visible;
+        }
+        
+        .ui-tabs {
+            border:0px none;
+        } */
+</style>
+
+		<rich:jQuery />
+
+		<!-- <script type="text/javascript" src="../js/jquery-1.6.2.min.js" /> -->
+		<script type="text/javascript"
+			src="../js/jquery-ui-1.8.14.custom.min.js" />
+
+		<!-- richfaces 4 don't integrate layout component, but based on this
+	site: http://community.jboss.org/message/598687
+	it's recommended to use - jQuery UI.Layout Plug-in see: http://layout.jquery-dev.net/
+	
+	inspirational examples mostly:
+	http://layout.jquery-dev.net/demos/example.html
+	and 
+	http://layout.jquery-dev.net/demos/nested.html
+	 -->
+		<script type="text/javascript"
+			src="../js/jquery.layout-1.3.0-rc-29.15.js" />
+
+		<script type="text/javascript">
+			/* jQuery.noConflict(); */
+			jQuery(document).ready(function() {
+				jQuery('body').layout({
+					applyDefaultStyles : true
+				});
+			});
+		</script>
+
+	</h:head>
+
+	<h:body>
+		<div class="ui-layout-north">
+			<h:panelGrid columns="2">
+				<h:form>
+					<rich:toolbar height="26px">
+						<rich:dropDownMenu mode="ajax">
+							<f:facet name="label">
+								<h:panelGroup>
+									<h:outputText value="File" />
+								</h:panelGroup>
+							</f:facet>
+							<rich:menuGroup label="Song">
+								<rich:menuItem label="New"
+									oncomplete="#{rich:component('dialogSongEdit')}.show();#{rich:element('dialogSongEditForm:dialogSongEditName')}.focus();" 
+									render="dialogSongEditPanel"/>
+							</rich:menuGroup>
+						</rich:dropDownMenu>
+					</rich:toolbar>
+				</h:form>
+				
+				<a4j:status>
+		            <f:facet name="start">
+		                <h:graphicImage value="/images/ajax/ai.gif" alt="ai"/>
+		            </f:facet>
+	        	</a4j:status>
+        	</h:panelGrid>
+        
+			<ui:include src="dialogSongEdit.xhtml" />
+		</div>
+
+		<div class="ui-layout-west">
+			<rich:tabPanel switchType="client">
+				<rich:tab header="Songs">
+					<a4j:outputPanel id="songs">
+						<h:form>
+							<h:panelGrid>
+								<rich:dragIndicator id="songDragInd" acceptClass="accept"
+									rejectClass="reject" draggingClass="default">
+        							Drag song to schedule area ...
+    							</rich:dragIndicator>
+
+								<rich:dataTable value="#{songTableView.songs}" var="song"
+									id="songTable" styleClass="songTable"
+									rowClasses="songTable-odd-row, songTable-even-row">
+
+									<rich:column>
+										<f:facet name="header">
+											<h:outputText value="Song" />
+										</f:facet>
+										<a4j:outputPanel layout="block" styleClass="panel-draggable">
+											<rich:dragSource type="song" dragIndicator="songDragInd"
+												dragValue="#{song}" />
+											<h:outputText value="#{song.name}" />
+										</a4j:outputPanel>
+									</rich:column>
+								</rich:dataTable>
+							</h:panelGrid>
+						</h:form>
+	
+						<rich:jQuery selector=".songTable tr:odd"
+							query="addClass('songTable-odd-row')" />
+						<rich:jQuery selector=".songTable tr:even"
+							query="addClass('songTable-even-row')" />
+						<rich:jQuery selector=".songTable tr" event="mouseover"
+							query="jQuery(this).addClass('songTable-active-row')" />
+						<rich:jQuery selector=".songTable tr" event="mouseout"
+							query="jQuery(this).removeClass('songTable-active-row')" />
+						
+					</a4j:outputPanel>
+				</rich:tab>
+				<rich:tab header="Bible">
+				</rich:tab>
+			</rich:tabPanel>
+		</div>
+
+		<div class="ui-layout-center">
+			<a4j:outputPanel id="schedule">
+			
+				<h:form>
+					<rich:panel styleClass="dropTargetPanel">
+						<f:facet name="header">
+							<h:outputText value="${scheduleView.schedule.name}" />
+						</f:facet>
+	
+						<rich:dropTarget acceptedTypes="song" dropValue="song"
+							dropListener="#{scheduleView.add}" render="schedule" />
+	
+						<rich:dataTable value="#{scheduleView.schedule.presentations}"
+							var="presentation">
+	
+							<rich:column>
+								<rich:panel>
+        						<f:facet name="header">
+            						<h:outputText value="${presentation.song.name}"></h:outputText>
+        						</f:facet>
+        						
+								<rich:dataGrid value="#{presentation.slides}" var="slide"
+                					columns="3" elements="9" width="600px" border="0">
+									<rich:panel>
+										<h:outputText value="#{slide.verse.text}" escape="false" />
+										<!-- <h:outputText value="#{slide.background.thumbnail}" /> -->
+									</rich:panel>
+								</rich:dataGrid> 
+	
+								</rich:panel>
+							</rich:column>
+						</rich:dataTable>
+					</rich:panel>
+				</h:form>
+			</a4j:outputPanel>
+		</div>
+	</h:body>
+</f:view>
+</html>
