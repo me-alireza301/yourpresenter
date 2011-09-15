@@ -1,11 +1,10 @@
 package com.google.code.yourpresenter.entity;
 
-import java.io.File;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -82,9 +81,9 @@ public class Song implements Serializable {
 	 * 
 	 * @return the text
 	 */
-	@Basic(fetch = FetchType.EAGER)
-	@NotNull
-	@OneToMany(mappedBy = "song")
+//	@NotNull
+	// keep in mind to delete prphans: http://javablog.co.uk/2009/12/27/onetomany-fixes-in-jpa-2/
+	@OneToMany(mappedBy = "song", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	public List<Verse> getVerses() {
 		return verses;
 	}

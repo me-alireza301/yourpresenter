@@ -81,7 +81,7 @@ public class Verse implements Serializable {
 	 * 
 	 * @return the song
 	 */
-	@ManyToOne
+	@ManyToOne(optional = false)
 	public Song getSong() {
 		return song;
 	}

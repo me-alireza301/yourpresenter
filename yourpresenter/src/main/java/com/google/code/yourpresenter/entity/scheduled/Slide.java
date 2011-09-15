@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 import com.google.code.yourpresenter.entity.Verse;
 
@@ -29,6 +30,11 @@ public class Slide implements Serializable {
 
 	/** The presentation. */
 	private Presentation presentation;
+	
+	/**
+	 * Whether slide is the active one.
+	 */
+	private boolean active;
 
 	public Slide() {
 	}
@@ -104,7 +110,7 @@ public class Slide implements Serializable {
 	 * 
 	 * @return the presentation
 	 */
-	@ManyToOne
+	@ManyToOne(optional = false)
 	public Presentation getPresentation() {
 		return presentation;
 	}
@@ -117,5 +123,22 @@ public class Slide implements Serializable {
 	 */
 	public void setPresentation(Presentation presentation) {
 		this.presentation = presentation;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean isActive) {
+		this.active = isActive;
+	}
+	
+	public void activate() {
+		this.setActive(true);
+	}
+	
+	@Transient
+	public String getCssSuffix() {
+		return (active ? "active" : "inactive" );
 	}
 }

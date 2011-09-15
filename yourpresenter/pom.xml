@@ -122,8 +122,21 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
-			<version>3.5.0-Final</version>
+			<version>3.6.7.Final</version>
+			<exclusions>
+				<!-- don't depend upon old - 3.1 version -->
+				<exclusion> 
+					<groupId>commons-collections</groupId>
+		  			<artifactId>commons-collections</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+  			<artifactId>commons-collections</artifactId>
+			<version>3.2.1</version>
+		</dependency>
+		
 		<!-- JSF: Mojarra, PrimeFaces -->
 		<dependency>
 			<groupId>com.sun.faces</groupId>
@@ -305,6 +318,32 @@
 
 			<build>
 				<plugins>
+					<!-- for embedded jetty deployment, 
+					run with: mvn clean jetty:run 
+					see: http://maven.apache.org/plugins/maven-war-plugin/examples/rapid-testing-jetty6-plugin.html
+					for newer versions of jetty see: http://wiki.eclipse.org/Jetty/Feature/Jetty_Maven_Plugin 
+					-->
+					<plugin>
+						<groupId>org.mortbay.jetty</groupId>
+						<artifactId>jetty-maven-plugin</artifactId>
+						<version>7.5.0.RC2</version>
+						<!-- <version>6.1.10</version> -->
+						<configuration>
+							<scanIntervalSeconds>5</scanIntervalSeconds>
+							<connectors>
+								<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+									<port>8081</port>
+									<maxIdleTime>60000</maxIdleTime>
+								</connector>
+							</connectors>
+							<webAppConfig>
+								<contextPath>/yourpresenter</contextPath>
+							</webAppConfig>
+						</configuration>
+					</plugin>
+      
+      				<!-- for already installed tomcat deployment, 
+      				run with: mvn clean verify cargo:undeploy cargo:deploy -->
 					<plugin>
 						<groupId>org.codehaus.cargo</groupId>
 						<artifactId>cargo-maven2-plugin</artifactId>

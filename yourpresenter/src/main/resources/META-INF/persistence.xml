@@ -13,6 +13,7 @@
 		<class>com.google.code.yourpresenter.entity.scheduled.Presentation</class>
 		<class>com.google.code.yourpresenter.entity.scheduled.Schedule</class>
 		<class>com.google.code.yourpresenter.entity.scheduled.Slide</class>
+		
 	</persistence-unit>
 
 </persistence>

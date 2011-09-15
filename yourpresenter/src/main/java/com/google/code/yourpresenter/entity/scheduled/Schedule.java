@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -84,8 +84,9 @@ public class Schedule implements Serializable {
 	 * 
 	 * @return the presentations
 	 */
-	@Basic(fetch = FetchType.EAGER)
-	@OneToMany(mappedBy = "schedule")
+	// if having FetchType.EAGER => got exception: 
+	// Caused by: org.hibernate.loader.MultipleBagFetchException: cannot simultaneously fetch multiple bags 
+	@OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	public List<Presentation> getPresentations() {
 		return presentations;
 	}

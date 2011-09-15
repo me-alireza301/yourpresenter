@@ -1,6 +1,7 @@
 package com.google.code.yourpresenter.service;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.code.yourpresenter.entity.Song;
-import com.google.code.yourpresenter.entity.Verse;
 import com.google.code.yourpresenter.entity.scheduled.Presentation;
 import com.google.code.yourpresenter.entity.scheduled.Schedule;
 import com.google.code.yourpresenter.entity.scheduled.Slide;
@@ -28,15 +28,19 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 
 	private ISongService songService;
 
+	private ISlideService slideService;
+
 	@PersistenceContext
 	public void setEntityManager(EntityManager em) {
 		this.em = em;
 	}
 
 	@Autowired
-	public ScheduleServiceImpl(IPresentationService presentationService, ISongService songService) {
+	public ScheduleServiceImpl(IPresentationService presentationService, ISongService songService, 
+			ISlideService slideService) {
 		this.presentationService = presentationService;
 		this.songService = songService;
+		this.slideService = slideService;
 	}
 	
 	@Transactional(readOnly = true)
@@ -53,7 +57,9 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		if (null != schedule.getId()) {
 			em.merge(schedule);
 		} else {
-			em.persist(schedule);	
+			em.persist(schedule);
+			// make sure identity field is generated prio to relation 
+			em.flush();
 		}
 	}
 
@@ -92,15 +98,11 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		// org.hibernate.PersistentObjectException: detached entity passed to persist: 
 		// com.google.code.yourpresenter.entity.scheduled.Schedule
 		Schedule schedule = createOrEditSchedule(scheduleTr);
+		this.persistSchedule(schedule);
 		
 		Presentation presentation = presentationService.createOrEdit(null);
-		presentation.setSong(song);
-		
-		// persist
-		this.persistSchedule(schedule);
-		// make sure idfentity field is generated prio to relation 
-		em.flush();
 		presentation.setSchedule(schedule);
+		presentation.setSong(song);
 		this.presentationService.persist(presentation);
 		
 		// set changed state to view, to display after refresh
@@ -115,17 +117,11 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 			schedule = findScheduleById(scheduleTr.getId());	
 		}
 		
-		if (null != schedule && null != schedule.getPresentations()) {
-			for (Presentation presentation : schedule.getPresentations()) {
-				
-				if (null != presentation.getSlides()) {
-					for (Slide slide : presentation.getSlides()) {
-						slide.getVerse();
-					}
-				}
-			}	
+		if (null != schedule) {
+				List<Presentation> presentations = schedule.getPresentations();
+				presentations.toString();
+				// the rest (slides are loaded via FetchType.EAGER on schedule.slides)
 		}
-		
 		return schedule;
 	}
 }

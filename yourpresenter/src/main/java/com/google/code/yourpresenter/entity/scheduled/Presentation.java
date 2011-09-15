@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -63,7 +65,7 @@ public class Presentation implements Serializable {
 	 * 
 	 * @return the song
 	 */
-	@OneToOne
+	@OneToOne(optional = true)
 	public Song getSong() {
 		return song;
 	}
@@ -76,11 +78,6 @@ public class Presentation implements Serializable {
 	 */
 	public void setSong(Song song) {
 		this.song = song;
-		this.slides = new ArrayList<Slide>();
-		
-		for (Verse verse : this.song.getVerses()) {
-			this.slides.add(new Slide(verse, this));
-		}
 	}
 
 	/**
@@ -88,7 +85,7 @@ public class Presentation implements Serializable {
 	 * 
 	 * @return the schedule
 	 */
-	@ManyToOne
+	@ManyToOne(optional = false)
 	public Schedule getSchedule() {
 		return schedule;
 	}
@@ -108,7 +105,7 @@ public class Presentation implements Serializable {
 	 * 
 	 * @return the slides
 	 */
-	@OneToMany(mappedBy = "presentation")
+	@OneToMany(mappedBy = "presentation", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = false)
 	public List<Slide> getSlides() {
 		return slides;
 	}
@@ -128,7 +125,7 @@ public class Presentation implements Serializable {
 	 * 
 	 * @return the background
 	 */
-	@OneToOne
+	@OneToOne(optional = true)
 	public Background getBackground() {
 		return background;
 	}

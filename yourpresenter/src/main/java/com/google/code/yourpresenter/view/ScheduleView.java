@@ -1,7 +1,12 @@
 package com.google.code.yourpresenter.view;
 
 import java.io.Serializable;
+import java.util.Map;
 
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
+
+import org.richfaces.component.UICommandLink;
 import org.richfaces.event.DropEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,9 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.google.code.yourpresenter.YpError;
+import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.Song;
 import com.google.code.yourpresenter.entity.scheduled.Schedule;
 import com.google.code.yourpresenter.service.IScheduleService;
+import com.google.code.yourpresenter.service.ISlideService;
 
 @Component("scheduleView")
 @Scope("session")
@@ -24,9 +32,14 @@ public class ScheduleView implements Serializable, IHasSchedule {
 	
 	private IScheduleService scheduleService;
 	
+	private ISlideService slideService;
+	
+	private Long activeSlideId = -1L;
+	
 	@Autowired
-	public ScheduleView(IScheduleService scheduleService) {
+	public ScheduleView(IScheduleService scheduleService, ISlideService slideService) {
 		this.scheduleService = scheduleService;
+		this.slideService = slideService;
 	}
 
 	public Schedule getSchedule() {
@@ -51,4 +64,29 @@ public class ScheduleView implements Serializable, IHasSchedule {
 	public void add(Song song) {
 		this.scheduleService.addPresentation(this, this.schedule, song);
 	}
+	
+	public Long getActiveSlideId() {
+		if (this.activeSlideId == -1) {
+			// TODO
+		}
+		return activeSlideId;
+	}
+
+	public void setActiveSlideId(Long activeSlideId) throws YpException {
+		this.activeSlideId = activeSlideId;
+		this.slideService.activateSlide(activeSlideId);
+	}
+	
+	public void activateSlide() throws NumberFormatException, YpException {
+		FacesContext context = FacesContext.getCurrentInstance();
+		Map map = context.getExternalContext().getRequestParameterMap();
+		String songId = (String) map.get("id");
+		if (null != songId && !songId.isEmpty()) { 
+			slideService.activateSlide(Long.valueOf(songId));
+		} else {
+			throw new YpException(YpError.SLIDE_ID_NOT_SET);
+		}
+		
+	}
 }
+
