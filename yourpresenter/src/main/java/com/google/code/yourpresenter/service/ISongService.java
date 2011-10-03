@@ -15,7 +15,7 @@ public interface ISongService {
      * @param pattern the pattern
      * @return the list
      */
-    public List<Song> findSong(String pattern);
+    public List<Song> findByPattern(String pattern);
 
     /**
      * Find song by id.
@@ -23,21 +23,21 @@ public interface ISongService {
      * @param id the id
      * @return the song
      */
-    public Song findSongById(Long id);
+    public Song findById(Long id);
 
     /**
      * Persist song.
      * 
      * @param song the song
      */
-    public void persistSong(Song song);
+    public void persist(Song song);
 
     /**
      * Delete song.
      * 
      * @param song the song
      */
-    public void deleteSong(Song song);
+    public void delete(Song song);
 
     /**
      * Creates new or edits existing song.

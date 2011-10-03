@@ -1,7 +1,8 @@
 package com.google.code.yourpresenter.service;
 
 import com.google.code.yourpresenter.YpException;
-import com.google.code.yourpresenter.entity.scheduled.Slide;
+import com.google.code.yourpresenter.entity.BgImage;
+import com.google.code.yourpresenter.entity.Slide;
 
 public interface ISlideService {
 
@@ -10,4 +11,6 @@ public interface ISlideService {
     public void persist(Slide slide);
     
     public void activateSlide(Long id) throws YpException;
+
+	public void setBgImage(Long slideId, BgImage bgImage);
 }

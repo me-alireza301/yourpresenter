@@ -1,4 +1,4 @@
-package com.google.code.yourpresenter.entity.scheduled;
+package com.google.code.yourpresenter.entity;
 
 import java.io.Serializable;
 
@@ -9,7 +9,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
-import com.google.code.yourpresenter.entity.Verse;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -26,7 +25,7 @@ public class Slide implements Serializable {
 	private Verse verse;
 
 	/** The background. */
-	private Background background;
+	private BgImage bgImage;
 
 	/** The presentation. */
 	private Presentation presentation;
@@ -91,8 +90,8 @@ public class Slide implements Serializable {
 	 * @return the background
 	 */
 	@OneToOne
-	public Background getBackground() {
-		return background;
+	public BgImage getBgImage() {
+		return bgImage;
 	}
 
 	/**
@@ -101,8 +100,8 @@ public class Slide implements Serializable {
 	 * @param background
 	 *            the new background
 	 */
-	public void setBackground(Background background) {
-		this.background = background;
+	public void setBgImage(BgImage background) {
+		this.bgImage = background;
 	}
 
 	/**

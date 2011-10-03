@@ -21,7 +21,7 @@
 }
 
 .dropTargetPanel {
-	width: 90%;
+	width: 100%;
 }
 
 .rf-ind-drag.default {
@@ -75,12 +75,22 @@
 
 /* [END] songTable styles */
 
+/* [BEGIN] misc default styles */
 .label {
     font-weight: bold;
 }
+
+
 .rf-dg, .rf-dg-c{
     border:none;
 }
+
+.rf-p-b .rf-p {
+	/* make background transparent */
+	opacity:1.0;
+	filter:alpha(opacity=100); /* For IE8 and earlier */
+}
+/* [END] misc default styles */
 
 /* 		.ui-widget {
 			font-size: 75%;
@@ -113,12 +123,19 @@
 	border: 2px;
 	border-style:solid;
 	border-color:#000000;
-	/* border-color:#00ff00; */
-	padding:0px; 	
+	padding:0px;
+	
+	background-size: 100%;
+	background-repeat: no-repeat;
+	background-position:center; 	
 }
 
 .slidebox-inactive-mouseover {
 	cursor: pointer;
+	
+	background-size: 100%;
+	background-repeat: no-repeat;
+	background-position:center;
 }
 
 .slidebox-active
@@ -128,6 +145,10 @@
 	border-color:#00ff00;
 	/* border-color:#00ff00; */
 	padding:0px; 	
+	
+	background-size: 100%;
+	background-repeat: no-repeat;
+	background-position:center;
 }
 
 .jtextfill
@@ -145,9 +166,34 @@
 	padding-bottom: 6px;
 	padding-right: 0px;
 	padding-left: 0px;
+	
+	/* make background transparent */
+	opacity:1.0;
+	filter:alpha(opacity=100); /* For IE8 and earlier */
+}
+
+.jtextfill-inner
+{
+	/* make background transparent */
+	opacity:1.0;
+	filter:alpha(opacity=100); /* For IE8 and earlier */
+	
 }
 /* [END] slide styles */
-		
+
+/* [BEGIN] media for background styles */
+.media-image
+{
+	width:160px;
+	height:120px;
+	padding: 0px;
+	
+	background-size: 100%;
+	background-repeat: no-repeat;
+	background-position:center; 
+}
+/* [END] slide styles */		
+
 </style>
 
 		<rich:jQuery />
@@ -271,63 +317,50 @@
 				<h:form>
 					<rich:panel styleClass="dropTargetPanel">
 						<f:facet name="header">
-							<h:outputText value="${scheduleView.schedule.name}" />
+							<rich:panel>
+									
+       							<rich:dropTarget acceptedTypes="bgImage, song" dropValue="schedule_#{schedule.id}"
+									dropListener="#{scheduleView.dropped}" render="schedule" 
+									oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:70})" />
+									
+								<h:outputText value="Schedule: ${scheduleView.schedule.name}" />
+							</rich:panel>
 						</f:facet>
-	
-						<rich:dropTarget acceptedTypes="song" dropValue="song"
-							dropListener="#{scheduleView.add}" render="schedule" 
-							oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:70})"/>
-	
+							
 						<rich:dataTable value="#{scheduleView.schedule.presentations}"
 							var="presentation">
 	
 							<rich:column>
 								<rich:panel>
+								
         						<f:facet name="header">
-            						<h:outputText value="${presentation.song.name}"></h:outputText>
+        							<rich:panel>
+	        							<rich:dropTarget acceptedTypes="bgImage, song" dropValue="presentation_#{presentation.id}"
+											dropListener="#{scheduleView.dropped}" render="schedule" 
+											oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:70})" />
+
+										<h:outputText value="${presentation.song.name}" />
+ 									</rich:panel>						
         						</f:facet>
+
+        						<!--  elements="9" -->
 								<rich:dataGrid value="#{presentation.slides}" var="slide"
-                					columns="3" elements="9" border="0">
+                					 columns="4" border="0">
     
-    
-    
-    <!-- <h:commandLink action="#{scheduleView.activateSlide2}">
-    	<h:outputText value="verse: #{slide.verse} id: #{slide.id}"/>
-                    <f:param name="id" value="#{slide.id}"/>
-                    
-                </h:commandLink>            			 -->
-                					<!-- <a4j:commandLink action="#{slide.activate}"> -->
-                					<!-- commandLink used here just to enable sending currently clicked slide id to the server -->
-                					<!-- <a4j:commandLink execute="@this" render=""> -->
                 					<a4j:commandLink action="#{scheduleView.activateSlide}" render=""> 
-                					<!-- <h:commandLink action="#{scheduleView.activateSlide2}"> -->
-                						<!-- <a4j:param value="#{slide.id}" name="activateSlideId" assignTo="#{scheduleView.activeSlideId}" /> -->
                 						<f:param name="id" value="#{slide.id}"/>
-                						
+
+										<rich:dropTarget acceptedTypes="bgImage" dropValue="slide_#{slide.id}"
+											dropListener="#{scheduleView.dropped}" render="schedule" />
+											<!-- oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:70})" -->
+											
 	                					<!-- these panels + styles might look weird, but it's a working solution for jtextfill -->
-	                					<rich:panel styleClass="slidebox-#{slide.cssSuffix}" >
+	                					<rich:panel styleClass="slidebox-#{slide.cssSuffix}" 
+	                						style="background-image:url('/yourpresenter/mvc/thumbnail/#{slide.bgImage.id}');">
 		                					<rich:panel styleClass="jtextfill">
-		                						<!-- styleClass used => span is generated (it's needed for jtextfill) -->
-		                						<h:outputText styleClass="placebo" value="#{slide.verse.text}" escape="false" />
-												<!-- <h:outputText value="#{slide.background.thumbnail}" /> -->
+		                						<h:outputText styleClass="jtextfill-inner" value="#{slide.verse.text}" escape="false" />
 											</rich:panel>
-											
-											<!-- actionListener="" 
-																					oncomplete="jQuery(this).parent().parent().find('.slidebox').css('border-color','#000000');jQuery(this).css('border-color','#00ff00');"
-											-->																				
-												
-												<!-- <a4j:ajax event="click"
-											oncomplete="jQuery('.slidebox').css('border-color','#00ff00');jQuery('this').css('border-color','#000000');" 
-											/> -->									
-											<!-- <a4j:ajax event="click"
-											oncomplete="jQuery('.slidebox').css('border-color','#00ff00');jQuery('this').css('border-color','#000000');" 
-											/> 
-											
-											<rich:jQuery selector="#slidebox" event="mouseclick"
-	        									query="jQuery(this).stop().animate({width:'180px'})" />
-	        									-->
 										</rich:panel>
-									
 									</a4j:commandLink>
 									
 									<rich:jQuery selector=".slidebox-inactive" event="click"
@@ -337,10 +370,6 @@
 										query="jQuery(this).addClass('slidebox-inactive-mouseover')" />
 									<rich:jQuery selector=".slidebox-inactive" event="mouseout"
 										query="jQuery(this).removeClass('slidebox-inactive-mouseover')" />
-									
-									<!-- <rich:jQuery selector=".slidebox-inactive" event="mouseclick"
-										query="jQuery(this).removeClass('slidebox-inactive');jQuery(this).addClass('slidebox-active')" /> -->
-										
 								</rich:dataGrid> 
 	
 								</rich:panel>
@@ -349,6 +378,33 @@
 					</rich:panel>
 				</h:form>
 			</a4j:outputPanel>
+		</div>
+		
+		<div class="ui-layout-south">
+			<rich:tabPanel switchType="client">
+				<rich:tab header="Images">
+					<a4j:outputPanel id="images">
+						<h:form>
+							<rich:dragIndicator id="imageDragInd" acceptClass="accept"
+								rejectClass="reject" draggingClass="default">
+       							Drag image to scheduled song ...
+   							</rich:dragIndicator>
+   							
+							<rich:dataGrid value="#{imageView.bgImage}" var="bgImage"
+               					 columns="6" border="0">
+               					<rich:panel styleClass="media-image" 
+               						style="background-image:url('/yourpresenter/mvc/thumbnail/#{bgImage.id}');" >
+               						
+        						    <rich:dragSource type="bgImage" dragIndicator="imageDragInd"
+										dragValue="#{bgImage}" />
+               					</rich:panel>
+							</rich:dataGrid>							
+						</h:form>
+					</a4j:outputPanel>
+				</rich:tab>
+				<!-- <rich:tab header="Video">
+				</rich:tab> -->
+			</rich:tabPanel>
 		</div>
 	</h:body>
 </f:view>

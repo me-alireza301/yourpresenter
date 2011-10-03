@@ -1,4 +1,4 @@
-package com.google.code.yourpresenter.entity.scheduled;
+package com.google.code.yourpresenter.entity;
 
 import java.io.Serializable;
 
@@ -7,7 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
-import com.google.code.yourpresenter.entity.BgImage;
 
 // TODO: Auto-generated Javadoc
 /**

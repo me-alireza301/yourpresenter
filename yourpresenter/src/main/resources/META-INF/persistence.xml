@@ -6,14 +6,14 @@
 
 	<persistence-unit name="yourpresenter-persistence"
 		transaction-type="RESOURCE_LOCAL">
+		<class>com.google.code.yourpresenter.entity.Background</class>
 		<class>com.google.code.yourpresenter.entity.BgImage</class>
+		<class>com.google.code.yourpresenter.entity.Preference</class>
+		<class>com.google.code.yourpresenter.entity.Presentation</class>
+		<class>com.google.code.yourpresenter.entity.Schedule</class>
+		<class>com.google.code.yourpresenter.entity.Slide</class>
 		<class>com.google.code.yourpresenter.entity.Song</class>
 		<class>com.google.code.yourpresenter.entity.Verse</class>
-		<class>com.google.code.yourpresenter.entity.scheduled.Background</class>
-		<class>com.google.code.yourpresenter.entity.scheduled.Presentation</class>
-		<class>com.google.code.yourpresenter.entity.scheduled.Schedule</class>
-		<class>com.google.code.yourpresenter.entity.scheduled.Slide</class>
-		
 	</persistence-unit>
 
 </persistence>

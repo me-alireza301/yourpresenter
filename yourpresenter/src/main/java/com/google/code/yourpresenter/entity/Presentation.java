@@ -1,4 +1,4 @@
-package com.google.code.yourpresenter.entity.scheduled;
+package com.google.code.yourpresenter.entity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,8 +13,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import com.google.code.yourpresenter.entity.Song;
-import com.google.code.yourpresenter.entity.Verse;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -37,8 +35,10 @@ public class Presentation implements Serializable {
 	private List<Slide> slides;
 
 	/** The background. */
-	private Background background;
+	private BgImage bgImage;
 
+	private int possition;
+	
 	/**
 	 * Gets the id.
 	 * 
@@ -126,8 +126,8 @@ public class Presentation implements Serializable {
 	 * @return the background
 	 */
 	@OneToOne(optional = true)
-	public Background getBackground() {
-		return background;
+	public BgImage getBgImage() {
+		return bgImage;
 	}
 
 	/**
@@ -136,7 +136,27 @@ public class Presentation implements Serializable {
 	 * @param background
 	 *            the new background
 	 */
-	public void setBackground(Background background) {
-		this.background = background;
+	public void setBgImage(BgImage background) {
+		this.bgImage = background;
+	}
+
+	public int getPossition() {
+		return possition;
+	}
+
+	public void setPossition(int possition) {
+		this.possition = possition;
+	}
+	
+	public void increasePossition() {
+		this.possition++;
+	}
+
+	public void addSlide(Slide slide) {
+		if (null == this.slides) {
+			this.slides = new ArrayList<Slide>();	
+		}
+		
+		this.slides.add(slide);
 	}
 }

@@ -38,8 +38,7 @@
 	</listener>
 
 	<listener>
-		<listener-class>
-			org.springframework.web.context.request.RequestContextListener</listener-class>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
 	</listener>
 
 	<filter>
@@ -67,4 +66,23 @@
 		<url-pattern>*.jsf</url-pattern>
 	</servlet-mapping>
 
+	<!-- mvc used just to serve static content outside the war
+	for mixing jsf with mvc example,
+	see: http://www.javabeat.net/articles/232-integrating-spring-web-flow-with-jsf-1.html -->
+ 	<servlet>
+		<servlet-name>Spring MVC Dispatcher Servlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+ 			<param-name>contextConfigLocation</param-name>
+			<param-value></param-value>
+			<!-- <param-value>classpath:config/servlet-context.xml</param-value> -->
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+		
+	<servlet-mapping>
+		<servlet-name>Spring MVC Dispatcher Servlet</servlet-name>
+		<url-pattern>/mvc/*</url-pattern>
+	</servlet-mapping>
+	
 </web-app>

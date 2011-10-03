@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * The Class BgImage.
  */
@@ -21,6 +23,17 @@ public class BgImage implements Serializable {
 
 	/** The thumbnail. */
 	private String thumbnail;
+
+	/** last modified time in miliseconds */
+	private long lastModifiedTime;
+
+	public BgImage() {
+	}
+			
+	public BgImage(String image, long lastModifiedTime) {
+		this.image = image;
+		this.lastModifiedTime = lastModifiedTime;
+	}
 
 	/**
 	 * Gets the id.
@@ -80,4 +93,20 @@ public class BgImage implements Serializable {
 	public void setThumbnail(String thumbnail) {
 		this.thumbnail = thumbnail;
 	}
+
+	public long getLastModifiedTime() {
+		return lastModifiedTime;
+	}
+
+	public void setLastModifiedTime(long lastModifiedTime) {
+		this.lastModifiedTime = lastModifiedTime;
+	}
+
+	@Override
+	public int hashCode() {
+		// for updates find, these are the id's to be compared
+		return new HashCodeBuilder().append(this.image)
+				.append(this.lastModifiedTime).toHashCode();
+	}
+	
 }

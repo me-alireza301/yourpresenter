@@ -1,4 +1,4 @@
-package com.google.code.yourpresenter.entity.scheduled;
+package com.google.code.yourpresenter.entity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderColumn;
 import javax.validation.constraints.NotNull;
 
 // TODO: Auto-generated Javadoc
@@ -28,7 +29,7 @@ public class Schedule implements Serializable {
 	private List<Presentation> presentations;
 
 	/** The background. */
-	private Background background;
+	private BgImage bgImage;
 
 	/** The name. */
 	private String name;
@@ -87,6 +88,7 @@ public class Schedule implements Serializable {
 	// if having FetchType.EAGER => got exception: 
 	// Caused by: org.hibernate.loader.MultipleBagFetchException: cannot simultaneously fetch multiple bags 
 	@OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	@OrderColumn(name = "possition")
 	public List<Presentation> getPresentations() {
 		return presentations;
 	}
@@ -107,8 +109,8 @@ public class Schedule implements Serializable {
 	 * @return the background
 	 */
 	@OneToOne
-	public Background getBackground() {
-		return background;
+	public BgImage getBgImage() {
+		return bgImage;
 	}
 
 	/**
@@ -117,8 +119,8 @@ public class Schedule implements Serializable {
 	 * @param background
 	 *            the new background
 	 */
-	public void setBackground(Background background) {
-		this.background = background;
+	public void setBgImage(BgImage background) {
+		this.bgImage = background;
 	}
 	
 	public Presentation addPresentation(Presentation presentation) {

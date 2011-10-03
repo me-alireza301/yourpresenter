@@ -1,6 +1,6 @@
 package com.google.code.yourpresenter.view;
 
-import com.google.code.yourpresenter.entity.scheduled.Schedule;
+import com.google.code.yourpresenter.entity.Schedule;
 
 public interface IHasSchedule {
 

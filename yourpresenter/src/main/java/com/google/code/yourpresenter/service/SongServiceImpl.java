@@ -21,6 +21,9 @@ public class SongServiceImpl implements ISongService, Serializable {
 
 	private transient EntityManager em;
 
+	public SongServiceImpl() {
+	}
+	
 	@PersistenceContext
 	public void setEntityManager(EntityManager em) {
 		this.em = em;
@@ -28,7 +31,7 @@ public class SongServiceImpl implements ISongService, Serializable {
 
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
-	public List<Song> findSong(String pattern) {
+	public List<Song> findByPattern(String pattern) {
 		pattern = getSearchPattern(pattern);
 		if (pattern != null) {
 			return em.createQuery("select s from Song s ").getResultList();
@@ -43,12 +46,12 @@ public class SongServiceImpl implements ISongService, Serializable {
 	}
 
 	@Transactional(readOnly = true)
-	public Song findSongById(Long id) {
+	public Song findById(Long id) {
 		return em.find(Song.class, id);
 	}
 
 	@Transactional
-	public void persistSong(Song songTr) {
+	public void persist(Song songTr) {
 		em.persist(songTr);
 		em.flush();
 		// store also verses
@@ -58,7 +61,7 @@ public class SongServiceImpl implements ISongService, Serializable {
 	}
 
 	@Transactional
-	public void deleteSong(Song song) {
+	public void delete(Song song) {
 		song = em.find(Song.class, song.getId());
 		if (song != null) {
 			em.remove(song);
@@ -67,7 +70,7 @@ public class SongServiceImpl implements ISongService, Serializable {
 
 	public Song createOrEditSong(Long id) {
 		if (null != id) {
-			return findSongById(id);
+			return findById(id);
 		} else {
 			return new Song();
 		}

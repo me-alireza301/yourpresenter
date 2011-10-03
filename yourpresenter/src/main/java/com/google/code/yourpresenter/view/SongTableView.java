@@ -27,7 +27,7 @@ public class SongTableView implements Serializable {
 	}
 
 	public List<Song> getSongs() {
-		songs = this.songService.findSong("*");
+		songs = this.songService.findByPattern("*");
 		return songs;
 	}
 

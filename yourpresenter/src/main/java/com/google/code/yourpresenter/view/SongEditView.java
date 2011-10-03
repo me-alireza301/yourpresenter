@@ -46,7 +46,7 @@ public class SongEditView implements Serializable {
 	}
 	
 	public void update() {
-		songService.persistSong(song);
+		songService.persist(song);
 //		FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Song is updated successfully", "OK");
 //		FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 	}

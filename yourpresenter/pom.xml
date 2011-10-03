@@ -8,9 +8,9 @@
 	<name>Yourpresenter: remote presentation software</name>
 	<version>0.1-SNAPSHOT</version>
 	<properties>
-		<org.springframework-version>3.0.5.RELEASE</org.springframework-version>
-		<!-- <org.springframework.security-version>3.0.2.RELEASE</org.springframework.security-version> -->
+		<org.springframework-version>3.0.6.RELEASE</org.springframework-version>
 		<org.slf4j-version>1.5.10</org.slf4j-version>
+		<!-- <org.springframework.security-version>3.0.2.RELEASE</org.springframework.security-version> -->
 		<!-- <jsf-version>2.0.3</jsf-version> -->
 		<!-- layouts not working correctly with old primefaces -->
 		<!-- <primefaces-version>3.0.M2</primefaces-version> -->
@@ -263,7 +263,78 @@
 			<version>${org.springframework-version}</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- directory watch (if ported to java 7 => it's not necessary) -->
+		<dependency>
+			<groupId>jpathwatch</groupId>
+			<artifactId>jpathwatch</artifactId>
+			<version>0.94</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-vfs2</artifactId>
+			<version>2.0</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.0.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>2.0.1</version>
+		    <type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		
+		<!-- for thumbnails generation -->
+		<dependency>
+			<groupId>com.google.code.thumbnailator</groupId>
+	  		<artifactId>thumbnailator</artifactId>
+	  		<version>0.3.10</version>
+	  		<type>jar</type>
+			<scope>compile</scope>
+  		</dependency>
+
+  		<!-- caching,
+  		for usage see:
+  		http://code.google.com/p/ehcache-spring-annotations/
+  		http://code.google.com/p/ehcache-spring-annotations/wiki/UsingCacheable 
+  		 -->
+  		<dependency>
+			<groupId>com.googlecode.ehcache-spring-annotations</groupId>
+			<artifactId>ehcache-spring-annotations</artifactId>
+			<version>1.2.0</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		  		
+  		<!-- <dependency>
+	  		<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+  		</dependency> -->
+
+		<!-- we need to use cglib to enable proxies taking annotations of the interface,
+		see: http://forum.springsource.org/showthread.php?67002-Proxy-not-taking-over-annotations-of-interface -->  		
+  		<dependency>
+		    <groupId>cglib</groupId>
+		    <artifactId>cglib</artifactId>
+		    <version>2.2.2</version>
+		    <type>jar</type>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
+
 	<repositories>
 		<!-- Maven Central -->
 		<repository>
@@ -486,8 +557,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.6</source>
+					<target>1.6</target>
 				</configuration>
 			</plugin>
 			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-surefire-plugin</artifactId> 

@@ -4,44 +4,40 @@ import java.io.Serializable;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 
-import org.richfaces.component.UICommandLink;
+import org.apache.commons.lang3.StringUtils;
 import org.richfaces.event.DropEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
+import com.google.code.yourpresenter.entity.BgImage;
+import com.google.code.yourpresenter.entity.Schedule;
 import com.google.code.yourpresenter.entity.Song;
-import com.google.code.yourpresenter.entity.scheduled.Schedule;
+import com.google.code.yourpresenter.service.IPresentationService;
 import com.google.code.yourpresenter.service.IScheduleService;
 import com.google.code.yourpresenter.service.ISlideService;
+import com.google.code.yourpresenter.util.Logger;
+import com.google.code.yourpresenter.util.LoggerFactory;
 
 @Component("scheduleView")
 @Scope("session")
 @SuppressWarnings("serial")
 public class ScheduleView implements Serializable, IHasSchedule {
 
-	Logger logger = LoggerFactory.getLogger(ScheduleView.class);
+	private static Logger logger = LoggerFactory.getLogger(ScheduleView.class);
 
 	private Schedule schedule;
 	
+	@Autowired
 	private IScheduleService scheduleService;
-	
+	@Autowired
+	private IPresentationService presentationService;
+	@Autowired
 	private ISlideService slideService;
 	
-	private Long activeSlideId = -1L;
-	
-	@Autowired
-	public ScheduleView(IScheduleService scheduleService, ISlideService slideService) {
-		this.scheduleService = scheduleService;
-		this.slideService = slideService;
-	}
-
 	public Schedule getSchedule() {
 		return scheduleService.loadAllSlidesEager(this.schedule);
 	}
@@ -50,35 +46,72 @@ public class ScheduleView implements Serializable, IHasSchedule {
 		this.schedule = schedule;
 	}
 
-	public void add(DropEvent dropEvent) {
-//		String sourceId = dropEvent.getDragSource().getId();
+	public void dropped(DropEvent dropEvent) throws YpException {
+		// TODO extract to new class DnDDispatcher
 		Object dragValue = dropEvent.getDragValue();
+		String dropValue = (String) dropEvent.getDropValue();
+		
+		if (StringUtils.isEmpty(dropValue)) {
+			throw new YpException(YpError.EMPTY_DROP_VALUE);
+		}
+		
+		if ((null == dropValue) || (!dropValue.contains("_"))){
+			throw new YpException(YpError.EMPTY_DROP_VALUE);
+		}
+		
+		String[] split = dropValue.split("_");
+		if (1 == split.length) {
+			split = new String[] { split[0], "0"};
+		}
+		
+		long id = Long.valueOf(split[1]);
+		String level = split[0];
+			
 		if (dragValue instanceof Song) {
-			logger.debug("Song added to schedule: ", (Song) dragValue);
-			add((Song) dragValue);
+			if (level.equals("schedule")) {
+				// add song at start (position 0)
+				dropped((Song) dragValue, -1);
+			} else if (level.equals("presentation")) {
+				// add song after presentation (position id)
+				dropped((Song) dragValue, id);
+			}
+		} else if (dragValue instanceof BgImage) {
+			if (level.equals("schedule")) {
+				droppedToSchedule((BgImage) dragValue);
+			} else if (level.equals("presentation")) {
+				droppedToPresentation((BgImage) dragValue, id);
+			} else if (level.equals("slide")) {
+				droppedToSlide((BgImage) dragValue, id);
+			}
 		} else {
-			logger.warn("drop of not supported element type detected: ", dragValue);
+			logger.error("drop of not supported element type detected: ", dragValue);
 		}
 	}
 	
-	public void add(Song song) {
-		this.scheduleService.addPresentation(this, this.schedule, song);
+	public void dropped(Song song, long presentationId) {
+		logger.debug("Added Song (song.id=", song.getId(), ") to schedule (schedule=", this.schedule, 
+				") after presentation (presentation.id=", presentationId, ")");
+		this.scheduleService.addPresentation(this, this.schedule, presentationId, song);
 	}
 	
-	public Long getActiveSlideId() {
-		if (this.activeSlideId == -1) {
-			// TODO
-		}
-		return activeSlideId;
+	public void droppedToSlide(BgImage bgImage, long slideId) {
+		logger.debug("Assigned bgImage (bgImage.id=", bgImage.getId(), ") to slide (slide.id=", slideId);
+		this.slideService.setBgImage(slideId, bgImage);
 	}
-
-	public void setActiveSlideId(Long activeSlideId) throws YpException {
-		this.activeSlideId = activeSlideId;
-		this.slideService.activateSlide(activeSlideId);
+	
+	public void droppedToPresentation(BgImage bgImage, long presentationId) {
+		logger.debug("Assigned bgImage (bgImage.id=", bgImage.getId(), ") to presentation (presentation.id=", presentationId);
+		this.presentationService.setBgImage(presentationId, bgImage);
+	}
+	
+	public void droppedToSchedule(BgImage bgImage) {
+		logger.debug("Assigned bgImage (bgImage.id=", bgImage.getId(), ") to schedule (schedule=", this.schedule);
+		this.scheduleService.setBgImage(this.schedule, bgImage);
 	}
 	
 	public void activateSlide() throws NumberFormatException, YpException {
 		FacesContext context = FacesContext.getCurrentInstance();
+		@SuppressWarnings("rawtypes")
 		Map map = context.getExternalContext().getRequestParameterMap();
 		String songId = (String) map.get("id");
 		if (null != songId && !songId.isEmpty()) { 
@@ -89,4 +122,3 @@ public class ScheduleView implements Serializable, IHasSchedule {
 		
 	}
 }
-
