@@ -19,4 +19,12 @@ public class YpException extends Exception {
 		super(e);
 		this.error = error;
 	}
+
+	public YpError getError() {
+		return error;
+	}
+
+	public void setError(YpError error) {
+		this.error = error;
+	}
 }

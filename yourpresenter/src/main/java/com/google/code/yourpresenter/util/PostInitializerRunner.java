@@ -1,6 +1,7 @@
 package com.google.code.yourpresenter.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
@@ -41,7 +43,7 @@ public class PostInitializerRunner implements ApplicationListener<ContextRefresh
             Class<?> beanClass = bean.getClass();
             Method[] methods = beanClass.getMethods();
             for (Method method : methods) {
-                if (getAnnotation(method, PostInitialize.class) != null) {
+                if (null != getAnnotation(method, PostInitialize.class)) {
                     if (method.getParameterTypes().length == 0) {
                         int order = getAnnotation(method, PostInitialize.class).order();
                         postInitializingMethods.add(new PostInitializingMethod(method, bean, order, beanName));
@@ -57,13 +59,18 @@ public class PostInitializerRunner implements ApplicationListener<ContextRefresh
         if (LOG.isDebugEnabled())
             LOG.debug("Application Context scan completed, took " + (endTime - startTime) + " ms, "
                     + postInitializingMethods.size() + " post initializers found. Invoking now.");
-        for (PostInitializingMethod postInitializingMethod : postInitializingMethods) {
-            Method method = postInitializingMethod.getMethod();
+        for (PostInitializingMethod postInitMethod : postInitializingMethods) {
+        	Method method = postInitMethod.getMethod();
             try {
-                method.invoke(postInitializingMethod.getBeanInstance());
+            	// enable support for @Async (very simple one)
+            	if (null != getAnnotation(method, Async.class)) {
+            		new AsyncRunner(postInitMethod).start();
+            	} else {
+            		method.invoke(postInitMethod.getBeanInstance());
+            	}
             } catch (Throwable e) {
                 throw new BeanCreationException("Post Initialization of bean "
-                        + postInitializingMethod.getBeanName() + " failed.", e);
+                        + postInitMethod.getBeanName() + " failed.", e);
             }
         }
     }
@@ -95,6 +102,26 @@ public class PostInitializerRunner implements ApplicationListener<ContextRefresh
         return null;
     }
 
+    private class AsyncRunner extends Thread {
+    	
+    	private PostInitializingMethod postInitMethod;
+
+		public AsyncRunner(PostInitializingMethod postInitMethod) {
+    		this.postInitMethod = postInitMethod; 
+    	}
+
+		@Override
+		public void run() {
+			Method method = postInitMethod.getMethod();
+			try {
+				method.invoke(postInitMethod.getBeanInstance());
+			} catch (Throwable e) {
+                throw new BeanCreationException("Post Initialization of bean "
+                        + postInitMethod.getBeanName() + " failed.", e);
+            }
+		}
+    }
+    
     private class PostInitializingMethod implements Comparable<PostInitializingMethod> {
         private Method method;
         private Object beanInstance;

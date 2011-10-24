@@ -5,13 +5,17 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import com.google.code.yourpresenter.YpError;
+import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.BgImage;
 import com.google.code.yourpresenter.entity.Presentation;
 import com.google.code.yourpresenter.entity.Schedule;
@@ -38,18 +42,25 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		this.em = em;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
-	public Schedule findScheduleById(Long id) {
-		if (null == id) {
+	public List<Schedule> findAll() {
+	    Query query = em.createQuery("SELECT s FROM Schedule s");
+	    return query.getResultList();	
+	}
+	
+	@Transactional(readOnly = true)
+	public Schedule findByName(String name) {
+		if (null == name) {
 			return null;
 		}
-		return em.find(Schedule.class, id);
+		return em.find(Schedule.class, name);
 	}
 
 	@Transactional
 	public void persist(Schedule schedule) {
 //		schedule = this.findScheduleById(schedule.getId());
-		if (null != schedule.getId()) {
+		if (null != schedule.getName()) {
 			em.merge(schedule);
 		} else {
 			em.persist(schedule);
@@ -60,27 +71,27 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 
 	@Transactional
 	public void delete(Schedule schedule) {
-		schedule = em.find(Schedule.class, schedule.getId());
+		schedule = em.find(Schedule.class, schedule.getName());
 		if (schedule != null) {
 			em.remove(schedule);
 		}
 	}
 
-	public Schedule createOrEdit(Long id) {
-		if (null != id) {
-			return findScheduleById(id);
-		} else {
-			return new Schedule();
-		}
-	}
-	
-	public Schedule createOrEdit(Schedule schedule) {
-		Long id = null;
-		if (null != schedule) {
-			id = schedule.getId();
-		}
-		return createOrEdit(id);
-	}
+//	public Schedule createOrEdit(String name) {
+//		if (null != name) {
+//			return findByName(name);
+//		} else {
+//			return new Schedule();
+//		}
+//	}
+//	
+//	public Schedule createOrEdit(Schedule schedule) {
+//		String name = null;
+//		if (null != schedule) {
+//			name = schedule.getName();
+//		}
+//		return createOrEdit(name);
+//	}
 
 	@Transactional
 	public void addPresentation(IHasSchedule callback, final Schedule scheduleTr, long presentationId, final Song songTr) {
@@ -89,7 +100,9 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		// com.google.code.yourpresenter.entity.Song.verses, no session or session was closed
 		Song song = songService.findById(songTr.getId());
 
-		Schedule schedule = initSchedule(scheduleTr);
+//		checkScheduleInitialized(scheduleTr);
+		Schedule schedule = findByName(scheduleTr.getName());
+//		Schedule schedule = checkScheduleInitialized(scheduleTr);
 		int position = shiftPresentationFW(presentationId, schedule);
 
 		Presentation presentation = presentationService.createOrEdit(null);
@@ -137,7 +150,7 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 	public Schedule loadAllSlidesEager(Schedule scheduleTr) {
 		Schedule schedule = null;
 		if (null != scheduleTr) {
-			schedule = findScheduleById(scheduleTr.getId());	
+			schedule = findByName(scheduleTr.getName());	
 		}
 		
 		if (null != schedule) {
@@ -151,7 +164,9 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 	@Transactional
 	@Override
 	public void setBgImage(Schedule scheduleTr, BgImage bgImage) {
-		Schedule schedule = initSchedule(scheduleTr);
+//		Schedule schedule = checkScheduleInitialized(scheduleTr);
+//		checkScheduleInitialized(scheduleTr);
+		Schedule schedule = findByName(scheduleTr.getName());
 		schedule.setBgImage(bgImage);
 		this.persist(schedule);
 
@@ -163,13 +178,36 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		}
 	}
 
-	private Schedule initSchedule(Schedule scheduleTr) {
-		Schedule schedule = createOrEdit(scheduleTr);
+//	private Schedule checkScheduleInitialized(Schedule scheduleTr) {
+//		Schedule schedule = createOrEdit(scheduleTr);
+//		
+//		// newly created
+//		if (null == schedule.getName()) {
+//			this.persist(schedule);
+//		}
+//		return schedule;
+//	private void checkScheduleInitialized(Schedule scheduleTr) throws YpException {
+//		if (null == scheduleTr || null == scheduleTr.getName() || scheduleTr.getName().isEmpty()) {
+//			throw new YpException(YpError.SCHEDULE_UNINITIALIZED);
+//		}
+//	}
+
+	
+	@SuppressWarnings("unchecked")
+	@Transactional(readOnly = true)
+	@Override
+	public List<String> findScheduleNamesByName(String name) {
+		// JPA supports constructor calls, see: http://www.objectdb.com/java/jpa/query/jpql/select
+//	    Query query = em.createQuery("SELECT NEW com.google.code.yourpresenter.dto.ScheduleNameDTO(s.id, s.name) FROM Schedule s");
 		
-		// newly created
-		if (null == schedule.getId()) {
-			this.persist(schedule);
+		Query query = null;
+		if ((null == name) || StringUtils.isEmpty(name)) {
+			query = em.createQuery("SELECT s.name FROM Schedule s");	
+		} else {
+			query = em.createQuery("SELECT s.name FROM Schedule s WHERE s.name = :name");
+			query.setParameter("name", name);
 		}
-		return schedule;
+	    return (List<String>) query.getResultList();	
 	}
+
 }

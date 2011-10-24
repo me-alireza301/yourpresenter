@@ -14,4 +14,5 @@ public interface IConstants {
 	// @PostInitialize indexes
 	public static final int POST_INIT_IDX_PREFERENCE_SERVICE = 1;
 	public static final int POST_INIT_IDX_MEDIA_CRAWLER = 10;
+	
 }

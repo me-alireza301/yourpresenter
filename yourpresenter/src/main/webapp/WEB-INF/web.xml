@@ -24,9 +24,9 @@
 		<param-value>laguna</param-value>
 	</context-param>
 	<context-param>
-	<param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
-	<param-value>true</param-value>
-	</context-param> 
+		<param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
+		<param-value>true</param-value>
+	</context-param>
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:config/web-application-config.xml</param-value>
@@ -53,8 +53,22 @@
 		<filter-name>CharacterEncodingFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	
-	
+
+
+	<filter>
+		<filter-name>scheduleSelectedFilter</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+		<init-param>
+			<param-name>targetFilterLifecycle</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>scheduleSelectedFilter</filter-name>
+		<url-pattern>/presenter/*</url-pattern>
+	</filter-mapping>
+
 	<servlet>
 		<servlet-name>Faces Servlet</servlet-name>
 		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
@@ -66,23 +80,22 @@
 		<url-pattern>*.jsf</url-pattern>
 	</servlet-mapping>
 
-	<!-- mvc used just to serve static content outside the war
-	for mixing jsf with mvc example,
-	see: http://www.javabeat.net/articles/232-integrating-spring-web-flow-with-jsf-1.html -->
- 	<servlet>
+	<!-- mvc used just to serve static content outside the war. for mixing jsf 
+		with mvc example, see: http://www.javabeat.net/articles/232-integrating-spring-web-flow-with-jsf-1.html -->
+	<servlet>
 		<servlet-name>Spring MVC Dispatcher Servlet</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
- 			<param-name>contextConfigLocation</param-name>
+			<param-name>contextConfigLocation</param-name>
 			<param-value></param-value>
 			<!-- <param-value>classpath:config/servlet-context.xml</param-value> -->
 		</init-param>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
-		
+
 	<servlet-mapping>
 		<servlet-name>Spring MVC Dispatcher Servlet</servlet-name>
 		<url-pattern>/mvc/*</url-pattern>
 	</servlet-mapping>
-	
+
 </web-app>

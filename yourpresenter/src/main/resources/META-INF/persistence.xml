@@ -6,7 +6,6 @@
 
 	<persistence-unit name="yourpresenter-persistence"
 		transaction-type="RESOURCE_LOCAL">
-		<class>com.google.code.yourpresenter.entity.Background</class>
 		<class>com.google.code.yourpresenter.entity.BgImage</class>
 		<class>com.google.code.yourpresenter.entity.Preference</class>
 		<class>com.google.code.yourpresenter.entity.Presentation</class>

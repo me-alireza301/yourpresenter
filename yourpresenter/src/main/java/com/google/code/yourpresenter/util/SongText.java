@@ -1,4 +1,4 @@
-package com.google.code.yourpresenter.entity.util;
+package com.google.code.yourpresenter.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,7 +12,6 @@ import com.google.code.yourpresenter.entity.Verse;
 public class SongText {
 
 	private static final String NEW_VERSE = "\\s*((slide)|(verse))\\s*\\d*\\s*";
-	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	private static final String HTML_LINE_SEPARATOR = "<br/>";
 	private Song song;
 	
@@ -45,7 +44,7 @@ public class SongText {
 					// new slide indicator
 					if (line.toLowerCase().matches(NEW_VERSE)) {
 						// remove unneeded last HTML_LINE_SEPARATOR
-						txt.setLength(txt.length() - HTML_LINE_SEPARATOR.length() - 1);
+						txt.setLength(txt.length() - HTML_LINE_SEPARATOR.length());
 						
 						// add verse read
 						verses.add(new Verse(txt.toString().trim(), song));
@@ -64,7 +63,7 @@ public class SongText {
 			
 			if (0 < txt.length()) {
 				// remove unneeded last HTML_LINE_SEPARATOR
-				txt.setLength(txt.length() - HTML_LINE_SEPARATOR.length() - 1);
+				txt.setLength(txt.length() - HTML_LINE_SEPARATOR.length());
 				
 				// add the last verse read
 				verses.add(new Verse(txt.toString().trim(), song));

@@ -333,6 +333,13 @@
 		    <type>jar</type>
 			<scope>runtime</scope>
 		</dependency>
+		
+		<!-- for JSON serialization for js client communication -->
+		<dependency>
+		    <groupId>org.codehaus.jackson</groupId>
+		    <artifactId>jackson-core-asl</artifactId>
+		    <version>1.8.5</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>

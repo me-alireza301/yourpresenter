@@ -12,7 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
-import com.google.code.yourpresenter.entity.util.SongText;
+import com.google.code.yourpresenter.util.SongText;
 
 /**
  * The Class Song.

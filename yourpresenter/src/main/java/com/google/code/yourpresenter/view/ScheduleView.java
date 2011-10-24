@@ -1,5 +1,6 @@
 package com.google.code.yourpresenter.view;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -38,7 +39,7 @@ public class ScheduleView implements Serializable, IHasSchedule {
 	@Autowired
 	private ISlideService slideService;
 	
-	public Schedule getSchedule() {
+	public Schedule getSchedule() throws IOException {
 		return scheduleService.loadAllSlidesEager(this.schedule);
 	}
 
@@ -46,7 +47,7 @@ public class ScheduleView implements Serializable, IHasSchedule {
 		this.schedule = schedule;
 	}
 
-	public void dropped(DropEvent dropEvent) throws YpException {
+	public void dropped(DropEvent dropEvent) throws YpException, IOException {
 		// TODO extract to new class DnDDispatcher
 		Object dragValue = dropEvent.getDragValue();
 		String dropValue = (String) dropEvent.getDropValue();
@@ -110,15 +111,14 @@ public class ScheduleView implements Serializable, IHasSchedule {
 	}
 	
 	public void activateSlide() throws NumberFormatException, YpException {
-		FacesContext context = FacesContext.getCurrentInstance();
 		@SuppressWarnings("rawtypes")
-		Map map = context.getExternalContext().getRequestParameterMap();
+		Map map = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String songId = (String) map.get("id");
 		if (null != songId && !songId.isEmpty()) { 
 			slideService.activateSlide(Long.valueOf(songId));
 		} else {
 			throw new YpException(YpError.SLIDE_ID_NOT_SET);
 		}
-		
 	}
+	
 }

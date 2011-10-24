@@ -50,14 +50,6 @@ public class Logger {
 		}
 	}
 	
-//	private static String concat(String... strings) {
-//		StringBuilder sb = new StringBuilder();
-//		for (String string : strings) {
-//			sb.append(string);
-//		}
-//		return sb.toString();
-//	}
-	
 	private String concat(Object[] strings) {
 		StringBuilder sb = new StringBuilder();
 		for (Object string : strings) {

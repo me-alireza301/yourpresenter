@@ -1,7 +1,7 @@
 package com.google.code.yourpresenter.service;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -30,9 +30,9 @@ public class BgImageServiceImpl implements IBgImageService, Serializable {
 	
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
-	public Collection<BgImage> findAll() {
+	public List<BgImage> findAll() {
 		Query query = em.createQuery("SELECT b FROM BgImage b");
-	    return (Collection<BgImage>) query.getResultList();
+	    return (List<BgImage>) query.getResultList();
 	}
 	
 	public void persist(BgImage bgImage) {

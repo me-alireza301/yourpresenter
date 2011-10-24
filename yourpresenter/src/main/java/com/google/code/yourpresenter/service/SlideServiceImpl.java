@@ -39,6 +39,19 @@ public class SlideServiceImpl implements ISlideService, Serializable {
 		em.persist(slide);
 	}
 
+	@Transactional(readOnly = true)
+	public Slide findActiveSlide(String scheduleName) {
+		Query query = em.createQuery(
+				"SELECT sl FROM Slide sl WHERE sl.active = true AND sl.presentation IN (SELECT p FROM Presentation p WHERE p.schedule IN (SELECT sch FROM Schedule sl.name = :name))");
+		query.setParameter("name", scheduleName);
+		@SuppressWarnings("unchecked")
+		List<Slide> oldSelections = query.getResultList();
+		if (!CollectionUtils.isEmpty(oldSelections)) {
+			return oldSelections.iterator().next();
+		}
+		return null;
+	}
+	
 	@Transactional
 	public void activateSlide(Long id) throws YpException {
 		// for examples see:

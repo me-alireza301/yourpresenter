@@ -7,8 +7,7 @@
 	xmlns:a4j="http://richfaces.org/a4j">
 <f:view contentType="text/html">
 	<h:head>
-		<title><ui:insert name="title">Yourpresenter</ui:insert>
-		</title>
+		<title><ui:insert name="title">Yourpresenter</ui:insert></title>
 		<meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
 		<link type="text/css" rel="stylesheet"
 			href="#{request.contextPath}/themes/#{preferencesView.theme}/skin.css" />
@@ -57,6 +56,11 @@
 	z-index: 20 !important;
 	overflow: visible;
 }
+
+/* header area used for drop */
+.header-panel { /* make background transparent */
+	background: transparent;
+}
 /* [END] drag and drop */
 
 /* [BEGIN] songTable styles */
@@ -77,97 +81,124 @@
 
 /* [BEGIN] misc default styles */
 .label {
-    font-weight: bold;
+	font-weight: bold;
 }
 
-.rf-dg, .rf-dg-c{
-    border:none;
-}
-
-.rf-p-b .rf-p {
-	/* make background transparent */
-	background: transparent;
+.rf-dg,.rf-dg-c {
+	border: none;
 }
 /* [END] misc default styles */
 
 /* [BEGIN] slide styles - to enable auto-text size */
-.slidebox-inactive
-{
+.slidebox-inactive {
 	border: 2px;
-	border-style:solid;
-	border-color:#000000;
-	padding:0px;
-	
-	background-size: 100%;
+	border-style: solid;
+	border-color: #00ff00;
+	padding: 0pt;
+	/* background-size: 100%; */
+	background-size: cover;
 	background-repeat: no-repeat;
-	background-position:center;
+	background-position: center;
+	
+	vertical-align: middle;
 }
 
 .slidebox-inactive-mouseover {
 	cursor: pointer;
 }
 
-.slidebox-active
-{
+.slidebox-active {
 	border: 2px;
-	border-style:solid;
-	border-color:#00ff00;
-	padding:0px; 	
-	
-	background-size: 100%;
+	border-style: solid;
+	border-color: #00ff00;
+	padding: 0pt;
+	/* background-size: 100%; */
+	background-size: cover;
 	background-repeat: no-repeat;
-	background-position:center;
+	background-position: center;
+	
+	vertical-align: middle;
 }
 
-.jtextfill
-{
-	text-align:center;
-	width:240px;
-	height:180px;
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	
-	border: 0px;
-	border-style:solid;
-	border-color:#00ff00;
-	
-	padding-top: 0px;
-	padding-bottom: 6px;
-	padding-right: 0px;
-	padding-left: 0px;
-	
-	/* make background transparent */
-	background: transparent;
+.rf-p {
+	border: 2px;
+	border-style: solid;
+	border-color: #ffff00;
+	/* vertical-align: middle; */
+	border: 2px;
+	border-style: solid;
+	border-color: #00ffff;
 }
 
-.jtextfill-inner
-{
+.rf-p-b {
+	border: 2px;
+	/* height: 100%;
+	width: 100%; */
+	border-style: solid;
+	border-color: #ffff00;
+	vertical-align: middle;
+	border: 2px;
+	border-style: solid;
+	border-color: #000000;
+	padding: 0px;
+}
+
+.jtextfill {
+	width: 200px;
+	height: 150px;
+	padding: 10%;
+	border: 2px;
+	border-style: solid;
+	border-color: #0000ff;
 	/* make background transparent */
 	background: transparent;
-	
-	/* text with border */	
+	text-align: center;
+	vertical-align: middle;
+}
+
+.jtextfill-inner {
+	border: 2px;
+	border-style: solid;
+	border-color: #00ff00;
+	text-align: center;
+	vertical-align: middle;
+	/* text with border */
 	color: white;
-    text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;
-} 
+	/* text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000; */
+	text-shadow: 2px -2px 3px #000;
+	/* text-decoration: none; */
+	font-family: Verdana, Helvetica, sans-serif;
+	font-smooth: always;
+	/* wrap text on explicit line breaks only */
+	white-space: nowrap;
+}
+
+.jtextfill-inner a {
+	/* TODO check */
+	/* prevent underlined text in slides in google chrome/safari */
+	text-decoration: none
+}
 /* [END] slide styles */
 
 /* [BEGIN] media for background styles */
-.media-image
-{
-	width:160px;
-	height:120px;
+.media-image {
+	width: 160px;
+	height: 120px;
 	padding: 0px;
-	
-	background-size: 100%;
+	/* background-size: 100%; */
+	background-size: cover;
 	background-repeat: no-repeat;
-	background-position:center; 
+	background-position: center;
 }
-/* [END] slide styles */		
-
-</style>
+/* [END] slide styles */
+/* a {
+	text-decoration: none
+}
+ */</style>
 
 		<rich:jQuery />
-
-		<!-- <script type="text/javascript" src="../js/jquery-1.6.2.min.js" /> -->
+		<!-- <script type="text/javascript" src="js/jquery-1.6.2.min.js" /> -->
+		
 		<script type="text/javascript"
 			src="../js/jquery-ui-1.8.14.custom.min.js" />
 
@@ -191,15 +222,17 @@
 				});
 			});
 		</script>
-		
+
 		<!-- used to fit text size to box
 		see: http://plugins.jquery.com/project/TextFill
 		the call is used also for the all oncomplete for ajax events where necessary 
 		-->
 		<script type="text/javascript" src="../js/jquery-textfill-0.1.js" />
 		<script type="text/javascript">
-			jQuery(document).ready(function(){
-				jQuery('.jtextfill').textfill({maxFontPixels: 70})
+			jQuery(document).ready(function() {
+				jQuery('.jtextfill').textfill({
+					maxFontPixels : 70
+				})
 			});
 		</script>
 
@@ -218,20 +251,20 @@
 							</f:facet>
 							<rich:menuGroup label="Song">
 								<rich:menuItem label="New"
-									oncomplete="#{rich:component('dialogSongEdit')}.show();#{rich:element('dialogSongEditForm:dialogSongEditName')}.focus();" 
-									render="dialogSongEditPanel"/>
+									oncomplete="#{rich:component('dialogSongEdit')}.show();#{rich:element('dialogSongEditForm:dialogSongEditName')}.focus();"
+									render="dialogSongEditPanel" />
 							</rich:menuGroup>
 						</rich:dropDownMenu>
 					</rich:toolbar>
 				</h:form>
-				
+
 				<a4j:status>
-		            <f:facet name="start">
-		                <h:graphicImage value="/images/ajax/ai.gif" alt="ai"/>
-		            </f:facet>
-	        	</a4j:status>
-        	</h:panelGrid>
-        
+					<f:facet name="start">
+						<h:graphicImage value="/images/ajax/ai.gif" alt="ai" />
+					</f:facet>
+				</a4j:status>
+			</h:panelGrid>
+
 			<ui:include src="dialogSongEdit.xhtml" />
 		</div>
 
@@ -263,7 +296,7 @@
 								</rich:dataTable>
 							</h:panelGrid>
 						</h:form>
-	
+
 						<rich:jQuery selector=".songTable tr:odd"
 							query="addClass('songTable-odd-row')" />
 						<rich:jQuery selector=".songTable tr:even"
@@ -272,7 +305,7 @@
 							query="jQuery(this).addClass('songTable-active-row')" />
 						<rich:jQuery selector=".songTable tr" event="mouseout"
 							query="jQuery(this).removeClass('songTable-active-row')" />
-						
+
 					</a4j:outputPanel>
 				</rich:tab>
 				<rich:tab header="Bible">
@@ -282,65 +315,69 @@
 
 		<div class="ui-layout-center">
 			<a4j:outputPanel id="schedule">
-			
+
 				<h:form>
 					<rich:panel styleClass="dropTargetPanel">
 						<f:facet name="header">
-							<rich:panel>
-									
-       							<rich:dropTarget acceptedTypes="bgImage, song" dropValue="schedule_#{schedule.id}"
-									dropListener="#{scheduleView.dropped}" render="schedule" 
+							<rich:panel styleClass="header-panel">
+								<rich:dropTarget acceptedTypes="bgImage, song"
+									dropValue="schedule_#{schedule.name}"
+									dropListener="#{scheduleView.dropped}" render="schedule"
 									oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:70})" />
-									
+
 								<h:outputText value="Schedule: ${scheduleView.schedule.name}" />
 							</rich:panel>
 						</f:facet>
-							
+
 						<rich:dataTable value="#{scheduleView.schedule.presentations}"
 							var="presentation">
-	
+
 							<rich:column>
 								<rich:panel>
-								
-        						<f:facet name="header">
-        							<rich:panel>
-	        							<rich:dropTarget acceptedTypes="bgImage, song" dropValue="presentation_#{presentation.id}"
-											dropListener="#{scheduleView.dropped}" render="schedule" 
-											oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:70})" />
 
-										<h:outputText value="${presentation.song.name}" />
- 									</rich:panel>						
-        						</f:facet>
+									<f:facet name="header">
+										<rich:panel styleClass="header-panel">
+											<rich:dropTarget acceptedTypes="bgImage, song"
+												dropValue="presentation_#{presentation.id}"
+												dropListener="#{scheduleView.dropped}" render="schedule"
+												oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:70})" />
 
-        						<!--  elements="9" -->
-								<rich:dataGrid value="#{presentation.slides}" var="slide"
-                					 columns="4" border="0">
-    
-                					<a4j:commandLink action="#{scheduleView.activateSlide}" render=""> 
-                						<f:param name="id" value="#{slide.id}"/>
-
-										<rich:dropTarget acceptedTypes="bgImage" dropValue="slide_#{slide.id}"
-											dropListener="#{scheduleView.dropped}" render="schedule" />
-											<!-- oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:70})" -->
-											
-	                					<!-- these panels + styles might look weird, but it's a working solution for jtextfill -->
-	                					<rich:panel styleClass="slidebox-#{slide.cssSuffix}" 
-	                						style="background-image:url('/yourpresenter/mvc/thumbnail/#{slide.bgImage.id}');">
-		                					<rich:panel styleClass="jtextfill">
-		                						<h:outputText styleClass="jtextfill-inner" value="#{slide.verse.text}" escape="false" />
-											</rich:panel>
+											<h:outputText value="${presentation.song.name}" />
 										</rich:panel>
-									</a4j:commandLink>
-									
-									<rich:jQuery selector=".slidebox-inactive" event="click"
-										query="jQuery('.slidebox-active').addClass('slidebox-inactive');jQuery('.slidebox-active').removeClass('slidebox-active');jQuery(this).removeClass('slidebox-inactive');jQuery(this).addClass('slidebox-active');" />
-										
-									<rich:jQuery selector=".slidebox-inactive" event="mouseover"
-										query="jQuery(this).addClass('slidebox-inactive-mouseover')" />
-									<rich:jQuery selector=".slidebox-inactive" event="mouseout"
-										query="jQuery(this).removeClass('slidebox-inactive-mouseover')" />
-								</rich:dataGrid> 
-	
+									</f:facet>
+
+									<!--  elements="9" -->
+									<rich:dataGrid value="#{presentation.slides}" var="slide"
+										columns="4" border="0">
+
+										<a4j:commandLink action="#{scheduleView.activateSlide}"
+											render="">
+											<f:param name="id" value="#{slide.id}" />
+
+											<rich:dropTarget acceptedTypes="bgImage"
+												dropValue="slide_#{slide.id}"
+												dropListener="#{scheduleView.dropped}" render="schedule" />
+											<!-- oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:70})" -->
+
+											<!-- these panels + styles might look weird, but it's a working solution for jtextfill -->
+											<rich:panel styleClass="slidebox-#{slide.cssSuffix}"
+												style="background-image:url('/yourpresenter/mvc/thumbnail/#{slide.bgImage.id}');">
+												<rich:panel styleClass="jtextfill">
+													<h:outputText styleClass="jtextfill-inner"
+														value="#{slide.verse.text}" escape="false" />
+												</rich:panel>
+											</rich:panel>
+										</a4j:commandLink>
+
+										<rich:jQuery selector=".slidebox-inactive" event="click"
+											query="jQuery('.slidebox-active').addClass('slidebox-inactive');jQuery('.slidebox-active').removeClass('slidebox-active');jQuery(this).removeClass('slidebox-inactive');jQuery(this).addClass('slidebox-active');" />
+
+										<rich:jQuery selector=".slidebox-inactive" event="mouseover"
+											query="jQuery(this).addClass('slidebox-inactive-mouseover')" />
+										<rich:jQuery selector=".slidebox-inactive" event="mouseout"
+											query="jQuery(this).removeClass('slidebox-inactive-mouseover')" />
+									</rich:dataGrid>
+
 								</rich:panel>
 							</rich:column>
 						</rich:dataTable>
@@ -348,7 +385,7 @@
 				</h:form>
 			</a4j:outputPanel>
 		</div>
-		
+
 		<div class="ui-layout-south">
 			<rich:tabPanel switchType="client">
 				<rich:tab header="Images">
@@ -358,16 +395,16 @@
 								rejectClass="reject" draggingClass="default">
        							Drag image to scheduled song ...
    							</rich:dragIndicator>
-   							
+
 							<rich:dataGrid value="#{imageView.bgImage}" var="bgImage"
-               					 columns="6" border="0">
-               					<rich:panel styleClass="media-image" 
-               						style="background-image:url('/yourpresenter/mvc/thumbnail/#{bgImage.id}');" >
-               						
-        						    <rich:dragSource type="bgImage" dragIndicator="imageDragInd"
+								columns="6" border="0">
+								<rich:panel styleClass="media-image"
+									style="background-image:url('/yourpresenter/mvc/thumbnail/#{bgImage.id}');">
+
+									<rich:dragSource type="bgImage" dragIndicator="imageDragInd"
 										dragValue="#{bgImage}" />
-               					</rich:panel>
-							</rich:dataGrid>							
+								</rich:panel>
+							</rich:dataGrid>
 						</h:form>
 					</a4j:outputPanel>
 				</rich:tab>

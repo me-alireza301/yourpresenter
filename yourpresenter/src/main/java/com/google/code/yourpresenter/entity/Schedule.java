@@ -7,23 +7,18 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.validation.constraints.NotNull;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Schedule.
  */
 @SuppressWarnings("serial")
 @Entity
 public class Schedule implements Serializable {
-
-	/** The id. */
-	private Long id;
 
 	/** The presentations. */
 	private List<Presentation> presentations;
@@ -35,15 +30,20 @@ public class Schedule implements Serializable {
 	private String name;
 
 	public Schedule() {
-		super();
-		this.name = "New Schedule"; 
+		this(null);
 	}
 	
+	public Schedule(String name) {
+		super();
+		this.name = name;	
+	}
+
 	/**
 	 * Gets the name.
 	 * 
 	 * @return the name
 	 */
+	@Id
 	@NotNull
 	public String getName() {
 		return name;
@@ -57,27 +57,6 @@ public class Schedule implements Serializable {
 	 */
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	/**
-	 * Gets the id.
-	 * 
-	 * @return the id
-	 */
-	@Id
-	@GeneratedValue
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 * Sets the id.
-	 * 
-	 * @param id
-	 *            the new id
-	 */
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	/**

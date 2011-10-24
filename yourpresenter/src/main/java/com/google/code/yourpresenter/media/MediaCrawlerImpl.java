@@ -15,6 +15,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.VFS;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +46,7 @@ public class MediaCrawlerImpl implements IMediaCrawler, Serializable {
 
 	@PostInitialize(order = IConstants.POST_INIT_IDX_MEDIA_CRAWLER)
 	@Transactional
+	@Async
 	public void crawl() throws YpException {
 		final String[] dirs = preferenceService
 				.findStringArrayById(IConstants.MEDIA_DIRS);

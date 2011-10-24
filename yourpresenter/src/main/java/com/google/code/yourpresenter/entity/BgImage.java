@@ -22,6 +22,7 @@ public class BgImage implements Serializable {
 	private String image;
 
 	/** The thumbnail. */
+//	@JsonIgnore
 	private String thumbnail;
 
 	/** last modified time in miliseconds */

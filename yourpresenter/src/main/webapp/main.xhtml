@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+<f:view contentType="text/html">
+	<h:head>
+		<title><ui:insert name="title">Yourpresenter</ui:insert></title>
+		<meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+		
+		<rich:jQuery />
+		
+		<!-- need to focus the 1.st component, solution found in:
+			http://iamjosh.wordpress.com/2008/03/10/jquery-focus-on-first-form-element/ -->
+		<script type="text/javascript">
+			jQuery(document).ready(function() {
+				jQuery(':text:visible:enabled:first').focus();
+			});
+		</script>
+	</h:head>
+	<h:body>
+		<h:form>
+			<h:panelGrid columns="3">
+				<h:outputText value="Schedule:" />
+				<rich:autocomplete mode="client" minChars="0" autofill="false"
+					autocompleteMethod="#{mainView.allScheduleNames}"
+					value="#{mainView.scheduleName}">
+					<!-- <rich:validator event="keyup" /> -->
+					<rich:validator event="change"/>
+				</rich:autocomplete>
+				<rich:message for="scheduleName" />
+
+				<h:outputText value="Role:" />
+				<h:panelGrid columns="1">
+					<h:commandButton value="Presenter"
+						action="#{mainView.submitSchedule}" >
+						<!-- to enable URL refresh '?faces-redirect=true' is used,
+							see http://www.coderanch.com/t/522508/JSF/java/commandButton-URL-no-refresh -->
+						<f:param name="outcome" value="presenter/presenter.jsf?faces-redirect=true" />
+					</h:commandButton>
+					<h:button value="Speaker" outcome="speaker.jsf" type="submit" />
+					<h:button value="Musician" />
+					<h:button value="Projector" outcome="projector.jsf" />
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:form>
+	</h:body>
+</f:view>
+</html>

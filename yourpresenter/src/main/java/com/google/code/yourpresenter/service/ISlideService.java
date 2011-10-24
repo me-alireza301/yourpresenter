@@ -13,4 +13,6 @@ public interface ISlideService {
     public void activateSlide(Long id) throws YpException;
 
 	public void setBgImage(Long slideId, BgImage bgImage);
+	
+	public Slide findActiveSlide(String scheduleName);
 }
