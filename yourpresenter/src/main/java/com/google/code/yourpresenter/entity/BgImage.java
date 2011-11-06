@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  * The Class BgImage.
@@ -19,13 +20,15 @@ public class BgImage implements Serializable {
 	private Long id;
 
 	/** The image. */
+	@JsonIgnore
 	private String image;
 
 	/** The thumbnail. */
-//	@JsonIgnore
+	@JsonIgnore
 	private String thumbnail;
 
 	/** last modified time in miliseconds */
+	@JsonIgnore
 	private long lastModifiedTime;
 
 	public BgImage() {

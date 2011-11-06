@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import com.google.code.yourpresenter.YpError;
-import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.BgImage;
 import com.google.code.yourpresenter.entity.Presentation;
 import com.google.code.yourpresenter.entity.Schedule;
@@ -208,6 +206,31 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 			query.setParameter("name", name);
 		}
 	    return (List<String>) query.getResultList();	
+	}
+
+	
+	@Transactional
+	@Override
+	public void toggleBlank(String scheduleName) {
+		Schedule schedule = this.findByName(scheduleName);
+		schedule.setBlank(!schedule.isBlank());
+		persist(schedule);
+	}
+	
+	@Transactional
+	@Override
+	public void toggleClear(String scheduleName) {
+		Schedule schedule = this.findByName(scheduleName);
+		schedule.setClear(!schedule.isClear());
+		persist(schedule);
+	}
+
+	@Transactional
+	@Override
+	public void toggleLive(String scheduleName) {
+		Schedule schedule = this.findByName(scheduleName);
+		schedule.setLive(!schedule.isLive());
+		persist(schedule);
 	}
 
 }

@@ -254,7 +254,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>3.8.2</version>
+			<version>4.10</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -335,10 +335,11 @@
 		</dependency>
 		
 		<!-- for JSON serialization for js client communication -->
+		<!-- see: http://stackoverflow.com/questions/2259551/spring-3-0-making-json-response-using-jackson-message-converter -->
 		<dependency>
 		    <groupId>org.codehaus.jackson</groupId>
-		    <artifactId>jackson-core-asl</artifactId>
-		    <version>1.8.5</version>
+		    <artifactId>jackson-mapper-asl</artifactId>
+		    <version>1.9.1</version>
 		</dependency>
 	</dependencies>
 

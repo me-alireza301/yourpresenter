@@ -3,11 +3,11 @@ package com.google.code.yourpresenter.dto;
 import com.google.code.yourpresenter.entity.Schedule;
 import com.google.code.yourpresenter.entity.Slide;
 
-public class ScheduleDTO {
+public class StateDTO {
 	private Slide actualSlide;
 	private Schedule schedule;
 	
-	public ScheduleDTO(Slide actualSlide, Schedule schedule) {
+	public StateDTO(Slide actualSlide, Schedule schedule) {
 		super();
 		this.actualSlide = actualSlide;
 		this.schedule = schedule;

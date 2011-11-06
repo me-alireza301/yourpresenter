@@ -197,10 +197,10 @@
  */</style>
 
 		<rich:jQuery />
-		<!-- <script type="text/javascript" src="js/jquery-1.6.2.min.js" /> -->
+		<!-- <script type="text/javascript" src="js/jquery-1.6.4.min.js" /> -->
 		
 		<script type="text/javascript"
-			src="../js/jquery-ui-1.8.14.custom.min.js" />
+			src="../js/jquery-ui-1.8.14.custom.min.js"></script>
 
 		<!-- richfaces 4 don't integrate layout component, but based on this
 		site: http://community.jboss.org/message/598687
@@ -212,7 +212,7 @@
 		http://layout.jquery-dev.net/demos/nested.html
 	 	-->
 		<script type="text/javascript"
-			src="../js/jquery.layout-1.3.0-rc-29.15.js" />
+			src="../js/jquery.layout-1.3.0-rc-29.15.js"></script>
 
 		<script type="text/javascript">
 			/* jQuery.noConflict(); */
@@ -227,7 +227,7 @@
 		see: http://plugins.jquery.com/project/TextFill
 		the call is used also for the all oncomplete for ajax events where necessary 
 		-->
-		<script type="text/javascript" src="../js/jquery-textfill-0.1.js" />
+		<script type="text/javascript" src="../js/jquery-textfill-0.1.js"></script>
 		<script type="text/javascript">
 			jQuery(document).ready(function() {
 				jQuery('.jtextfill').textfill({
@@ -240,30 +240,39 @@
 
 	<h:body>
 		<div class="ui-layout-north">
-			<h:panelGrid columns="2">
-				<h:form>
-					<rich:toolbar height="26px">
-						<rich:dropDownMenu mode="ajax">
-							<f:facet name="label">
-								<h:panelGroup>
-									<h:outputText value="File" />
-								</h:panelGroup>
-							</f:facet>
-							<rich:menuGroup label="Song">
-								<rich:menuItem label="New"
-									oncomplete="#{rich:component('dialogSongEdit')}.show();#{rich:element('dialogSongEditForm:dialogSongEditName')}.focus();"
-									render="dialogSongEditPanel" />
-							</rich:menuGroup>
-						</rich:dropDownMenu>
-					</rich:toolbar>
-				</h:form>
-
+			<h:panelGrid columns="3" cellspacing="0">
+					<h:form>
+						<rich:toolbar height="26px">
+							<rich:dropDownMenu mode="ajax">
+								<f:facet name="label">
+									<h:panelGroup>
+										<h:outputText value="File" />
+									</h:panelGroup>
+								</f:facet>
+								<rich:menuGroup label="Song">
+									<rich:menuItem label="New"
+										oncomplete="#{rich:component('dialogSongEdit')}.show();#{rich:element('dialogSongEditForm:dialogSongEditName')}.focus();"
+										render="dialogSongEditPanel" />
+								</rich:menuGroup>
+							</rich:dropDownMenu>
+						</rich:toolbar>
+					</h:form>
+	
+				<h:panelGrid columns="3" cellspacing="3" id="toggleButtons">
+					<h:form>
+						<a4j:commandButton value="Blank" action="#{scheduleView.toggleBlank}" type="submit" render="toggleButtons" />
+						<a4j:commandButton value="Clear" action="#{scheduleView.toggleClear}" type="submit" render="toggleButtons" />
+						<a4j:commandButton value="Live" action="#{scheduleView.toggleLive}" type="submit" render="toggleButtons" />
+					</h:form>
+				</h:panelGrid>
+				
 				<a4j:status>
 					<f:facet name="start">
 						<h:graphicImage value="/images/ajax/ai.gif" alt="ai" />
 					</f:facet>
 				</a4j:status>
 			</h:panelGrid>
+			
 
 			<ui:include src="dialogSongEdit.xhtml" />
 		</div>

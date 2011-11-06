@@ -43,16 +43,16 @@ public class PresentationServiceImpl implements IPresentationService, Serializab
 	
 	public int findPositionById(Long id) {
 		Query query = em.createQuery(
-				"SELECT p.possition FROM Presentation p WHERE p.id = :id");
+				"SELECT p.position FROM Presentation p WHERE p.id = :id");
 		query.setParameter("id", id);
 		
 		// for some reason following string doesn't work ok and returns 0 allways 
-		// => ratheriterate over list
+		// => rather iterate over list
 //		return query.getFirstResult();
 		@SuppressWarnings("unchecked")
-		List<Integer> possitions = query.getResultList();
-		if (!CollectionUtils.isEmpty(possitions)) {
-			return possitions.iterator().next();
+		List<Integer> positions = query.getResultList();
+		if (!CollectionUtils.isEmpty(positions)) {
+			return positions.iterator().next();
 		}
 		return -1;
 	}

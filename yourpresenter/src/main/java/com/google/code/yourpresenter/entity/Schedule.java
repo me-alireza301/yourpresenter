@@ -13,6 +13,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.validation.constraints.NotNull;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  * The Class Schedule.
  */
@@ -21,13 +23,19 @@ import javax.validation.constraints.NotNull;
 public class Schedule implements Serializable {
 
 	/** The presentations. */
+	@JsonIgnore
 	private List<Presentation> presentations;
 
 	/** The background. */
+	@JsonIgnore
 	private BgImage bgImage;
 
 	/** The name. */
 	private String name;
+	
+	private boolean blank;
+	private boolean clear;
+	private boolean live;
 
 	public Schedule() {
 		this(null);
@@ -35,6 +43,10 @@ public class Schedule implements Serializable {
 	
 	public Schedule(String name) {
 		super();
+		this.blank = false;
+		this.clear = false;
+		this.live = false;
+		
 		this.name = name;	
 	}
 
@@ -109,5 +121,29 @@ public class Schedule implements Serializable {
 		
 		this.presentations.add(presentation);
 		return presentation;
+	}
+
+	public boolean isBlank() {
+		return blank;
+	}
+
+	public void setBlank(boolean blank) {
+		this.blank = blank;
+	}
+
+	public boolean isClear() {
+		return clear;
+	}
+
+	public void setClear(boolean clear) {
+		this.clear = clear;
+	}
+
+	public boolean isLive() {
+		return live;
+	}
+
+	public void setLive(boolean live) {
+		this.live = live;
 	}
 }

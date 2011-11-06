@@ -22,27 +22,37 @@
 	</h:head>
 	<h:body>
 		<h:form>
+			<rich:messages ajaxRendered="true"/>
 			<h:panelGrid columns="3">
 				<h:outputText value="Schedule:" />
-				<rich:autocomplete mode="client" minChars="0" autofill="false"
+				<rich:autocomplete id="scheduleName" mode="client" minChars="0" autofill="false"
 					autocompleteMethod="#{mainView.allScheduleNames}"
 					value="#{mainView.scheduleName}">
-					<!-- <rich:validator event="keyup" /> -->
-					<rich:validator event="change"/>
+					<rich:validator event="keyup" />
+					<!-- <rich:validator event="onblur"/> -->
 				</rich:autocomplete>
 				<rich:message for="scheduleName" />
 
 				<h:outputText value="Role:" />
-				<h:panelGrid columns="1">
-					<h:commandButton value="Presenter"
+				<h:panelGrid columns="2">
+					<h:commandButton value="Presenter" id="presenter"
 						action="#{mainView.submitSchedule}" >
 						<!-- to enable URL refresh '?faces-redirect=true' is used,
 							see http://www.coderanch.com/t/522508/JSF/java/commandButton-URL-no-refresh -->
 						<f:param name="outcome" value="presenter/presenter.jsf?faces-redirect=true" />
 					</h:commandButton>
+					<rich:message for="presenter" />
+					
 					<h:button value="Speaker" outcome="speaker.jsf" type="submit" />
+					<rich:message for="abc" />
 					<h:button value="Musician" />
-					<h:button value="Projector" outcome="projector.jsf" />
+					<rich:message for="def" />
+					
+					<h:commandButton value="Projector" id="projector"
+						action="#{mainView.chooseSchedule}" binding="#{mainView.submitButton}" >
+						<f:param name="outcome" value="projector/projector.jsf?faces-redirect=true" />
+					</h:commandButton>
+					<rich:message for="projector" />
 				</h:panelGrid>
 			</h:panelGrid>
 		</h:form>

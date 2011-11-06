@@ -43,12 +43,15 @@ public class SongText {
 				if (!line.trim().isEmpty()) {
 					// new slide indicator
 					if (line.toLowerCase().matches(NEW_VERSE)) {
-						// remove unneeded last HTML_LINE_SEPARATOR
-						txt.setLength(txt.length() - HTML_LINE_SEPARATOR.length());
-						
-						// add verse read
-						verses.add(new Verse(txt.toString().trim(), song));
-						txt.setLength(0);
+						// add verse only in case something to be added already read
+						if (txt.length() > 0) {
+							// remove unneeded last HTML_LINE_SEPARATOR
+							txt.setLength(txt.length() - HTML_LINE_SEPARATOR.length());
+							
+							// add verse read
+							verses.add(new Verse(txt.toString().trim(), song));
+							txt.setLength(0);							
+						}
 						
 					// regular text case
 					} else {

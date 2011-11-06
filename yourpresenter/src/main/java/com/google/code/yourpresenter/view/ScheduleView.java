@@ -120,5 +120,16 @@ public class ScheduleView implements Serializable, IHasSchedule {
 			throw new YpException(YpError.SLIDE_ID_NOT_SET);
 		}
 	}
+
+	public void toggleBlank() {
+		this.scheduleService.toggleBlank(this.schedule.getName());
+	}
 	
+	public void toggleClear() {
+		this.scheduleService.toggleClear(this.schedule.getName());
+	}
+	
+	public void toggleLive() {
+		this.scheduleService.toggleLive(this.schedule.getName());
+	}
 }

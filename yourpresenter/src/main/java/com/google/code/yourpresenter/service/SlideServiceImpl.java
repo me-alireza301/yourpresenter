@@ -42,7 +42,7 @@ public class SlideServiceImpl implements ISlideService, Serializable {
 	@Transactional(readOnly = true)
 	public Slide findActiveSlide(String scheduleName) {
 		Query query = em.createQuery(
-				"SELECT sl FROM Slide sl WHERE sl.active = true AND sl.presentation IN (SELECT p FROM Presentation p WHERE p.schedule IN (SELECT sch FROM Schedule sl.name = :name))");
+				"SELECT sl FROM Slide sl WHERE sl.active = true AND sl.presentation IN (SELECT p FROM Presentation p WHERE p.schedule IN (SELECT sch FROM Schedule sch WHERE sch.name = :name))");
 		query.setParameter("name", scheduleName);
 		@SuppressWarnings("unchecked")
 		List<Slide> oldSelections = query.getResultList();

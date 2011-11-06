@@ -48,37 +48,52 @@ public class MediaContentController {
 //	}
 
 	@RequestMapping(value = "/thumbnail/{id}", method = RequestMethod.GET)
-	public void getFile(@PathVariable("id") String bgImageId,
+	public void getThumbnail(@PathVariable("id") String bgImageId,
 			HttpServletResponse response) throws YpException {
+		getFile(bgImageId, response, true);
+	}
+
+	@RequestMapping(value = "/image/{id}", method = RequestMethod.GET)
+	public void getImage(@PathVariable("id") String bgImageId,
+			HttpServletResponse response) throws YpException {
+		getFile(bgImageId, response, false);
+	}
+
+	private void getFile(String bgImageId, HttpServletResponse response, boolean thumbnail)
+			throws YpException {
 		BgImage bgImage = this.bgImageService.findById(Long.valueOf(bgImageId));
 		
 		InputStream is = null;
 		try {
-			is = new FileInputStream(bgImage.getThumbnail());
-			setHeader(response, bgImage);
+			String file = (thumbnail ? bgImage.getThumbnail() : bgImage.getImage());
+			is = new FileInputStream(file);
+			setHeader(response, bgImage, thumbnail);
 			
 			// copy it to response's OutputStream
 			IOUtils.copy(is, response.getOutputStream());
 			response.flushBuffer();
 		} catch (FileNotFoundException e) {
-			throw new YpException(YpError.THUMBNAIL_READING_FAILED, e);
+			throw new YpException(YpError.FILE_READING_FAILED, e);
 		} catch (IOException e) {
-			throw new YpException(YpError.THUMBNAIL_READING_FAILED, e);
+			throw new YpException(YpError.FILE_READING_FAILED, e);
 		} finally {
 			if (null != is) {
 				try {
 					is.close();
 				} catch (IOException e) {
-					throw new YpException(YpError.THUMBNAIL_READING_FAILED, e);
+					throw new YpException(YpError.FILE_READING_FAILED, e);
 				}
 				is = null;
 			}
 		}
 	}
 	
-	private void setHeader(HttpServletResponse response, BgImage bgImage)
+	private void setHeader(HttpServletResponse response, BgImage bgImage, boolean thumbnail)
 			throws YpException {
+		
+		String type = (thumbnail ? IConstants.MEDIA_THUMBNAIL_CONTENT_TYPE : IConstants.MEDIA_IMAGE_CONTENT_TYPE);
+		
 		response.setContentType(this.preferenceService
-				.findStringById(IConstants.MEDIA_THUMBNAIL_CONTENT_TYPE));
+				.findStringById(type));
 	}
 }

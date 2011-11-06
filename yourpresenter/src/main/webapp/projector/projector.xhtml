@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+<f:view contentType="text/html">
+
+	<h:head>
+		<title><ui:insert name="title">Projector</ui:insert>
+		</title>
+		<meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+
+		<script type="text/javascript" src="../js/jquery-1.7.min.js"></script>
+		<script type="text/javascript">
+			/* 	as we don't use jQuery distributed with Richfaces => need this
+				see: http://docs.jquery.com/Using_jQuery_with_Other_Libraries */
+			/* jQuery.noConflict(); */
+			var $ = jQuery.noConflict();
+		</script>
+		<!-- <script type="text/javascript" src="../js/projector.js"></script> -->
+				
+		<!-- used to fit text size to box
+		see: http://plugins.jquery.com/project/TextFill
+		the call is used also for the all oncomplete for ajax events where necessary 
+		-->
+		<script type="text/javascript" src="../js/jquery-textfill-0.1.js"></script>
+		
+		<script type="text/javascript">
+			var fadeInBgDuration = 500;
+			var fadeInTxtDuration = 10000;
+			/* var active_fg = ".one-fg";
+			var active_bg = ".one-bg"; */
+
+			/* jQuery(document).ready(function() {
+				jQuery('.jtextfill').textfill({ maxFontPixels: 70 });
+
+			}); */
+			
+			jQuery(document).ready(function() {
+				/* call function in jQuery: http://stackoverflow.com/questions/907634/is-this-how-you-define-a-function-in-jquery */
+				onStart();
+			});
+
+			function onStart() {
+				var scheduleName = jQuery(".secret").text();
+				jQuery.getJSON("../mvc/state/" + scheduleName, function(data) {
+					
+					/* preload bg image first, fade it in only afterwards
+						see: http://stackoverflow.com/questions/5365509/calling-a-function-when-the-background-image-finishes-loading */
+					var imgPath = "/yourpresenter/mvc/image/" + data.actualSlide.bgImage.id;
+					/*
+					var img = new Image();
+					img.onload = function() {
+						// css + jquery: http://www.jquery4u.com/dynamic-css-2/change-css-jquery/
+						jQuery(".one-bg").css({"background-image":"url('" + imgPath + "')"});
+						
+						jQuery(".one-bg").fadeIn(fadeInBgDuration); 
+						// jQuery(".one-bg").fadeIn(fadeInBgDuration, function() {
+						//	jQuery(".one-fg").children(":first").children(":first").html(data.actualSlide.verse.text);
+						//	jQuery(".jtextfill").textfill({maxFontPixels : 70});  
+						//	jQuery(".one-fg").fadeIn(fadeInTxtDuration);
+						//}); 
+						jQuery(".one-fg").children(":first").children(":first").html(data.actualSlide.verse.text);
+						jQuery(".jtextfill").textfill({maxFontPixels : 70});  
+						jQuery(".one-fg").fadeIn(fadeInTxtDuration);
+					};
+					img.src = imgPath;
+					*/
+					
+					jQuery(".one-fg").children(":first").children(":first").html(data.actualSlide.verse.text);
+					jQuery(".jtextfill").textfill({maxFontPixels : 140});
+					jQuery(".one-fg").fadeIn(fadeInTxtDuration);
+					jQuery(".one-bg").css({"background-image":"url('" + imgPath + "')"});
+					jQuery(".one-bg").fadeIn(fadeInBgDuration);
+					
+					/* TODO slide txt*/
+					/* $(".one-fg").fadeIn(fadeInDuration); */
+					/* alert(data.actualSlide.verse.text); */
+					/* jQuery(".one-fg.jtextfill-inner").text(data.actualSlide.verse.text); */					
+					/* jQuery(".one-fg").children(":first").children(":first").text(data.actualSlide.verse.text); */
+					/* jQuery(".one-fg").children(":first").textfill({maxFontPixels : 70});   */
+					
+					/* jQuery(".jtextfill").textfill({maxFontPixels : 70});  
+					jQuery(".one-fg").fadeIn(fadeInTxtDuration); */
+
+				});
+			}
+		</script>
+
+		<style type="text/css">
+
+/* fullscreen div idea found: http://stackoverflow.com/questions/2217007/how-to-make-a-div-fullscreen-and-atop-of-all-other-elements-with-jquery */
+.curtain {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: black;
+	padding: 0pt;
+	border: 0px;
+	/* border: 1px; 
+	border-style: solid;
+	border-color: #00ff00; */
+	z-index: 10;
+}
+
+.secret {
+	z-index: 1;
+}
+
+.template-bg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	/* background-color: black; */
+	padding: 0pt;
+	border: 0px;
+	z-index: 20;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+	/* by default hidden */
+	display: none;
+}
+
+.template-fg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: transparent;
+	padding: 0pt;
+	border: 0px;
+	z-index: 21;
+	/* border around text needed */
+	/* padding: 10%; */
+	/* by default hidden */
+	margin:auto;
+	
+	display:table;
+}
+
+.one-bg {
+}
+
+.one-fg {
+}
+
+.two-bg {
+}
+
+.two-fg {
+}
+
+/* [BEGIN] slide styles */
+.jtextfill {
+	padding: 5%; 
+	/* width: 90%;
+	height: 90%; */
+	border: 2px;
+	border-style: solid;
+	border-color: #00ff00;
+	/ * make background transparent * /
+	background: transparent;
+	text-align: center;
+	
+	
+	
+	
+	color: white;
+	/* margin:auto; */
+	
+	
+	
+	/* text with border */
+	color: white;
+	/* text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000; */
+	text-shadow: 2px -2px 3px #000;
+	/* text-decoration: none; */
+	font-family: Verdana, Helvetica, sans-serif;
+	font-smooth: always;
+	/* wrap text on explicit line breaks only */
+	white-space: nowrap;
+	
+	display:table-cell;
+	vertical-align: middle;
+} 
+.jtextfill-inner {
+	border: 2px;
+	border-style: solid;
+	border-color: #00ff00;
+	text-align: center;
+	vertical-align: middle;
+	/* text with border */
+	color: white;
+	/* text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000; */
+	text-shadow: 2px -2px 3px #000;
+	/* text-decoration: none; */
+	font-family: Verdana, Helvetica, sans-serif;
+	font-smooth: always;
+	/* wrap text on explicit line breaks only */
+	white-space: nowrap;
+	
+	margin:auto;
+}
+
+.jtextfill-inner a { /* TODO check */
+	/* prevent underlined text in slides in google chrome/safari */
+	text-decoration: none
+}
+/* [END] slide styles */
+
+</style>
+	</h:head>
+	<h:body>
+		<!-- to transfer post param to javascript -->
+		<div class="secret">
+			<h:outputText value="#{scheduleView.schedule.name}" />
+		</div>
+
+		<!-- default background -->
+		<div class="curtain"></div>
+
+		
+			
+		<div class="template-bg one-bg"></div>
+		<div class="template-fg one-fg">
+			<div class="jtextfill">
+			<span class="jtextfill-inner">
+			
+			</span>
+			<!-- <div class="haluz">Stvoril si ma k chvále,<br/>k sláve svojej výsosti,<br/>môj Pán,<br/>aby som stále<br/>mal plné srdce vïaky</div> -->
+		</div>
+		</div>
+
+		<!-- <div class="template-bg two-bg"></div>
+		<div class="template-fg two-fg">
+		<div class="jtextfill">
+			<span class="jtextfill-inner"></span>
+			</div>
+		</div> -->
+	</h:body>
+</f:view>
+</html>

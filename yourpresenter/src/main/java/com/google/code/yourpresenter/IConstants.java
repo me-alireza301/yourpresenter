@@ -6,6 +6,7 @@ public interface IConstants {
 	// preferences keys
 	public static final String MEDIA_ACCEPTED_EXTS = "media.accepted.exts";
 	public static final String MEDIA_DIRS = "media.dirs";
+	public static final String MEDIA_IMAGE_CONTENT_TYPE = "media.image.content.type";
 	public static final String MEDIA_THUMBNAIL_DIR = "media.thumbnail.dir";
 	public static final String MEDIA_THUMBNAIL_EXT = "media.thumbnail.ext";
 	public static final String MEDIA_THUMBNAIL_WIDTH = "media.thumbnail.width";

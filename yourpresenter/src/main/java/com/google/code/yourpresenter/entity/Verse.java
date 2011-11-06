@@ -8,6 +8,9 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  * The Class Verse.
  */
@@ -22,6 +25,7 @@ public class Verse implements Serializable {
 	private String text;
 
 	/** The song. */
+	@JsonIgnore
 	private Song song;
 
 	public Verse(String text, Song song) {
@@ -94,5 +98,10 @@ public class Verse implements Serializable {
 	 */
 	public void setSong(Song song) {
 		this.song = song;
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

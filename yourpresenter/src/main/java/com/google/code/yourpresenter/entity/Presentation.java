@@ -13,6 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 
 // TODO: Auto-generated Javadoc
 /**
@@ -26,17 +28,24 @@ public class Presentation implements Serializable {
 	private Long id;
 
 	/** The song. */
+	@JsonIgnore
 	private Song song;
 
 	/** The schedule. */
+	@JsonIgnore
 	private Schedule schedule;
 
 	/** The slides. */
 	private List<Slide> slides;
 
 	/** The background. */
+	@JsonIgnore
 	private BgImage bgImage;
 
+	@JsonIgnore
+	// in case of correct one: position => java.sql.SQLException: Table not found in statement [select schedule0_.name ...
+	// seems like position is reserved word => can't be used
+	// see: http://stackoverflow.com/questions/1442127/table-not-found-with-hibernate-and-hsqldb
 	private int possition;
 	
 	/**
@@ -144,8 +153,8 @@ public class Presentation implements Serializable {
 		return possition;
 	}
 
-	public void setPossition(int possition) {
-		this.possition = possition;
+	public void setPossition(int position) {
+		this.possition = position;
 	}
 	
 	public void increasePossition() {

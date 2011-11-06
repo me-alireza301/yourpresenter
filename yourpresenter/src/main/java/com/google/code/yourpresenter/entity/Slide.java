@@ -9,6 +9,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 
 // TODO: Auto-generated Javadoc
 /**
@@ -28,11 +30,13 @@ public class Slide implements Serializable {
 	private BgImage bgImage;
 
 	/** The presentation. */
+	@JsonIgnore
 	private Presentation presentation;
 	
 	/**
 	 * Whether slide is the active one.
 	 */
+	@JsonIgnore
 	private boolean active;
 
 	public Slide() {

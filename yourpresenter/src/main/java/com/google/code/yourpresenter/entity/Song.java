@@ -94,8 +94,9 @@ public class Song implements Serializable {
 	 * @param verses
 	 *            the new verses
 	 */
-	public void setVerses(List<Verse> verses) {
+	public Song setVerses(List<Verse> verses) {
 		this.verses = verses;
+		return this;
 	}
 	
 	/**

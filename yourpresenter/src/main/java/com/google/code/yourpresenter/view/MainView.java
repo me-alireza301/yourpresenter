@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.validation.constraints.Size;
 
@@ -20,6 +22,8 @@ import com.google.code.yourpresenter.service.IScheduleService;
 @SuppressWarnings("serial")
 public class MainView implements Serializable {
 
+	private UIComponent submitButton;
+	
 	@Autowired
 	private IScheduleService scheduleService;
 
@@ -81,11 +85,40 @@ public class MainView implements Serializable {
 		return (String) map.get("outcome");
 	}
 
+	public String chooseSchedule() throws IOException {
+		Schedule schedule = scheduleService.findByName(this.scheduleName);
+		
+		// if new schedule to be created => error
+		if (null == schedule) {
+			// add validation error message
+			// see: http://stackoverflow.com/questions/315804/how-to-display-my-applications-errors-in-jsf
+			// and: http://stackoverflow.com/questions/1140426/add-message-from-methode-in-jsf
+			final FacesContext context = FacesContext.getCurrentInstance();
+	        context.addMessage(this.submitButton.getClientId(context), new FacesMessage(FacesMessage.SEVERITY_ERROR, "New schedule can be created by presenter only!", null));
+		    return null;
+		} else {
+			this.scheduleView.setSchedule(schedule);
+		
+			// redirect to the next page via outcome param value
+			@SuppressWarnings("rawtypes")
+			Map map = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+			return (String) map.get("outcome");
+		}
+	}
+	
 	public String getScheduleName() {
 		return scheduleName;
 	}
 
 	public void setScheduleName(String scheduleName) {
 		this.scheduleName = scheduleName;
+	}
+
+	public UIComponent getSubmitButton() {
+		return submitButton;
+	}
+
+	public void setSubmitButton(UIComponent submitButton) {
+		this.submitButton = submitButton;
 	}
 }
