@@ -12,11 +12,12 @@ import com.google.code.yourpresenter.entity.Schedule;
 import com.google.code.yourpresenter.entity.Slide;
 import com.google.code.yourpresenter.service.IScheduleService;
 import com.google.code.yourpresenter.service.ISlideService;
+import com.googlecode.ehcache.annotations.Cacheable;
 
 // for json spring integration info see:
 // http://blog.springsource.com/2010/01/25/ajax-simplifications-in-spring-3-0/
 @Controller
-public class ProjectorDataController {
+public class ProjectorDataJSONController {
 
 	@Autowired
 	private ISlideService slideService;
@@ -24,6 +25,7 @@ public class ProjectorDataController {
 	@Autowired
 	private IScheduleService scheduleService;
 
+	@Cacheable(cacheName="stateCache")
 	@RequestMapping(value="/state/{name}", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody StateDTO getState(@PathVariable("name") String scheduleName) {
 		Slide slide = this.slideService.findActiveSlide(scheduleName);
