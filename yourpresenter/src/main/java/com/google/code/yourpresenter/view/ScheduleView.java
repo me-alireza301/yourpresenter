@@ -117,7 +117,11 @@ public class ScheduleView implements Serializable, IHasSchedule {
 		if (null != songId && !songId.isEmpty()) { 
 			slideService.activateSlide(Long.valueOf(songId));
 		} else {
-			throw new YpException(YpError.SLIDE_ID_NOT_SET);
+			// for the case of drop of background on slide link is called as well 
+			// (seems like activation, but no id is sent)
+			// => for such a case do nothing
+			
+			// throw new YpException(YpError.SLIDE_ID_NOT_SET);
 		}
 	}
 

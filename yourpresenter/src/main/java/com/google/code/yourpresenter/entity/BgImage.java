@@ -8,6 +8,7 @@ import javax.persistence.Id;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Index;
 
 /**
  * The Class BgImage.
@@ -46,6 +47,7 @@ public class BgImage implements Serializable {
 	 */
 	@Id
 	@GeneratedValue
+	@Index(name="BgImageIdIdx")
 	public Long getId() {
 		return id;
 	}

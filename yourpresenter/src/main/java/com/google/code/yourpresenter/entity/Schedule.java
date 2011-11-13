@@ -14,6 +14,7 @@ import javax.persistence.OrderColumn;
 import javax.validation.constraints.NotNull;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Index;
 
 /**
  * The Class Schedule.
@@ -57,6 +58,7 @@ public class Schedule implements Serializable {
 	 */
 	@Id
 	@NotNull
+	@Index(name="ScheduleNameIdx")
 	public String getName() {
 		return name;
 	}
@@ -100,6 +102,7 @@ public class Schedule implements Serializable {
 	 * @return the background
 	 */
 	@OneToOne
+	@Index(name="ScheduleBgImageIdx")
 	public BgImage getBgImage() {
 		return bgImage;
 	}

@@ -5,6 +5,8 @@ import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import org.hibernate.annotations.Index;
+
 @SuppressWarnings("serial")
 @Entity
 public class Preference implements Serializable {
@@ -25,6 +27,7 @@ public class Preference implements Serializable {
 	}
 
 	@Id
+	@Index(name="PreferenceNameIdx")
 	public String getName() {
 		return name;
 	}

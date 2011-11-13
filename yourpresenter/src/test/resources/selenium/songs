@@ -8,7 +8,10 @@
 <body>
 <table id="suiteTable" cellpadding="1" cellspacing="1" border="1" class="selenium"><tbody>
 <tr><td><b>Test Suite</b></td></tr>
-<tr><td><a href="add2Songs">add2Songs</a></td></tr>
+<tr><td><a href="presenterNoSchedule">presenterNoSchedule</a></td></tr>
+<tr><td><a href="createSchedule">createSchedule</a></td></tr>
+<tr><td><a href="add2Songs">add2songs</a></td></tr>
+<tr><td><a href="add2SongsToSchedule">add2SongsToSchedule</a></td></tr>
 </tbody></table>
 </body>
 </html>

@@ -29,27 +29,56 @@
 		
 		<script type="text/javascript">
 			var fadeInBgDuration = 500;
-			var fadeInTxtDuration = 10000;
-			/* var active_fg = ".one-fg";
-			var active_bg = ".one-bg"; */
-
-			/* jQuery(document).ready(function() {
-				jQuery('.jtextfill').textfill({ maxFontPixels: 70 });
-
-			}); */
+			var fadeInTxtDuration = 1000;
+			var activeFgClass = ".one-fg";
+			var activeBgClass = ".one-bg";
+			var isBlank = true;
+			var isClear = true;
+			var isLive = false;
+			var scheduleName = "";
 			
+			var oldTxt = "";
+			var oldBgId = -1;
+
 			jQuery(document).ready(function() {
 				/* call function in jQuery: http://stackoverflow.com/questions/907634/is-this-how-you-define-a-function-in-jquery */
 				onStart();
 			});
 
 			function onStart() {
-				var scheduleName = jQuery(".secret").text();
+				scheduleName = jQuery(".secret").text();				
+				queryData();
+			}
+			
+			function queryData() {
 				jQuery.getJSON("../mvc/state/" + scheduleName, function(data) {
+
+					var newTxt = data.actualSlide.verse.text;
+					if (newTxt != oldTxt) {
+						var newFgClass = alterClass(activeFgClass); 
+						
+						/* hide old and show new */
+						jQuery(newFgClass).children(":first").children(":first").html(newTxt);
+						jQuery(".jtextfill").textfill({maxFontPixels : 140});
+						
+						jQuery(activeFgClass).fadeOut(fadeInTxtDuration);
+						jQuery(newFgClass).fadeIn(fadeInTxtDuration);
+						/* jQuery(newFgClass).children(":first").children(":first").html(); */
+						
+						oldTxt = newTxt;
+						newFgClass = activeFgClass;
+					}
 					
+					var newBgId = data.actualSlide.bgImage.id;
+					if (newBgId != oldBgId) {
+						var imgPath = "/yourpresenter/mvc/image/" + newBgId;
+						jQuery(activeBgClass).css({"background-image":"url('" + imgPath + "')"});
+						jQuery(activeBgClass).fadeIn(fadeInBgDuration);
+						oldBgId = newBgId;
+					}
+				
 					/* preload bg image first, fade it in only afterwards
 						see: http://stackoverflow.com/questions/5365509/calling-a-function-when-the-background-image-finishes-loading */
-					var imgPath = "/yourpresenter/mvc/image/" + data.actualSlide.bgImage.id;
 					/*
 					var img = new Image();
 					img.onload = function() {
@@ -69,23 +98,19 @@
 					img.src = imgPath;
 					*/
 					
-					jQuery(".one-fg").children(":first").children(":first").html(data.actualSlide.verse.text);
-					jQuery(".jtextfill").textfill({maxFontPixels : 140});
-					jQuery(".one-fg").fadeIn(fadeInTxtDuration);
-					jQuery(".one-bg").css({"background-image":"url('" + imgPath + "')"});
-					jQuery(".one-bg").fadeIn(fadeInBgDuration);
-					
-					/* TODO slide txt*/
-					/* $(".one-fg").fadeIn(fadeInDuration); */
-					/* alert(data.actualSlide.verse.text); */
-					/* jQuery(".one-fg.jtextfill-inner").text(data.actualSlide.verse.text); */					
-					/* jQuery(".one-fg").children(":first").children(":first").text(data.actualSlide.verse.text); */
-					/* jQuery(".one-fg").children(":first").textfill({maxFontPixels : 70});   */
-					
-					/* jQuery(".jtextfill").textfill({maxFontPixels : 70});  
-					jQuery(".one-fg").fadeIn(fadeInTxtDuration); */
-
 				});
+				
+				setTimeout('queryData()', 1000);
+			}
+			
+			function alterClass(oldClass) {
+				var newClass = "";
+				if (oldClass.substring(0, ".one".length) === ".one") {
+					newClass = oldClass.replace("/^\.one/", ".two");
+				} else {
+					newClass = oldClass.replace("/^\.two/", ".one");
+				}
+				return newClass; 
 			}
 		</script>
 
@@ -146,37 +171,21 @@
 	display:table;
 }
 
-.one-bg {
-}
-
-.one-fg {
-}
-
-.two-bg {
-}
-
-.two-fg {
+.one-bg .one-fg .two-bg .two-fg {
 }
 
 /* [BEGIN] slide styles */
 .jtextfill {
 	padding: 5%; 
-	/* width: 90%;
-	height: 90%; */
-	border: 2px;
+	/* border: 2px;
 	border-style: solid;
-	border-color: #00ff00;
-	/ * make background transparent * /
+	border-color: #00ff00; */
+	border: 0px;
+	
+	/* make background transparent */
 	background: transparent;
-	text-align: center;
-	
-	
-	
-	
+
 	color: white;
-	/* margin:auto; */
-	
-	
 	
 	/* text with border */
 	color: white;
@@ -187,27 +196,16 @@
 	font-smooth: always;
 	/* wrap text on explicit line breaks only */
 	white-space: nowrap;
-	
+
+	text-align: center;	
 	display:table-cell;
 	vertical-align: middle;
 } 
 .jtextfill-inner {
-	border: 2px;
+	/* border: 2px;
 	border-style: solid;
-	border-color: #00ff00;
-	text-align: center;
-	vertical-align: middle;
-	/* text with border */
-	color: white;
-	/* text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000; */
-	text-shadow: 2px -2px 3px #000;
-	/* text-decoration: none; */
-	font-family: Verdana, Helvetica, sans-serif;
-	font-smooth: always;
-	/* wrap text on explicit line breaks only */
-	white-space: nowrap;
-	
-	margin:auto;
+	border-color: #00ff00; */
+	border: 0px;
 }
 
 .jtextfill-inner a { /* TODO check */

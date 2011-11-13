@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Index;
 
 /**
  * The Class Verse.
@@ -45,6 +46,7 @@ public class Verse implements Serializable {
 	 * @return the id
 	 */
 	@Id
+	@Index(name="VerseIdIdx")
 	@GeneratedValue
 	public Long getId() {
 		return id;
@@ -86,6 +88,7 @@ public class Verse implements Serializable {
 	 * @return the song
 	 */
 	@ManyToOne(optional = false)
+	@Index(name="VerseSongIdx")
 	public Song getSong() {
 		return song;
 	}

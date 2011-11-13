@@ -74,8 +74,9 @@ public class PresentationServiceImpl implements IPresentationService, Serializab
 	public void persistSlides(Presentation presentation) {
 		Song song = null;
 		if (null != (song = presentation.getSong())) {
+			int i = 0;
 			for (Verse verse : song.getVerses()) {
-				Slide slide = new Slide(verse, presentation);
+				Slide slide = new Slide(verse, presentation, i++);
 				this.slideService.persist(slide);
 				presentation.addSlide(slide);
 			}

@@ -54,9 +54,12 @@ public class SongServiceImpl implements ISongService, Serializable {
 	public void persist(Song songTr) {
 		em.persist(songTr);
 		em.flush();
-		// store also verses
-		for (Verse verse : songTr.getVerses()) {
-			em.persist(verse);
+		
+		if (null != songTr.getVerses()) {
+			// store also verses
+			for (Verse verse : songTr.getVerses()) {
+				em.persist(verse);
+			}			
 		}
 	}
 

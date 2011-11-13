@@ -10,6 +10,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Index;
 
 
 // TODO: Auto-generated Javadoc
@@ -33,6 +34,12 @@ public class Slide implements Serializable {
 	@JsonIgnore
 	private Presentation presentation;
 	
+	@JsonIgnore
+	// in case of correct one: position => java.sql.SQLException: Table not found in statement [select schedule0_.name ...
+	// seems like position is reserved word => can't be used
+	// see: http://stackoverflow.com/questions/1442127/table-not-found-with-hibernate-and-hsqldb
+	private int possition;
+	
 	/**
 	 * Whether slide is the active one.
 	 */
@@ -42,9 +49,10 @@ public class Slide implements Serializable {
 	public Slide() {
 	}
 	
-	public Slide(Verse verse, Presentation presentation) {
+	public Slide(Verse verse, Presentation presentation, int possition) {
 		this.setVerse(verse);
 		this.setPresentation(presentation);
+		this.setPossition(possition);
 	}
 
 	/**
@@ -53,6 +61,7 @@ public class Slide implements Serializable {
 	 * @return the id
 	 */
 	@Id
+	@Index(name="SlideIdIdx")
 	@GeneratedValue
 	public Long getId() {
 		return id;
@@ -74,6 +83,7 @@ public class Slide implements Serializable {
 	 * @return the verse
 	 */
 	@OneToOne
+	@Index(name="SlideVerseIdx")
 	public Verse getVerse() {
 		return verse;
 	}
@@ -94,6 +104,7 @@ public class Slide implements Serializable {
 	 * @return the background
 	 */
 	@OneToOne
+	@Index(name="SlideBgImageIdx")
 	public BgImage getBgImage() {
 		return bgImage;
 	}
@@ -114,6 +125,7 @@ public class Slide implements Serializable {
 	 * @return the presentation
 	 */
 	@ManyToOne(optional = false)
+	@Index(name="SlidePresentationIdx")
 	public Presentation getPresentation() {
 		return presentation;
 	}
@@ -143,5 +155,19 @@ public class Slide implements Serializable {
 	@Transient
 	public String getCssSuffix() {
 		return (active ? "active" : "inactive" );
+	}
+
+	/**
+	 * @return the possition
+	 */
+	public int getPossition() {
+		return possition;
+	}
+
+	/**
+	 * @param possition the possition to set
+	 */
+	public void setPossition(int possition) {
+		this.possition = possition;
 	}
 }

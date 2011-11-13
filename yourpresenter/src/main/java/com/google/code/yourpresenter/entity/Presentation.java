@@ -12,8 +12,10 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderColumn;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Index;
 
 
 // TODO: Auto-generated Javadoc
@@ -55,6 +57,7 @@ public class Presentation implements Serializable {
 	 */
 	@Id
 	@GeneratedValue
+	@Index(name="PresentationIdIdx")
 	public Long getId() {
 		return id;
 	}
@@ -75,6 +78,7 @@ public class Presentation implements Serializable {
 	 * @return the song
 	 */
 	@OneToOne(optional = true)
+	@Index(name="PresentationSongIdx")
 	public Song getSong() {
 		return song;
 	}
@@ -95,6 +99,7 @@ public class Presentation implements Serializable {
 	 * @return the schedule
 	 */
 	@ManyToOne(optional = false)
+	@Index(name="PresentationScheduleIdx")
 	public Schedule getSchedule() {
 		return schedule;
 	}
@@ -115,6 +120,7 @@ public class Presentation implements Serializable {
 	 * @return the slides
 	 */
 	@OneToMany(mappedBy = "presentation", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = false)
+	@OrderColumn(name = "possition")
 	public List<Slide> getSlides() {
 		return slides;
 	}
@@ -135,6 +141,7 @@ public class Presentation implements Serializable {
 	 * @return the background
 	 */
 	@OneToOne(optional = true)
+	@Index(name="PresentationBgImageIdx")
 	public BgImage getBgImage() {
 		return bgImage;
 	}
