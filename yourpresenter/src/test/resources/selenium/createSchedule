@@ -17,11 +17,21 @@
 	<td></td>
 </tr>
 <tr>
+	<td>type</td>
+	<td>//input[contains(@id, ':scheduleNameInput')]</td>
+	<td>new schedule</td>
+</tr>
+<tr>
 	<td>clickAndWait</td>
-	<td>id=j_idt10:presenter</td>
+	<td>//input[contains(@id, ':presenter')]</td>
 	<td></td>
 </tr>
-
+<!--check schedule created-->
+<tr>
+	<td>assertText</td>
+	<td>//div[contains(@id, ':scheduleName')]</td>
+	<td>Schedule: new schedule</td>
+</tr>
 </tbody></table>
 </body>
 </html>

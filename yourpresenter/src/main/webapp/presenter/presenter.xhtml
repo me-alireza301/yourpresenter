@@ -190,13 +190,59 @@
 	background-position: center;
 }
 /* [END] slide styles */
-</style>
 
+
+/* [BEGIN] toggle button */
+.toggleButton {
+    padding: 1pt 5pt 1pt 5pt;
+    cursor: pointer;
+    color: black;
+    text-align: center;
+}
+
+.toggleButton:link {
+	text-decoration: none;
+}
+
+.toggleButton:hover {
+	/*color: black;
+	text-decoration: none; */
+	background: transparent;
+}
+
+.toggleButton-up {
+	background-color:#eeeeee;
+	
+    border-top: solid 1px #eaeaea;
+    border-left: solid 1px #eaeaea;
+    border-bottom: solid 1px #777;
+    border-right: solid 1px #777;    
+}
+
+.toggleButton-down {
+	background-color:#dddddd;
+	
+	border-top: solid 1px #777;
+    border-left: solid 1px #777;
+    border-bottom: solid 1px #eaeaea;
+    border-right: solid 1px #eaeaea;
+}
+/* [END] toggle button */
+
+</style>
 		<rich:jQuery />
-		<!-- <script type="text/javascript" src="js/jquery-1.6.4.min.js" /> -->
+		<!-- when using newer jquery like this => DnD doens't work => stick with the one used in richfaces -->
+		<!-- <script type="text/javascript" src="../js/jquery-1.7.min.js"></script> 
+		<script type="text/javascript">
+			/* 	as we don't use jQuery distributed with Richfaces => need this
+				see: http://docs.jquery.com/Using_jQuery_with_Other_Libraries */
+			/* jQuery.noConflict(); */
+			/* var $ = jQuery.noConflict(); */
+		</script>
+		-->
 		
 		<script type="text/javascript"
-			src="../js/jquery-ui-1.8.14.custom.min.js"></script>
+			src="../js/jquery-ui-1.8.16.custom.min.js"></script>
 
 		<!-- richfaces 4 don't integrate layout component, but based on this
 		site: http://community.jboss.org/message/598687
@@ -236,7 +282,7 @@
 				})
 			});
 		</script>
-
+		
 	</h:head>
 
 	<h:body>
@@ -251,7 +297,7 @@
 									</h:panelGroup>
 								</f:facet>
 								<rich:menuGroup label="Song">
-									<rich:menuItem label="New"
+									<rich:menuItem id="menuFileNew" label="New"
 										oncomplete="#{rich:component('dialogSongEdit')}.show();#{rich:element('dialogSongEditForm:dialogSongEditName')}.focus();"
 										render="dialogSongEditPanel" />
 								</rich:menuGroup>
@@ -261,9 +307,21 @@
 	
 				<h:panelGrid columns="3" cellspacing="3" id="toggleButtons">
 					<h:form>
-						<a4j:commandButton value="Blank" action="#{scheduleView.toggleBlank}" type="submit" render="toggleButtons" />
-						<a4j:commandButton value="Clear" action="#{scheduleView.toggleClear}" type="submit" render="toggleButtons" />
-						<a4j:commandButton value="Live" action="#{scheduleView.toggleLive}" type="submit" render="toggleButtons" />
+						<a4j:commandLink action="#{scheduleView.toggleBlank}" id="blankButton" 
+							styleClass="toggleButton toggleButton-#{scheduleView.toggleBlankCssSuffix}" >
+ 							<h:outputText value="Blank" />
+ 						</a4j:commandLink>
+ 						<a4j:commandLink action="#{scheduleView.toggleClear}" id="clearButton" 
+							styleClass="toggleButton toggleButton-#{scheduleView.toggleClearCssSuffix}" >
+ 							<h:outputText value="Clear" />
+ 						</a4j:commandLink>
+ 						<a4j:commandLink action="#{scheduleView.toggleLive}" id="liveButton" 
+							styleClass="toggleButton toggleButton-#{scheduleView.toggleLiveCssSuffix}" >
+ 							<h:outputText value="Live" />
+ 						</a4j:commandLink>
+ 						
+ 						<rich:jQuery selector=".toggleButton" event="click" 
+							query="jQuery(this).toggleClass('toggleButton-down').toggleClass('toggleButton-up');" />
 					</h:form>
 				</h:panelGrid>
 				
@@ -328,7 +386,7 @@
 				<h:form>
 					<rich:panel styleClass="dropTargetPanel">
 						<f:facet name="header">
-							<rich:panel styleClass="header-panel">
+							<rich:panel id="scheduleName" styleClass="header-panel">
 								<rich:dropTarget acceptedTypes="bgImage, song"
 									dropValue="schedule_#{schedule.name}"
 									dropListener="#{scheduleView.dropped}" render="schedule"
@@ -344,7 +402,7 @@
 							<rich:column>
 								<rich:panel>
 									<f:facet name="header">
-										<rich:panel styleClass="header-panel">
+										<rich:panel id="panelHeaderPresentation" styleClass="header-panel">
 											<rich:dropTarget acceptedTypes="bgImage, song"
 												dropValue="presentation_#{presentation.id}"
 												dropListener="#{scheduleView.dropped}" render="schedule"

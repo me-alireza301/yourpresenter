@@ -2,11 +2,13 @@ package com.google.code.yourpresenter.entity;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -67,7 +69,10 @@ public class Verse implements Serializable {
 	 * 
 	 * @return the text
 	 */
+	// keep in sync with song.text
 	@NotNull
+	@Column(columnDefinition = "VARCHAR(1000)")
+	@Size(max = 1000)
 	public String getText() {
 		return text;
 	}

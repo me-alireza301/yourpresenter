@@ -34,8 +34,7 @@ public class MainView implements Serializable {
 	private String scheduleName;
 
 	public List<String> allScheduleNames(String name) {
-		List<String> persistedSchedules = scheduleService.findScheduleNamesByName(name);
-		return persistedSchedules;
+		return scheduleService.findScheduleNamesByName(name);
 	}
 	
 //	public List<String> getAllScheduleNames() {

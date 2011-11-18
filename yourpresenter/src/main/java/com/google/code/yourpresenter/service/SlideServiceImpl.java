@@ -36,7 +36,13 @@ public class SlideServiceImpl implements ISlideService, Serializable {
 	}
 
 	public void persist(Slide slide) {
-		em.persist(slide);
+		if (null != slide.getId()) {
+			em.merge(slide);
+		} else {
+			em.persist(slide);
+			// make sure identity field is generated prio to relation
+			em.flush();
+		}
 	}
 
 	@Transactional(readOnly = true)
@@ -64,19 +70,15 @@ public class SlideServiceImpl implements ISlideService, Serializable {
 		if (!CollectionUtils.isEmpty(oldSelections)) {
 			Slide oldSelection = oldSelections.iterator().next();
 			oldSelection.setActive(false);
-			merge(oldSelection);
+			this.persist(oldSelection);
 		}
 
 		Slide slide = findById(id);
 		slide.getPresentation().getSchedule();
 		slide.setActive(true);
-		merge(slide);
+		this.persist(slide);
 	}
 	
-	public void merge(Slide slide) {
-		em.merge(slide);
-	}
-
 	@Transactional
 	@Override
 	public void setBgImage(Long slideId, BgImage bgImage) {

@@ -1,0 +1,79 @@
+	<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8081/" />
+<title>okScheduleAdd2SongsDnD</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">okScheduleAdd2SongsDnD</td></tr>
+</thead><tbody>
+<!--working DnD found on http://glauche.de/page/2/-->
+<!--add 1.st song 2 schedule-->
+<tr>
+	<td>mouseOver</td>
+	<td>j_idt37:songTable:0:j_idt42</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseDownAt</td>
+	<td>j_idt37:songTable:0:j_idt42</td>
+	<td>5,5</td>
+</tr>
+<tr>
+	<td>mouseMoveAt</td>
+	<td>id=j_idt51:j_idt53_body</td>
+	<td>5,5</td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>10</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseOver</td>
+	<td>id=j_idt51:j_idt53_body</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseUpAt</td>
+	<td>id=j_idt51:j_idt53_body</td>
+	<td>5,5</td>
+</tr>
+<!--add 2.nd song 2 schedule-->
+<tr>
+	<td>mouseOver</td>
+	<td>id=j_idt37:songTable:1:j_idt42</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseDownAt</td>
+	<td>id=j_idt37:songTable:1:j_idt42</td>
+	<td>5,5</td>
+</tr>
+<tr>
+	<td>mouseMoveAt</td>
+	<td>id=j_idt51:j_idt53_body</td>
+	<td>5,5</td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>10</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseOver</td>
+	<td>id=j_idt51:j_idt53_body</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseUpAt</td>
+	<td>id=j_idt51:j_idt53_body</td>
+	<td>5,5</td>
+</tr>
+</tbody></table>
+</body>
+</html>

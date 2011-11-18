@@ -15,7 +15,7 @@ public interface IScheduleService {
 
     public void delete(Schedule schedule);
     
-    public void addPresentation(IHasSchedule callback, Schedule schedule, long presentationId, Song song);
+    public void addPresentation(Schedule schedule, long presentationId, Song song);
     
     public Schedule loadAllSlidesEager(Schedule schedule);
 
@@ -25,7 +25,7 @@ public interface IScheduleService {
 	
 	public List<String> findScheduleNamesByName(String name);
 	
-	public void toggleBlank(String scheduleName);
-	public void toggleClear(String scheduleName);
-	public void toggleLive(String scheduleName);
+	public void toggleBlank(Schedule schedule);
+	public void toggleClear(Schedule schedule);
+	public void toggleLive(Schedule schedule);
 }

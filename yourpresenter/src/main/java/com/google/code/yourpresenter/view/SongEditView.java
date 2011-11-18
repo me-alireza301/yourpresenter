@@ -26,6 +26,7 @@ public class SongEditView implements Serializable {
 		this.songService = songService;
 	}
 	
+	@SuppressWarnings("restriction")
 	@PostConstruct
 	public void onLoad() {
 		String songId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("songId");

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8081/" />
+<title>presenter/dialogSongEdit/okClose</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">presenter/dialogSongEdit/okClose</td></tr>
+</thead><tbody>
+<!--check we're in schedule-->
+<tr>
+	<td>assertText</td>
+	<td>//div[contains(@id, ':scheduleName')]</td>
+	<td>Schedule: new schedule</td>
+</tr>
+<tr>
+	<td>assertNotVisible</td>
+	<td>id=dialogSongEditForm:buttonCancel</td>
+	<td></td>
+</tr>
+<!--open song edit dialog-->
+<tr>
+	<td>click</td>
+	<td>//div[contains(@id, ':menuFileNew')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>id=dialogSongEditForm:buttonCancel</td>
+	<td></td>
+</tr>
+<!--close dialog via cancel button-->
+<tr>
+	<td>click</td>
+	<td>id=dialogSongEditForm:buttonCancel</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForNotVisible</td>
+	<td>id=dialogSongEditForm:buttonCancel</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

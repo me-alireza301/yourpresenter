@@ -66,8 +66,13 @@ public class PresentationServiceImpl implements IPresentationService, Serializab
 	}
 
 	public void persist(Presentation presentation) {
-		em.persist(presentation);
-		em.flush();
+		if (null != presentation.getId()) {
+			em.merge(presentation);
+		} else {
+			em.persist(presentation);
+			// make sure identity field is generated prio to relation
+			em.flush();
+		}
 	}
 
 	@Override

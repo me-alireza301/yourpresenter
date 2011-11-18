@@ -4,12 +4,12 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="http://localhost:8081/" />
-<title>add2songs</title>
+<title>okSongCreate2</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">add2songs</td></tr>
+<tr><td rowspan="1" colspan="3">okSongCreate2</td></tr>
 </thead><tbody>
 <!--check we're in schedule-->
 <tr>
@@ -35,12 +35,12 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>id=dialogSongEditForm:buttonOK</td>
+	<td>id=dialogSongEditForm:j_idt32</td>
 	<td></td>
 </tr>
 <tr>
 	<td>assertText</td>
-	<td>//td[contains(@id, ':songTable:0:')]</td>
+	<td>id=j_idt37:songTable:0:j_idt40</td>
 	<td>Odložil si svoj majestát</td>
 </tr>
 <!--insert new song-->
@@ -61,14 +61,15 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>id=dialogSongEditForm:buttonOK</td>
+	<td>id=dialogSongEditForm:j_idt32</td>
 	<td></td>
 </tr>
 <tr>
 	<td>assertText</td>
-	<td>//td[contains(@id, ':songTable:1:')]</td>
+	<td>id=j_idt37:songTable:1:j_idt40</td>
 	<td>Stvoril si ma k chvále</td>
 </tr>
+<!--only till drag&drop can be done without full refresh-->
 </tbody></table>
 </body>
 </html>

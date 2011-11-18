@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.richfaces.event.DropEvent;
@@ -22,15 +23,19 @@ import com.google.code.yourpresenter.service.IScheduleService;
 import com.google.code.yourpresenter.service.ISlideService;
 import com.google.code.yourpresenter.util.Logger;
 import com.google.code.yourpresenter.util.LoggerFactory;
+import com.googlecode.ehcache.annotations.Cacheable;
+import com.googlecode.ehcache.annotations.KeyGenerator;
+import com.googlecode.ehcache.annotations.Property;
+import com.googlecode.ehcache.annotations.TriggersRemove;
 
 @Component("scheduleView")
 @Scope("session")
 @SuppressWarnings("serial")
-public class ScheduleView implements Serializable, IHasSchedule {
+public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 
 	private static Logger logger = LoggerFactory.getLogger(ScheduleView.class);
-
-	private Schedule schedule;
+	
+	private String scheduleName;
 	
 	@Autowired
 	private IScheduleService scheduleService;
@@ -40,11 +45,26 @@ public class ScheduleView implements Serializable, IHasSchedule {
 	private ISlideService slideService;
 	
 	public Schedule getSchedule() throws IOException {
-		return scheduleService.loadAllSlidesEager(this.schedule);
+		return scheduleService.loadAllSlidesEager(getSchedule(this.scheduleName));
 	}
 
+	@Cacheable(cacheName="scheduleCache")
+	private Schedule getSchedule(String scheduleName) {
+		return this.scheduleService.findByName(scheduleName);
+	}
+	
+	@TriggersRemove(cacheName="scheduleCache", 
+	        keyGenerator = @KeyGenerator (
+	                name = "HashCodeCacheKeyGenerator",
+	                properties = @Property( name="includeMethod", value="false" )
+	            )
+	        )
+	private void clearScheduleCache(String scheduleName) {
+	}
+	
 	public void setSchedule(Schedule schedule) {
-		this.schedule = schedule;
+		this.scheduleName = schedule.getName();
+		this.clearScheduleCache(this.scheduleName);
 	}
 
 	public void dropped(DropEvent dropEvent) throws YpException, IOException {
@@ -59,7 +79,7 @@ public class ScheduleView implements Serializable, IHasSchedule {
 		if ((null == dropValue) || (!dropValue.contains("_"))){
 			throw new YpException(YpError.EMPTY_DROP_VALUE);
 		}
-		
+
 		String[] split = dropValue.split("_");
 		if (1 == split.length) {
 			split = new String[] { split[0], "0"};
@@ -87,12 +107,15 @@ public class ScheduleView implements Serializable, IHasSchedule {
 		} else {
 			logger.error("drop of not supported element type detected: ", dragValue);
 		}
+		
+		// make sure on modification cache is cleared
+		this.clearScheduleCache(this.scheduleName);
 	}
 	
-	public void dropped(Song song, long presentationId) {
-		logger.debug("Added Song (song.id=", song.getId(), ") to schedule (schedule=", this.schedule, 
+	public void dropped(Song song, long presentationId) throws IOException {
+		logger.debug("Added Song (song.id=", song.getId(), ") to schedule (schedule=", this.scheduleName, 
 				") after presentation (presentation.id=", presentationId, ")");
-		this.scheduleService.addPresentation(this, this.schedule, presentationId, song);
+		this.scheduleService.addPresentation(this.getSchedule(), presentationId, song);
 	}
 	
 	public void droppedToSlide(BgImage bgImage, long slideId) {
@@ -105,9 +128,9 @@ public class ScheduleView implements Serializable, IHasSchedule {
 		this.presentationService.setBgImage(presentationId, bgImage);
 	}
 	
-	public void droppedToSchedule(BgImage bgImage) {
-		logger.debug("Assigned bgImage (bgImage.id=", bgImage.getId(), ") to schedule (schedule=", this.schedule);
-		this.scheduleService.setBgImage(this.schedule, bgImage);
+	public void droppedToSchedule(BgImage bgImage) throws IOException {
+		logger.debug("Assigned bgImage (bgImage.id=", bgImage.getId(), ") to schedule (schedule=", this.scheduleName);
+		this.scheduleService.setBgImage(this.getSchedule(), bgImage);
 	}
 	
 	public void activateSlide() throws NumberFormatException, YpException {
@@ -116,6 +139,9 @@ public class ScheduleView implements Serializable, IHasSchedule {
 		String songId = (String) map.get("id");
 		if (null != songId && !songId.isEmpty()) { 
 			slideService.activateSlide(Long.valueOf(songId));
+			
+			// make sure on modification cache is cleared
+			this.clearScheduleCache(this.scheduleName);
 		} else {
 			// for the case of drop of background on slide link is called as well 
 			// (seems like activation, but no id is sent)
@@ -126,14 +152,35 @@ public class ScheduleView implements Serializable, IHasSchedule {
 	}
 
 	public void toggleBlank() {
-		this.scheduleService.toggleBlank(this.schedule.getName());
+		scheduleService.toggleBlank(this.getSchedule(scheduleName));
+		
+		// make sure on modification cache is cleared
+		this.clearScheduleCache(this.scheduleName);
+	}
+	
+	public String getToggleBlankCssSuffix() {
+		return (this.getSchedule(scheduleName).isBlank() ? "down" : "up" );
 	}
 	
 	public void toggleClear() {
-		this.scheduleService.toggleClear(this.schedule.getName());
+		scheduleService.toggleClear(this.getSchedule(scheduleName));
+		
+		// make sure on modification cache is cleared
+		this.clearScheduleCache(this.scheduleName);
+	}
+	
+	public String getToggleClearCssSuffix() {
+		return (this.getSchedule(scheduleName).isClear() ? "down" : "up" );
 	}
 	
 	public void toggleLive() {
-		this.scheduleService.toggleLive(this.schedule.getName());
+		scheduleService.toggleLive(this.getSchedule(scheduleName));
+		
+		// make sure on modification cache is cleared
+		this.clearScheduleCache(this.scheduleName);
+	}
+	
+	public String getToggleLiveCssSuffix() {
+		return (this.getSchedule(scheduleName).isLive() ? "down" : "up" );
 	}
 }

@@ -34,7 +34,7 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 
 	public ScheduleServiceImpl() {
 	}
-	
+
 	@PersistenceContext
 	public void setEntityManager(EntityManager em) {
 		this.em = em;
@@ -43,10 +43,10 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public List<Schedule> findAll() {
-	    Query query = em.createQuery("SELECT s FROM Schedule s");
-	    return query.getResultList();	
+		Query query = em.createQuery("SELECT s FROM Schedule s");
+		return query.getResultList();
 	}
-	
+
 	@Transactional(readOnly = true)
 	public Schedule findByName(String name) {
 		if (null == name) {
@@ -57,12 +57,12 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 
 	@Transactional
 	public void persist(Schedule schedule) {
-//		schedule = this.findScheduleById(schedule.getId());
+		// schedule = this.findScheduleById(schedule.getId());
 		if (null != schedule.getName()) {
 			em.merge(schedule);
 		} else {
 			em.persist(schedule);
-			// make sure identity field is generated prio to relation 
+			// make sure identity field is generated prio to relation
 			em.flush();
 		}
 	}
@@ -75,32 +75,18 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		}
 	}
 
-//	public Schedule createOrEdit(String name) {
-//		if (null != name) {
-//			return findByName(name);
-//		} else {
-//			return new Schedule();
-//		}
-//	}
-//	
-//	public Schedule createOrEdit(Schedule schedule) {
-//		String name = null;
-//		if (null != schedule) {
-//			name = schedule.getName();
-//		}
-//		return createOrEdit(name);
-//	}
-
 	@Transactional
-	public void addPresentation(IHasSchedule callback, final Schedule scheduleTr, long presentationId, final Song songTr) {
+	public void addPresentation(final Schedule schedule,
+			long presentationId, final Song songTr) {
 		// to prevent:
-		// Exception: failed to lazily initialize a collection of role: 
-		// com.google.code.yourpresenter.entity.Song.verses, no session or session was closed
+		// Exception: failed to lazily initialize a collection of role:
+		// com.google.code.yourpresenter.entity.Song.verses, no session or
+		// session was closed
 		Song song = songService.findById(songTr.getId());
-
-//		checkScheduleInitialized(scheduleTr);
-		Schedule schedule = findByName(scheduleTr.getName());
-//		Schedule schedule = checkScheduleInitialized(scheduleTr);
+		
+		// make sure schedule is not detached object => do the merge
+		this.persist(schedule);
+		
 		int position = shiftPresentationFW(presentationId, schedule);
 
 		Presentation presentation = presentationService.createOrEdit(null);
@@ -110,15 +96,13 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		this.presentationService.persist(presentation);
 		// make sure that also slides relevant for song are to be persisted
 		this.presentationService.persistSlides(presentation);
-		
-		BgImage bgImage = schedule.getBgImage(); 
+
+		BgImage bgImage = schedule.getBgImage();
 		if (null != bgImage) {
-			presentation = this.presentationService.findById(presentation.getId());
+			presentation = this.presentationService.findById(presentation
+					.getId());
 			this.presentationService.setBgImage(presentation, bgImage);
 		}
-		
-		// set changed state to view, to display after refresh
-		callback.setSchedule(schedule);
 	}
 
 	private int shiftPresentationFW(long presentationId, Schedule schedule) {
@@ -128,13 +112,13 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		if (null == presentations) {
 			return 0;
 		}
-		
+
 		int position = 0;
 		if (-1 != presentationId) {
 			position = presentationService.findPositionById(presentationId);
 			position++;
 		}
-		
+
 		int maxIdx = presentations.size();
 		for (int idx = position; idx < maxIdx; idx++) {
 			Presentation toShiftPres = presentations.get(idx);
@@ -143,28 +127,26 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		}
 		return position;
 	}
-	
+
 	@Transactional(readOnly = true)
 	public Schedule loadAllSlidesEager(Schedule scheduleTr) {
 		Schedule schedule = null;
 		if (null != scheduleTr) {
-			schedule = findByName(scheduleTr.getName());	
+			schedule = findByName(scheduleTr.getName());
 		}
-		
+
 		if (null != schedule) {
-				List<Presentation> presentations = schedule.getPresentations();
-				presentations.toString();
-				// the rest (slides are loaded via FetchType.EAGER on schedule.slides)
+			List<Presentation> presentations = schedule.getPresentations();
+			presentations.toString();
+			// the rest (slides are loaded via FetchType.EAGER on
+			// schedule.slides)
 		}
 		return schedule;
 	}
 
 	@Transactional
 	@Override
-	public void setBgImage(Schedule scheduleTr, BgImage bgImage) {
-//		Schedule schedule = checkScheduleInitialized(scheduleTr);
-//		checkScheduleInitialized(scheduleTr);
-		Schedule schedule = findByName(scheduleTr.getName());
+	public void setBgImage(Schedule schedule, BgImage bgImage) {
 		schedule.setBgImage(bgImage);
 		this.persist(schedule);
 
@@ -176,59 +158,43 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		}
 	}
 
-//	private Schedule checkScheduleInitialized(Schedule scheduleTr) {
-//		Schedule schedule = createOrEdit(scheduleTr);
-//		
-//		// newly created
-//		if (null == schedule.getName()) {
-//			this.persist(schedule);
-//		}
-//		return schedule;
-//	private void checkScheduleInitialized(Schedule scheduleTr) throws YpException {
-//		if (null == scheduleTr || null == scheduleTr.getName() || scheduleTr.getName().isEmpty()) {
-//			throw new YpException(YpError.SCHEDULE_UNINITIALIZED);
-//		}
-//	}
-
-	
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	@Override
 	public List<String> findScheduleNamesByName(String name) {
-		// JPA supports constructor calls, see: http://www.objectdb.com/java/jpa/query/jpql/select
-//	    Query query = em.createQuery("SELECT NEW com.google.code.yourpresenter.dto.ScheduleNameDTO(s.id, s.name) FROM Schedule s");
-		
+		// JPA supports constructor calls, see:
+		// http://www.objectdb.com/java/jpa/query/jpql/select
+		// Query query =
+		// em.createQuery("SELECT NEW com.google.code.yourpresenter.dto.ScheduleNameDTO(s.id, s.name) FROM Schedule s");
+
 		Query query = null;
 		if ((null == name) || StringUtils.isEmpty(name)) {
-			query = em.createQuery("SELECT s.name FROM Schedule s");	
+			query = em.createQuery("SELECT s.name FROM Schedule s");
 		} else {
-			query = em.createQuery("SELECT s.name FROM Schedule s WHERE s.name = :name");
+			query = em
+					.createQuery("SELECT s.name FROM Schedule s WHERE s.name = :name");
 			query.setParameter("name", name);
 		}
-	    return (List<String>) query.getResultList();	
+		return (List<String>) query.getResultList();
 	}
 
-	
 	@Transactional
 	@Override
-	public void toggleBlank(String scheduleName) {
-		Schedule schedule = this.findByName(scheduleName);
+	public void toggleBlank(Schedule schedule) {
 		schedule.setBlank(!schedule.isBlank());
 		persist(schedule);
 	}
-	
+
 	@Transactional
 	@Override
-	public void toggleClear(String scheduleName) {
-		Schedule schedule = this.findByName(scheduleName);
+	public void toggleClear(Schedule schedule) {
 		schedule.setClear(!schedule.isClear());
 		persist(schedule);
 	}
 
 	@Transactional
 	@Override
-	public void toggleLive(String scheduleName) {
-		Schedule schedule = this.findByName(scheduleName);
+	public void toggleLive(Schedule schedule) {
 		schedule.setLive(!schedule.isLive());
 		persist(schedule);
 	}
