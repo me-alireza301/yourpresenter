@@ -12,6 +12,9 @@ public interface IConstants {
 	public static final String MEDIA_THUMBNAIL_WIDTH = "media.thumbnail.width";
 	public static final String MEDIA_THUMBNAIL_CONTENT_TYPE = "media.thumbnail.content.type";
 	
+	public static final String VIEW_FONT_MAXSIZE_PRESENTER = "view.font.maxsize.presenter";
+	public static final String VIEW_FONT_MAXSIZE_PROJECTOR = "view.font.maxsize.projector";
+	
 	// @PostInitialize indexes
 	public static final int POST_INIT_IDX_PREFERENCE_SERVICE = 1;
 	public static final int POST_INIT_IDX_MEDIA_CRAWLER = 10;

@@ -18,7 +18,9 @@ import com.google.code.yourpresenter.entity.BgImage;
 import com.google.code.yourpresenter.entity.Presentation;
 import com.google.code.yourpresenter.entity.Schedule;
 import com.google.code.yourpresenter.entity.Song;
-import com.google.code.yourpresenter.view.IHasSchedule;
+import com.googlecode.ehcache.annotations.Cacheable;
+import com.googlecode.ehcache.annotations.KeyGenerator;
+import com.googlecode.ehcache.annotations.Property;
 
 @SuppressWarnings("serial")
 @Service("scheduleService")
@@ -47,6 +49,12 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		return query.getResultList();
 	}
 
+	@Cacheable(cacheName="scheduleCache", 
+	        keyGenerator = @KeyGenerator (
+	                name = "HashCodeCacheKeyGenerator",
+	                properties = @Property( name="includeMethod", value="false" )
+	            )
+	        )
 	@Transactional(readOnly = true)
 	public Schedule findByName(String name) {
 		if (null == name) {

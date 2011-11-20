@@ -20,8 +20,13 @@ import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import com.google.code.yourpresenter.IConstants;
+import com.google.code.yourpresenter.YpException;
+import com.google.code.yourpresenter.service.IPreferenceService;
 
 @Component("preferencesView")
 @Scope("session")
@@ -30,6 +35,9 @@ public class PreferencesView implements Serializable {
 
 	/** The theme. */
 	private String theme = "aristo"; //default
+	
+	@Autowired
+	private IPreferenceService preferenceService;
 
 	/**
 	 * Gets the theme.
@@ -52,5 +60,13 @@ public class PreferencesView implements Serializable {
 	 */
 	public void setTheme(String theme) {
 		this.theme = theme;
+	}
+	
+	public String getViewFontMaxsizeProjector() throws YpException {
+		return this.preferenceService.findStringById(IConstants.VIEW_FONT_MAXSIZE_PROJECTOR);
+	}
+	
+	public String getViewFontMaxsizePresenter() throws YpException {
+		return this.preferenceService.findStringById(IConstants.VIEW_FONT_MAXSIZE_PRESENTER);
 	}
 }

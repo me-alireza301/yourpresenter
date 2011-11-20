@@ -95,6 +95,7 @@
 	border-style: solid;
 	padding: 0pt;
 	/* background-size: 100%; */
+	background-color: black;
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: center;
@@ -109,7 +110,7 @@
 }
 
 .slidebox-inactive {
-	border-color: #000000;	
+	border-color: black;	
 }
 
 .slidebox-inactive:hover {
@@ -241,6 +242,11 @@
 		</script>
 		-->
 		
+		<script type="text/javascript">
+			var preferences = new Array();
+			preferences['view.font.maxsize.presenter'] = <h:outputText value="#{preferencesView.viewFontMaxsizeProjector}"/>;
+		</script>
+		
 		<script type="text/javascript"
 			src="../js/jquery-ui-1.8.16.custom.min.js"></script>
 
@@ -278,7 +284,7 @@
 		<script type="text/javascript">
 			jQuery(document).ready(function() {
 				jQuery('.jtextfill').textfill({
-					maxFontPixels : 70
+					maxFontPixels : preferences['view.font.maxsize.presenter']
 				})
 			});
 		</script>
@@ -390,7 +396,7 @@
 								<rich:dropTarget acceptedTypes="bgImage, song"
 									dropValue="schedule_#{schedule.name}"
 									dropListener="#{scheduleView.dropped}" render="schedule"
-									oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:70})" />
+									oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:preferences['view.font.maxsize.presenter']})" />
 
 								<h:outputText value="Schedule: ${scheduleView.schedule.name}" />
 							</rich:panel>
@@ -406,7 +412,7 @@
 											<rich:dropTarget acceptedTypes="bgImage, song"
 												dropValue="presentation_#{presentation.id}"
 												dropListener="#{scheduleView.dropped}" render="schedule"
-												oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:70})" />
+												oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:preferences['view.font.maxsize.presenter']})" />
 
 											<h:outputText value="${presentation.song.name}" />
 										</rich:panel>
@@ -423,7 +429,7 @@
 											<rich:dropTarget acceptedTypes="bgImage"
 												dropValue="slide_#{slide.id}"
 												dropListener="#{scheduleView.dropped}" render="schedule"
-												oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:70})" />
+												oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:preferences['view.font.maxsize.presenter']})" />
 
 											<!-- these panels + styles might look weird, but it's a working solution for jtextfill -->
 											<rich:panel styleClass="slidebox slidebox-#{slide.cssSuffix}"

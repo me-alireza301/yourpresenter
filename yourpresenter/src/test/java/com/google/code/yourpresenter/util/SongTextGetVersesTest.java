@@ -27,14 +27,12 @@ public class SongTextGetVersesTest {
     		Verse verse1_1 = new Verse();
     		verse1_1.setText("Lorem ipsum dolor sit amet,<br/>consectetur adipiscing elit.");
     		Verse verse1_2 = new Verse();
-    		verse1_2.setText("Lorem ipsum dolor sit amet,<br/>consectetur adipiscing elit.");
+    		verse1_2.setText("malesuada id tortor.");
     		
     		Song song2 = new Song();
-    		song2.setText("Lorem ipsum dolor sit amet,<br/>consectetur adipiscing elit.");
+    		song2.setText("Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit.");
     		Verse verse2_1 = new Verse();
-    		verse1_1.setText("Lorem ipsum dolor sit amet,<br/>consectetur adipiscing elit.");
-    		Verse verse2_2 = new Verse();
-    		verse1_2.setText("malesuada id tortor.");
+    		verse2_1.setText("Lorem ipsum dolor sit amet,<br/>consectetur adipiscing elit.");
     		
             return Arrays.asList(new Object[][] {
             		{ 
@@ -43,7 +41,7 @@ public class SongTextGetVersesTest {
             		},
             		{ 
             			song2,
-            			new ArrayList<Verse> ( Arrays.asList(new Verse[] { verse2_1, verse2_2}))
+            			new ArrayList<Verse> ( Arrays.asList(new Verse[] { verse2_1}))
             		}
             });
     }

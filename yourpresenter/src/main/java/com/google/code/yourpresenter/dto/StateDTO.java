@@ -19,4 +19,5 @@ public class StateDTO {
 	public Schedule getSchedule() {
 		return schedule;
 	}
+	
 }

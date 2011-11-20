@@ -16,6 +16,17 @@
         maxElementsInMemory="300" overflowToDisk="false" diskPersistent="false"
         timeToIdleSeconds="0" timeToLiveSeconds="600"
         memoryStoreEvictionPolicy="LRU" />
+        
+    <cache name="stateCache" eternal="false"
+      	maxElementsInMemory="10" overflowToDisk="false" diskPersistent="false"
+        timeToIdleSeconds="0" timeToLiveSeconds="600"
+        memoryStoreEvictionPolicy="LRU" />
+        
+    <cache name="scheduleCache" eternal="false"
+        maxElementsInMemory="10" overflowToDisk="false" diskPersistent="false"
+        timeToIdleSeconds="0" timeToLiveSeconds="600"
+        memoryStoreEvictionPolicy="LRU" />
+        
 <!-- 
     <cache name="locationSearchCache" eternal="false"
         maxElementsInMemory="100" overflowToDisk="false" diskPersistent="false"

@@ -74,7 +74,7 @@ public class SlideServiceImpl implements ISlideService, Serializable {
 		}
 
 		Slide slide = findById(id);
-		slide.getPresentation().getSchedule();
+//		slide.getPresentation().getSchedule();
 		slide.setActive(true);
 		this.persist(slide);
 	}

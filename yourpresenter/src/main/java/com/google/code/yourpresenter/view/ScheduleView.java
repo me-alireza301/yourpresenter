@@ -5,7 +5,6 @@ import java.io.Serializable;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
-import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.richfaces.event.DropEvent;
@@ -18,15 +17,12 @@ import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.BgImage;
 import com.google.code.yourpresenter.entity.Schedule;
 import com.google.code.yourpresenter.entity.Song;
+import com.google.code.yourpresenter.service.ICacheService;
 import com.google.code.yourpresenter.service.IPresentationService;
 import com.google.code.yourpresenter.service.IScheduleService;
 import com.google.code.yourpresenter.service.ISlideService;
 import com.google.code.yourpresenter.util.Logger;
 import com.google.code.yourpresenter.util.LoggerFactory;
-import com.googlecode.ehcache.annotations.Cacheable;
-import com.googlecode.ehcache.annotations.KeyGenerator;
-import com.googlecode.ehcache.annotations.Property;
-import com.googlecode.ehcache.annotations.TriggersRemove;
 
 @Component("scheduleView")
 @Scope("session")
@@ -43,28 +39,24 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 	private IPresentationService presentationService;
 	@Autowired
 	private ISlideService slideService;
+	@Autowired
+	private ICacheService cacheService;
 	
 	public Schedule getSchedule() throws IOException {
 		return scheduleService.loadAllSlidesEager(getSchedule(this.scheduleName));
 	}
-
-	@Cacheable(cacheName="scheduleCache")
+	
 	private Schedule getSchedule(String scheduleName) {
 		return this.scheduleService.findByName(scheduleName);
 	}
 	
-	@TriggersRemove(cacheName="scheduleCache", 
-	        keyGenerator = @KeyGenerator (
-	                name = "HashCodeCacheKeyGenerator",
-	                properties = @Property( name="includeMethod", value="false" )
-	            )
-	        )
-	private void clearScheduleCache(String scheduleName) {
+	public String getScheduleName() {
+		return getSchedule(this.scheduleName).getName();
 	}
 	
 	public void setSchedule(Schedule schedule) {
 		this.scheduleName = schedule.getName();
-		this.clearScheduleCache(this.scheduleName);
+		this.cacheService.clearScheduleCaches(this.scheduleName);
 	}
 
 	public void dropped(DropEvent dropEvent) throws YpException, IOException {
@@ -109,7 +101,7 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 		}
 		
 		// make sure on modification cache is cleared
-		this.clearScheduleCache(this.scheduleName);
+		this.cacheService.clearScheduleCaches(this.scheduleName);
 	}
 	
 	public void dropped(Song song, long presentationId) throws IOException {
@@ -141,7 +133,7 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 			slideService.activateSlide(Long.valueOf(songId));
 			
 			// make sure on modification cache is cleared
-			this.clearScheduleCache(this.scheduleName);
+			this.cacheService.clearScheduleCaches(this.scheduleName);
 		} else {
 			// for the case of drop of background on slide link is called as well 
 			// (seems like activation, but no id is sent)
@@ -151,33 +143,45 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 		}
 	}
 
+	public boolean getBlank() {
+		return this.getSchedule(scheduleName).isBlank();
+	}
+	
 	public void toggleBlank() {
 		scheduleService.toggleBlank(this.getSchedule(scheduleName));
 		
 		// make sure on modification cache is cleared
-		this.clearScheduleCache(this.scheduleName);
+		this.cacheService.clearScheduleCaches(this.scheduleName);
 	}
 	
 	public String getToggleBlankCssSuffix() {
 		return (this.getSchedule(scheduleName).isBlank() ? "down" : "up" );
 	}
 	
+	public boolean getClear() {
+		return this.getSchedule(scheduleName).isClear();
+	}
+	
 	public void toggleClear() {
 		scheduleService.toggleClear(this.getSchedule(scheduleName));
 		
 		// make sure on modification cache is cleared
-		this.clearScheduleCache(this.scheduleName);
+		this.cacheService.clearScheduleCaches(this.scheduleName);
 	}
 	
 	public String getToggleClearCssSuffix() {
 		return (this.getSchedule(scheduleName).isClear() ? "down" : "up" );
 	}
 	
+	public boolean getLive() {
+		return this.getSchedule(scheduleName).isLive();
+	}
+	
 	public void toggleLive() {
 		scheduleService.toggleLive(this.getSchedule(scheduleName));
 		
 		// make sure on modification cache is cleared
-		this.clearScheduleCache(this.scheduleName);
+		this.cacheService.clearScheduleCaches(this.scheduleName);
 	}
 	
 	public String getToggleLiveCssSuffix() {

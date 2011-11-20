@@ -19,6 +19,12 @@
 			/* jQuery.noConflict(); */
 			var $ = jQuery.noConflict();
 		</script>
+		
+		<script type="text/javascript">
+			var preferences = new Array();
+			preferences['view.font.maxsize.projector'] = <h:outputText value="#{preferencesView.viewFontMaxsizeProjector}" />;
+		</script>
+		
 		<!-- <script type="text/javascript" src="../js/projector.js"></script> -->
 				
 		<!-- used to fit text size to box
@@ -28,17 +34,18 @@
 		<script type="text/javascript" src="../js/jquery-textfill-0.1.js"></script>
 		
 		<script type="text/javascript">
-			var fadeInBgDuration = 500;
-			var fadeInTxtDuration = 1000;
-			var activeFgClass = ".one-fg";
-			var activeBgClass = ".one-bg";
-			var isBlank = true;
-			var isClear = true;
-			var isLive = false;
-			var scheduleName = "";
-			
-			var oldTxt = "";
-			var oldBgId = -1;
+			var data;
+			var state = ""
+			var fadeBgDuration = 500;
+			var fadeFgDuration = 1000;
+			var fgClass = ".one-fg";
+			var bgClass = ".one-bg";
+			var isBlank = <h:outputText value="#{scheduleView.blank}" />;
+			var isClear = <h:outputText value="#{scheduleView.clear}" />;
+			var isLive = <h:outputText value="#{scheduleView.live}" />;
+			var scheduleName = "<h:outputText value="#{scheduleView.scheduleName}" />";
+			var txt = "";
+			var bgId = -1;
 
 			jQuery(document).ready(function() {
 				/* call function in jQuery: http://stackoverflow.com/questions/907634/is-this-how-you-define-a-function-in-jquery */
@@ -46,36 +53,158 @@
 			});
 
 			function onStart() {
-				scheduleName = jQuery(".secret").text();				
+				/* alert(scheduleName); */
+				setUp();
 				queryData();
 			}
 			
+			function setUp() {
+				// handle blank/live
+				if (isBlank || !isLive) {
+					jQuery(".blank").show();
+				} else {
+					jQuery(".blank").hide();
+				}
+				
+				// set fg/bg visibility
+				jQuery(fgClass).show();
+				jQuery(alterClass(fgClass)).hide();
+				jQuery(bgClass).show();
+				jQuery(alterClass(bgClass)).hide();
+				
+				// handle clear
+				if (isClear) {
+					jQuery(".template-fg").hide();
+				} else {
+					jQuery(".template-fg").show();
+				}
+			}
+			
 			function queryData() {
-				jQuery.getJSON("../mvc/state/" + scheduleName, function(data) {
+				jQuery.getJSON("../mvc/state/" + scheduleName, function(newData) {
 
-					var newTxt = data.actualSlide.verse.text;
-					if (newTxt != oldTxt) {
-						var newFgClass = alterClass(activeFgClass); 
-						
-						/* hide old and show new */
-						jQuery(newFgClass).children(":first").children(":first").html(newTxt);
-						jQuery(".jtextfill").textfill({maxFontPixels : 140});
-						
-						jQuery(activeFgClass).fadeOut(fadeInTxtDuration);
-						jQuery(newFgClass).fadeIn(fadeInTxtDuration);
-						/* jQuery(newFgClass).children(":first").children(":first").html(); */
-						
-						oldTxt = newTxt;
-						newFgClass = activeFgClass;
+					// TODO JSON comparison, see:
+					// http://stackoverflow.com/questions/201183/how-do-you-determine-equality-for-two-javascript-objects
+					/* alert(jQuery.JSON.encode(newData)===jQuery.JSON.encode(data)); 
+
+					// in case nothing changed => do nothing
+					if (newData == data) {
+						alert("no update");
+						return;
+					}
+					*/
+
+					var newTxt = newData.actualSlide.verse.text;
+					var newIsBlank = newData.schedule.blank; 
+					var newIsClear = newData.schedule.clear;
+					var newIsLive = newData.schedule.live;
+					var newBgId = -1;
+					
+					if (newData.actualSlide.bgImage != null) {
+						var newBgId = newData.actualSlide.bgImage.id	
 					}
 					
-					var newBgId = data.actualSlide.bgImage.id;
-					if (newBgId != oldBgId) {
-						var imgPath = "/yourpresenter/mvc/image/" + newBgId;
-						jQuery(activeBgClass).css({"background-image":"url('" + imgPath + "')"});
-						jQuery(activeBgClass).fadeIn(fadeInBgDuration);
-						oldBgId = newBgId;
+					// blank or live toggled
+					if ((newIsBlank != isBlank)
+							|| (newIsLive != isLive)) {
+						if (newIsBlank || !newIsLive) {
+							jQuery(".blank").fadeIn(fadeFgDuration);
+						} else {
+							jQuery(".blank").fadeOut(fadeFgDuration);
+						}
+						isBlank = newIsBlank;
+						isLive = newIsLive;
 					}
+					
+					// clear toggled
+					if (newIsClear != isClear) {
+						if (newIsClear) {
+							jQuery(".template-fg").fadeOut(fadeFgDuration);
+						} else {
+							jQuery(".template-fg").fadeIn(fadeFgDuration);
+						}
+						isClear = newIsClear; 
+					}
+					
+					// txt changed
+					if (newTxt != txt) {
+						var newFgClass = alterClass(fgClass);
+						
+						// set new txt
+						jQuery(newFgClass).children(".jtextfill").children(".jtextfill-inner").html(newTxt);
+						
+						// align size only for non-empty txt
+						if (newTxt != "") {
+							jQuery(newFgClass).children(".jtextfill").textfill({maxFontPixels : preferences['view.font.maxsize.projector']});	
+						}
+						 
+						// hide old and show new 
+						jQuery(fgClass).fadeOut(fadeFgDuration);
+						/* jQuery(fgClass).hide();  */
+						jQuery(newFgClass).fadeIn(fadeFgDuration); 
+
+						txt = newTxt;
+						newFgClass = fgClass;
+					}
+					
+					// bg changed
+ 					if ( newBgId != bgId) {
+						var newBgClass = alterClass(bgClass);
+						
+					/* 	if (newBgId == -1) {
+							jQuery(newBgClass).css({"background-image":"none"});
+						} else {
+							var imgPath = "/yourpresenter/mvc/image/" + newBgId;
+							jQuery(newBgClass).css({"background-image":"url('" + imgPath + "')"});	
+						} 
+						
+						
+						jQuery(bgClass).fadeOut(fadeBgDuration, function() {
+							jQuery(newBgClass).fadeIn(fadeBgDuration);
+						});
+					 */	
+						/* jQuery(bgClass).fadeOut(fadeBgDuration);
+						jQuery(newBgClass).fadeIn(fadeBgDuration, function() {
+							setTimeout('queryData()', 1000);
+						}); */
+						
+						/* jQuery(bgClass).fadeOut(fadeBgDuration, function() {
+							if (newBgId == -1) {
+								jQuery(newBgClass).css({"background-image":"none"});
+							} else {
+								var imgPath = "/yourpresenter/mvc/image/" + newBgId;
+								jQuery(newBgClass).css({"background-image":"url('" + imgPath + "')"});	
+							}
+							jQuery(newBgClass).fadeIn(fadeBgDuration, function() {
+								setTimeout('queryData()', 1000);
+							});
+						});
+						 */
+						 
+						if (newBgId == -1) {
+							jQuery(newBgClass).css({"background-image":"none"});
+						} else {
+							var imgPath = "/yourpresenter/mvc/image/" + newBgId;
+							jQuery(newBgClass).css({"background-image":"url('" + imgPath + "')"});	
+						} 
+
+						/* // hide old and show new 
+						jQuery(bgClass).fadeOut(fadeBgDuration, function() {
+							var newBgClass = alterClass(bgClass);
+							jQuery(newBgClass).delay(fadeBgDuration).fadeIn(fadeBgDuration);
+						}); */
+
+						 						 							
+ 						// hide old and show new 
+						jQuery(bgClass).fadeOut(fadeBgDuration);
+						jQuery(newBgClass).delay(fadeBgDuration).fadeIn(fadeBgDuration);
+						  
+						bgId = newBgId;
+						newBgClass = bgClass;
+					}
+ 				/* 	else {
+ 						setTimeout('queryData()', 1000);
+ 					} */
 				
 					/* preload bg image first, fade it in only afterwards
 						see: http://stackoverflow.com/questions/5365509/calling-a-function-when-the-background-image-finishes-loading */
@@ -85,19 +214,20 @@
 						// css + jquery: http://www.jquery4u.com/dynamic-css-2/change-css-jquery/
 						jQuery(".one-bg").css({"background-image":"url('" + imgPath + "')"});
 						
-						jQuery(".one-bg").fadeIn(fadeInBgDuration); 
-						// jQuery(".one-bg").fadeIn(fadeInBgDuration, function() {
-						//	jQuery(".one-fg").children(":first").children(":first").html(data.actualSlide.verse.text);
+						jQuery(".one-bg").fadeIn(fadeBgDuration); 
+						// jQuery(".one-bg").fadeIn(fadeBgDuration, function() {
+						//	jQuery(".one-fg").children(":first").children(":first").html(newData.actualSlide.verse.text);
 						//	jQuery(".jtextfill").textfill({maxFontPixels : 70});  
-						//	jQuery(".one-fg").fadeIn(fadeInTxtDuration);
+						//	jQuery(".one-fg").fadeIn(fadeFgDuration);
 						//}); 
-						jQuery(".one-fg").children(":first").children(":first").html(data.actualSlide.verse.text);
+						jQuery(".one-fg").children(":first").children(":first").html(newData.actualSlide.verse.text);
 						jQuery(".jtextfill").textfill({maxFontPixels : 70});  
-						jQuery(".one-fg").fadeIn(fadeInTxtDuration);
+						jQuery(".one-fg").fadeIn(fadeFgDuration);
 					};
 					img.src = imgPath;
 					*/
 					
+					data = newData;
 				});
 				
 				setTimeout('queryData()', 1000);
@@ -106,9 +236,9 @@
 			function alterClass(oldClass) {
 				var newClass = "";
 				if (oldClass.substring(0, ".one".length) === ".one") {
-					newClass = oldClass.replace("/^\.one/", ".two");
+					newClass = oldClass.replace("one", "two");
 				} else {
-					newClass = oldClass.replace("/^\.two/", ".one");
+					newClass = oldClass.replace("two", "one");
 				}
 				return newClass; 
 			}
@@ -117,7 +247,7 @@
 		<style type="text/css">
 
 /* fullscreen div idea found: http://stackoverflow.com/questions/2217007/how-to-make-a-div-fullscreen-and-atop-of-all-other-elements-with-jquery */
-.curtain {
+.board {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -132,8 +262,19 @@
 	z-index: 10;
 }
 
-.secret {
-	z-index: 1;
+.blank {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: black;
+	padding: 0pt;
+	border: 0px;
+	/* border: 1px; 
+	border-style: solid;
+	border-color: #00ff00; */
+	z-index: 30;
 }
 
 .template-bg {
@@ -149,8 +290,6 @@
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: center;
-	/* by default hidden */
-	display: none;
 }
 
 .template-fg {
@@ -168,7 +307,8 @@
 	/* by default hidden */
 	margin:auto;
 	
-	display:table;
+	/* display: none; */
+	display: table;
 }
 
 .one-bg .one-fg .two-bg .two-fg {
@@ -217,32 +357,25 @@
 </style>
 	</h:head>
 	<h:body>
-		<!-- to transfer post param to javascript -->
-		<div class="secret">
-			<h:outputText value="#{scheduleView.schedule.name}" />
-		</div>
-
 		<!-- default background -->
-		<div class="curtain"></div>
-
-		
+		<div class="board"></div>
 			
 		<div class="template-bg one-bg"></div>
+		<div class="template-bg two-bg"></div>
+		
 		<div class="template-fg one-fg">
 			<div class="jtextfill">
-			<span class="jtextfill-inner">
-			
-			</span>
-			<!-- <div class="haluz">Stvoril si ma k chvále,<br/>k sláve svojej výsosti,<br/>môj Pán,<br/>aby som stále<br/>mal plné srdce vïaky</div> -->
-		</div>
-		</div>
-
-		<!-- <div class="template-bg two-bg"></div>
-		<div class="template-fg two-fg">
-		<div class="jtextfill">
 			<span class="jtextfill-inner"></span>
-			</div>
-		</div> -->
+		</div>
+		</div>
+		
+		<div class="template-fg two-fg">
+			<div class="jtextfill">
+			<span class="jtextfill-inner"></span>
+		</div>
+		</div>
+		
+		<div class="blank"></div>
 	</h:body>
 </f:view>
 </html>

@@ -5,7 +5,6 @@ import java.util.List;
 import com.google.code.yourpresenter.entity.BgImage;
 import com.google.code.yourpresenter.entity.Schedule;
 import com.google.code.yourpresenter.entity.Song;
-import com.google.code.yourpresenter.view.IHasSchedule;
 
 public interface IScheduleService {
 

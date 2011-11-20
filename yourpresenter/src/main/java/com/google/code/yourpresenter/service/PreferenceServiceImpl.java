@@ -40,7 +40,12 @@ public class PreferenceServiceImpl implements IPreferenceService, Serializable {
 		this.em = em;
 	}
 
-	@Cacheable(cacheName="preferenceCache")
+	@Cacheable(cacheName="preferenceCache", 
+	        keyGenerator = @KeyGenerator (
+	                name = "HashCodeCacheKeyGenerator",
+	                properties = @Property( name="includeMethod", value="false" )
+	            )
+	        )
 	@Override
 	public String findStringById(String name) throws YpException {
 		Query query = em.createQuery(
@@ -55,7 +60,12 @@ public class PreferenceServiceImpl implements IPreferenceService, Serializable {
 		return values.iterator().next();
 	}
 
-	@Cacheable(cacheName="preferenceCache")
+	@Cacheable(cacheName="preferenceCache", 
+	        keyGenerator = @KeyGenerator (
+	                name = "HashCodeCacheKeyGenerator",
+	                properties = @Property( name="includeMethod", value="false" )
+	            )
+	        )
 	@Override
 	public String[] findStringArrayById(String name) throws YpException {
 		return findStringById(name).split(",");		
@@ -78,7 +88,7 @@ public class PreferenceServiceImpl implements IPreferenceService, Serializable {
 	@Transactional
 	@PostInitialize(order = IConstants.POST_INIT_IDX_PREFERENCE_SERVICE)
 	public void loadDefault() throws YpException {
-		// check is properties are already loaded
+		// check if properties are already loaded
 		if (preferencesLoaded()) {
 			return;
 		}
@@ -108,4 +118,5 @@ public class PreferenceServiceImpl implements IPreferenceService, Serializable {
 		}
 		return true;
 	}
+
 }
