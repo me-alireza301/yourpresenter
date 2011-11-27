@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8081/" />
+<title>presenter/okPresentationsReorder</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">presenter/okPresentationsReorder</td></tr>
+</thead><tbody>
+<!--check 3 songs available in schedule-->
+<tr>
+	<td>assertText</td>
+	<td>//div[contains(@id, '0:panelHeaderPresentation_body')]</td>
+	<td>Stvoril si ma k chvále</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//div[contains(@id, '1:panelHeaderPresentation_body')]</td>
+	<td>Odložil si svoj majestát</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//div[contains(@id, '2:panelHeaderPresentation_body')]</td>
+	<td>Stvoril si ma k chvále</td>
+</tr>
+<!--move 2.nd presentation to the 1.st place-->
+<tr>
+	<td>mouseOver</td>
+	<td>//div[contains(@id, '1:panelHeaderPresentation_body')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseDownAt</td>
+	<td>//div[contains(@id, '1:panelHeaderPresentation_body')]</td>
+	<td>5,5</td>
+</tr>
+<tr>
+	<td>mouseMoveAt</td>
+	<td>//div[contains(@id, ':scheduleName_body')]</td>
+	<td>5,5</td>
+</tr>
+<tr>
+	<td>mouseOver</td>
+	<td>//div[contains(@id, ':scheduleName_body')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>10</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseUpAt</td>
+	<td>//div[contains(@id, ':scheduleName_body')]</td>
+	<td>5,5</td>
+</tr>
+<tr>
+	<td>mouseOut</td>
+	<td>//div[contains(@id, '1:panelHeaderPresentation_body')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//div[contains(@id, '0:panelHeaderPresentation_body')]</td>
+	<td>Odložil si svoj majestát</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//div[contains(@id, '1:panelHeaderPresentation_body')]</td>
+	<td>Stvoril si ma k chvále</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//div[contains(@id, '2:panelHeaderPresentation_body')]</td>
+	<td>Stvoril si ma k chvále</td>
+</tr>
+<!--move 1.st presentation to the 2.nd place-->
+<tr>
+	<td>mouseOver</td>
+	<td>//div[contains(@id, '0:panelHeaderPresentation_body')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseDownAt</td>
+	<td>//div[contains(@id, '0:panelHeaderPresentation_body')]</td>
+	<td>5,5</td>
+</tr>
+<tr>
+	<td>mouseMoveAt</td>
+	<td>//div[contains(@id, '1:panelHeaderPresentation_body')]</td>
+	<td>5,5</td>
+</tr>
+<tr>
+	<td>mouseOver</td>
+	<td>//div[contains(@id, '1:panelHeaderPresentation_body')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>10</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseUpAt</td>
+	<td>//div[contains(@id, '1:panelHeaderPresentation_body')]</td>
+	<td>5,5</td>
+</tr>
+<tr>
+	<td>mouseOut</td>
+	<td>//div[contains(@id, '0:panelHeaderPresentation_body')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//div[contains(@id, '0:panelHeaderPresentation_body')]</td>
+	<td>Stvoril si ma k chvále</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//div[contains(@id, '1:panelHeaderPresentation_body')]</td>
+	<td>Odložil si svoj majestát</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//div[contains(@id, '2:panelHeaderPresentation_body')]</td>
+	<td>Stvoril si ma k chvále</td>
+</tr>
+</tbody></table>
+</body>
+</html>

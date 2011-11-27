@@ -84,6 +84,7 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 	}
 
 	@Transactional
+	@Override
 	public void addPresentation(final Schedule schedule,
 			long presentationId, final Song songTr) {
 		// to prevent:
@@ -95,7 +96,7 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		// make sure schedule is not detached object => do the merge
 		this.persist(schedule);
 		
-		int position = shiftPresentationFW(presentationId, schedule);
+		int position = shiftPresentation(presentationId, schedule, true);
 
 		Presentation presentation = presentationService.createOrEdit(null);
 		presentation.setPossition(position);
@@ -113,7 +114,7 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		}
 	}
 
-	private int shiftPresentationFW(long presentationId, Schedule schedule) {
+	private int shiftPresentation(long presentationId, Schedule schedule, boolean forward) {
 		List<Presentation> presentations = schedule.getPresentations();
 
 		// if new schedule
@@ -128,10 +129,19 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		}
 
 		int maxIdx = presentations.size();
-		for (int idx = position; idx < maxIdx; idx++) {
+		for (int idx = 0; idx < maxIdx; idx++) {
 			Presentation toShiftPres = presentations.get(idx);
-			toShiftPres.increasePossition();
-			this.presentationService.persist(toShiftPres);
+			// skip all the presentations not to be affected by shift (before target position)
+			if (toShiftPres.getPossition() < position) {
+				continue;
+			}
+			
+			if (forward) {
+				toShiftPres.incrementPossition();
+			} else {
+				toShiftPres.decrementPossition();	
+			}
+			this.presentationService.persist(toShiftPres);	
 		}
 		return position;
 	}
@@ -205,6 +215,35 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 	public void toggleLive(Schedule schedule) {
 		schedule.setLive(!schedule.isLive());
 		persist(schedule);
+	}
+
+	@Transactional
+	@Override
+	public void movePresentation(Schedule schedule, long presentationId,
+			Presentation presentationTr) {
+		// to prevent:
+		// Exception: failed to lazily initialize a collection of role:
+		// com.google.code.yourpresenter.entity.Song.verses, no session or
+		// session was closed
+		Presentation presentation = presentationService.findById(presentationTr.getId());
+		
+		// TODO tune performance detect cases where no update necessary and skip DB actions
+		// nothing to be done
+//		if (presentation.getPossition() == 1 && presentationId == -1) {
+//			
+//		}
+		
+		// make sure schedule is not detached object => do the merge
+		this.persist(schedule);
+		
+		// move all the presentations after this one in schedule backward
+		shiftPresentation(presentation.getId(), schedule, false);
+		
+		// move all the presentations before this one in schedule forward
+		int newPosition = shiftPresentation(presentationId, schedule, true);
+
+		presentation.setPossition(newPosition);
+		this.presentationService.persist(presentation);
 	}
 
 }

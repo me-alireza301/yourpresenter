@@ -125,7 +125,7 @@ public class Schedule implements Serializable {
 		this.presentations.add(presentation);
 		return presentation;
 	}
-
+	
 	public boolean isBlank() {
 		return blank;
 	}

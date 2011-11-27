@@ -390,10 +390,15 @@
 			<a4j:outputPanel id="schedule">
 
 				<h:form>
+					<rich:dragIndicator id="presentationDragInd" acceptClass="accept"
+						rejectClass="reject" draggingClass="default">
+						Move Presentation to other possition in schedule...
+					</rich:dragIndicator>
+   										
 					<rich:panel styleClass="dropTargetPanel">
 						<f:facet name="header">
 							<rich:panel id="scheduleName" styleClass="header-panel">
-								<rich:dropTarget acceptedTypes="bgImage, song"
+								<rich:dropTarget acceptedTypes="bgImage, song, presentation"
 									dropValue="schedule_#{schedule.name}"
 									dropListener="#{scheduleView.dropped}" render="schedule"
 									oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:preferences['view.font.maxsize.presenter']})" />
@@ -409,7 +414,9 @@
 								<rich:panel>
 									<f:facet name="header">
 										<rich:panel id="panelHeaderPresentation" styleClass="header-panel">
-											<rich:dropTarget acceptedTypes="bgImage, song"
+											<rich:dragSource type="presentation" dragIndicator="presentationDragInd"
+												dragValue="#{presentation}" />
+											<rich:dropTarget acceptedTypes="bgImage, song, presentation"
 												dropValue="presentation_#{presentation.id}"
 												dropListener="#{scheduleView.dropped}" render="schedule"
 												oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:preferences['view.font.maxsize.presenter']})" />

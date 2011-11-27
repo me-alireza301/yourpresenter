@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.BgImage;
+import com.google.code.yourpresenter.entity.Presentation;
 import com.google.code.yourpresenter.entity.Schedule;
 import com.google.code.yourpresenter.entity.Song;
 import com.google.code.yourpresenter.service.ICacheService;
@@ -88,6 +89,14 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 				// add song after presentation (position id)
 				dropped((Song) dragValue, id);
 			}
+		} else if (dragValue instanceof Presentation) {
+				if (level.equals("schedule")) {
+					// move presentation to the start (position 0)
+					dropped((Presentation) dragValue, -1);
+				} else if (level.equals("presentation")) {
+					// move presentation after presentation (position id)
+					dropped((Presentation) dragValue, id);
+				}
 		} else if (dragValue instanceof BgImage) {
 			if (level.equals("schedule")) {
 				droppedToSchedule((BgImage) dragValue);
@@ -104,6 +113,12 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 		this.cacheService.clearScheduleCaches(this.scheduleName);
 	}
 	
+	private void dropped(Presentation presentation, long presentationId) throws IOException {
+		logger.debug("Moved presentation (presentation.id=", presentation.getId(), ") in (schedule=", this.scheduleName, 
+				") after presentation (presentation.id=", presentationId, ")");
+		this.scheduleService.movePresentation(this.getSchedule(), presentationId, presentation);
+	}
+
 	public void dropped(Song song, long presentationId) throws IOException {
 		logger.debug("Added Song (song.id=", song.getId(), ") to schedule (schedule=", this.scheduleName, 
 				") after presentation (presentation.id=", presentationId, ")");

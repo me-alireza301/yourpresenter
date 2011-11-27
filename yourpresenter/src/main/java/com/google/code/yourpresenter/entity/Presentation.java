@@ -164,8 +164,12 @@ public class Presentation implements Serializable {
 		this.possition = position;
 	}
 	
-	public void increasePossition() {
+	public void incrementPossition() {
 		this.possition++;
+	}
+	
+	public void decrementPossition() {
+		this.possition--;
 	}
 
 	public void addSlide(Slide slide) {
