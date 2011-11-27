@@ -36,8 +36,7 @@
 		<script type="text/javascript">
 			var data;
 			var state = ""
-			var fadeBgDuration = 500;
-			var fadeFgDuration = 1000;
+			var transitionDuration = 500;
 			var fgClass = ".one-fg";
 			var bgClass = ".one-bg";
 			var isBlank = <h:outputText value="#{scheduleView.blank}" />;
@@ -46,6 +45,9 @@
 			var scheduleName = "<h:outputText value="#{scheduleView.scheduleName}" />";
 			var txt = "";
 			var bgId = -1;
+			var zIdxBehindAll = 0;
+			var zIdxFg = 20;
+			var zIdxBg = 10;
 
 			jQuery(document).ready(function() {
 				/* call function in jQuery: http://stackoverflow.com/questions/907634/is-this-how-you-define-a-function-in-jquery */
@@ -53,7 +55,6 @@
 			});
 
 			function onStart() {
-				/* alert(scheduleName); */
 				setUp();
 				queryData();
 			}
@@ -108,9 +109,9 @@
 					if ((newIsBlank != isBlank)
 							|| (newIsLive != isLive)) {
 						if (newIsBlank || !newIsLive) {
-							jQuery(".blank").fadeIn(fadeFgDuration);
+							jQuery(".blank").fadeIn(transitionDuration);
 						} else {
-							jQuery(".blank").fadeOut(fadeFgDuration);
+							jQuery(".blank").fadeOut(transitionDuration);
 						}
 						isBlank = newIsBlank;
 						isLive = newIsLive;
@@ -119,18 +120,19 @@
 					// clear toggled
 					if (newIsClear != isClear) {
 						if (newIsClear) {
-							jQuery(".template-fg").fadeOut(fadeFgDuration);
+							jQuery(".template-fg").fadeOut(transitionDuration);
 						} else {
-							jQuery(".template-fg").fadeIn(fadeFgDuration);
+							jQuery(".template-fg").fadeIn(transitionDuration);
 						}
 						isClear = newIsClear; 
 					}
 					
-					// txt changed
-					if (newTxt != txt) {
+ 					// txt changed
+ 					if (newTxt != txt) {
 						var newFgClass = alterClass(fgClass);
 						
 						// set new txt
+						jQuery(newFgClass).css("z-index", zIdxBehindAll);
 						jQuery(newFgClass).children(".jtextfill").children(".jtextfill-inner").html(newTxt);
 						
 						// align size only for non-empty txt
@@ -138,73 +140,62 @@
 							jQuery(newFgClass).children(".jtextfill").textfill({maxFontPixels : preferences['view.font.maxsize.projector']});	
 						}
 						 
-						// hide old and show new 
-						jQuery(fgClass).fadeOut(fadeFgDuration);
-						/* jQuery(fgClass).hide();  */
-						jQuery(newFgClass).fadeIn(fadeFgDuration); 
+						//
+						// hide old and show new
+						//
+						
+						// hide new and move it in front
+						jQuery(newFgClass).hide();
+						jQuery(newFgClass).css("z-index", zIdxFg + 1);
+
+						// if to be displayed do the effect
+						if (!isClear) {
+							jQuery(fgClass).fadeOut(transitionDuration);
+							// jQuery(newFgClass).fadeIn(transitionDuration);
+							jQuery(newFgClass).fadeIn(transitionDuration, 
+									function () {
+										jQuery(newFgClass).css("z-index", zIdxFg);
+							});
+						} else {
+							jQuery(newFgClass).css("z-index", zIdxFg);
+						}
 
 						txt = newTxt;
-						newFgClass = fgClass;
-					}
-					
+						fgClass = newFgClass;
+					} 
+
 					// bg changed
  					if ( newBgId != bgId) {
 						var newBgClass = alterClass(bgClass);
 						
-					/* 	if (newBgId == -1) {
-							jQuery(newBgClass).css({"background-image":"none"});
-						} else {
-							var imgPath = "/yourpresenter/mvc/image/" + newBgId;
-							jQuery(newBgClass).css({"background-image":"url('" + imgPath + "')"});	
-						} 
+						// put new bg div to the back
+						jQuery(newBgClass).css("z-index", zIdxBehindAll);
+						jQuery(newBgClass).show();
 						
-						
-						jQuery(bgClass).fadeOut(fadeBgDuration, function() {
-							jQuery(newBgClass).fadeIn(fadeBgDuration);
-						});
-					 */	
-						/* jQuery(bgClass).fadeOut(fadeBgDuration);
-						jQuery(newBgClass).fadeIn(fadeBgDuration, function() {
-							setTimeout('queryData()', 1000);
-						}); */
-						
-						/* jQuery(bgClass).fadeOut(fadeBgDuration, function() {
-							if (newBgId == -1) {
-								jQuery(newBgClass).css({"background-image":"none"});
-							} else {
-								var imgPath = "/yourpresenter/mvc/image/" + newBgId;
-								jQuery(newBgClass).css({"background-image":"url('" + imgPath + "')"});	
-							}
-							jQuery(newBgClass).fadeIn(fadeBgDuration, function() {
-								setTimeout('queryData()', 1000);
-							});
-						});
-						 */
-						 
 						if (newBgId == -1) {
 							jQuery(newBgClass).css({"background-image":"none"});
 						} else {
 							var imgPath = "/yourpresenter/mvc/image/" + newBgId;
-							jQuery(newBgClass).css({"background-image":"url('" + imgPath + "')"});	
+							jQuery(newBgClass).css({"background-image":"url('" + imgPath + "')"}); 
 						} 
 
-						/* // hide old and show new 
-						jQuery(bgClass).fadeOut(fadeBgDuration, function() {
-							var newBgClass = alterClass(bgClass);
-							jQuery(newBgClass).delay(fadeBgDuration).fadeIn(fadeBgDuration);
-						}); */
-
-						 						 							
- 						// hide old and show new 
-						jQuery(bgClass).fadeOut(fadeBgDuration);
-						jQuery(newBgClass).delay(fadeBgDuration).fadeIn(fadeBgDuration);
-						  
+						//
+						// hide old and show new
+						//
+						
+						jQuery(newBgClass).hide();
+						jQuery(newBgClass).css("z-index", zIdxBg + 1);
+						
+ 						// hide old and show new
+						jQuery(bgClass).fadeOut(transitionDuration);
+						jQuery(newBgClass).fadeIn(transitionDuration, 
+								function () {
+									jQuery(newBgClass).css("z-index", zIdxBg);
+						});
+						
 						bgId = newBgId;
-						newBgClass = bgClass;
+						bgClass = newBgClass;
 					}
- 				/* 	else {
- 						setTimeout('queryData()', 1000);
- 					} */
 				
 					/* preload bg image first, fade it in only afterwards
 						see: http://stackoverflow.com/questions/5365509/calling-a-function-when-the-background-image-finishes-loading */
@@ -214,15 +205,15 @@
 						// css + jquery: http://www.jquery4u.com/dynamic-css-2/change-css-jquery/
 						jQuery(".one-bg").css({"background-image":"url('" + imgPath + "')"});
 						
-						jQuery(".one-bg").fadeIn(fadeBgDuration); 
-						// jQuery(".one-bg").fadeIn(fadeBgDuration, function() {
+						jQuery(".one-bg").fadeIn(transitionDuration); 
+						// jQuery(".one-bg").fadeIn(transitionDuration, function() {
 						//	jQuery(".one-fg").children(":first").children(":first").html(newData.actualSlide.verse.text);
 						//	jQuery(".jtextfill").textfill({maxFontPixels : 70});  
-						//	jQuery(".one-fg").fadeIn(fadeFgDuration);
+						//	jQuery(".one-fg").fadeIn(transitionDuration);
 						//}); 
 						jQuery(".one-fg").children(":first").children(":first").html(newData.actualSlide.verse.text);
 						jQuery(".jtextfill").textfill({maxFontPixels : 70});  
-						jQuery(".one-fg").fadeIn(fadeFgDuration);
+						jQuery(".one-fg").fadeIn(transitionDuration);
 					};
 					img.src = imgPath;
 					*/
@@ -259,7 +250,7 @@
 	/* border: 1px; 
 	border-style: solid;
 	border-color: #00ff00; */
-	z-index: 10;
+	z-index: 1;
 }
 
 .blank {
@@ -274,7 +265,7 @@
 	/* border: 1px; 
 	border-style: solid;
 	border-color: #00ff00; */
-	z-index: 30;
+	z-index: 100;
 }
 
 .template-bg {
@@ -301,7 +292,7 @@
 	background: transparent;
 	padding: 0pt;
 	border: 0px;
-	z-index: 21;
+	z-index: 30;
 	/* border around text needed */
 	/* padding: 10%; */
 	/* by default hidden */
@@ -309,9 +300,11 @@
 	
 	/* display: none; */
 	display: table;
+	table-layout:fixed;
 }
 
 .one-bg .one-fg .two-bg .two-fg {
+	opacity: 0;
 }
 
 /* [BEGIN] slide styles */
