@@ -13,7 +13,8 @@
 <tr><td><a href="presenter/dialogSongEdit/okClose">presenter/dialogSongEdit/okClose</a></td></tr>
 <tr><td><a href="presenter/errSongCreate">presenter/errSongCreate</a></td></tr>
 <tr><td><a href="presenter/okSongCreate2">presenter/okSongCreate2</a></td></tr>
-<tr><td><a href="presenter/okScheduleAddSongsDnD">okScheduleAddSongsDnD</a></td></tr>
+<tr><td><a href="presenter/okScheduleAddSongsDnD">presenter/okScheduleAddSongsDnD</a></td></tr>
+<tr><td><a href="presenter/okPresentationsReorder">presenter/okPresentationsReorder</a></td></tr>
 </tbody></table>
 </body>
 </html>
