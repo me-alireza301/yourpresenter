@@ -16,6 +16,8 @@
 		<!-- <primefaces-version>3.0.M2</primefaces-version> -->
 		<!-- <primefaces-version>2.2.1</primefaces-version> -->
 		<org.richfaces.bom.version>4.0.0.Final</org.richfaces.bom.version>
+		<!-- <org.richfaces.bom.version>4.1.0.20111101-M4</org.richfaces.bom.version> -->
+		
 	</properties>
 
 	<dependencyManagement>
