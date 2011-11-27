@@ -4,12 +4,12 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="http://localhost:8081/" />
-<title>okSongCreate2</title>
+<title>presenter/okSongCreate2</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">okSongCreate2</td></tr>
+<tr><td rowspan="1" colspan="3">presenter/okSongCreate2</td></tr>
 </thead><tbody>
 <!--check we're in schedule-->
 <tr>
@@ -35,12 +35,12 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>id=dialogSongEditForm:j_idt32</td>
+	<td>id=dialogSongEditForm:buttonOK</td>
 	<td></td>
 </tr>
 <tr>
 	<td>assertText</td>
-	<td>id=j_idt37:songTable:0:j_idt40</td>
+	<td>//td[contains(@id, ':songTable:0:')]</td>
 	<td>Odložil si svoj majestát</td>
 </tr>
 <!--insert new song-->
@@ -57,19 +57,18 @@
 <tr>
 	<td>type</td>
 	<td>id=dialogSongEditForm:dialogSongText</td>
-	<td>Stvoril si ma k chvále,<br />k sláve svojej výsosti,<br />môj Pán,<br />aby som stále<br />mal plné srdce vďaky.<br />Slide<br />Som, aby som ľúbil,<br />kráčal v šľapajách Tvojich,<br />môj Pán,<br />uctieval tým, čo mám,<br />sám seba Ti dám.<br />Slide<br />Večne budem chváliť<br />slávu Tvojej výsosti,<br />môj Pán,<br />budem mať stále<br />plné srdce vďaky.<br />Slide<br />Večne budem ľúbiť,<br />kráčať v šľapajách Tvojich, môj Pán,<br />uctievať tým, čo mám,<br />sám seba Ti dám.</td>
+	<td>Stvoril si ma k chvále,<br />k sláve svojej výsosti,<br />môj Pán,<br />aby som stále<br />mal plné srdce vďaky.<br />Slide<br />Som, aby som ľúbil,<br />kráčal v šľapajách Tvojich,<br />môj Pán,<br />uctieval tým, čo mám,<br />sám seba Ti dám.<br />Slide<br />Večne budem chváliť<br />slávu Tvojej výsosti,<br />môj Pán,<br />budem mať stále<br />plné srdce vďaky.<br />Slide<br />Večne budem ľúbiť,<br />kráčať v šľapajách Tvojich,<br />môj Pán,<br />uctievať tým, čo mám,<br />sám seba Ti dám.</td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>id=dialogSongEditForm:j_idt32</td>
+	<td>id=dialogSongEditForm:buttonOK</td>
 	<td></td>
 </tr>
 <tr>
 	<td>assertText</td>
-	<td>id=j_idt37:songTable:1:j_idt40</td>
+	<td>//td[contains(@id, ':songTable:1:')]</td>
 	<td>Stvoril si ma k chvále</td>
 </tr>
-<!--only till drag&drop can be done without full refresh-->
 </tbody></table>
 </body>
 </html>

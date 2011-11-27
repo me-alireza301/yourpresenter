@@ -9,7 +9,7 @@
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">okScheduleCreate</td></tr>
+<tr><td rowspan="1" colspan="3">createSchedule</td></tr>
 </thead><tbody>
 <tr>
 	<td>open</td>
@@ -25,6 +25,12 @@
 	<td>clickAndWait</td>
 	<td>//input[contains(@id, ':presenter')]</td>
 	<td></td>
+</tr>
+<!--check schedule created-->
+<tr>
+	<td>assertText</td>
+	<td>//div[contains(@id, ':scheduleName')]</td>
+	<td>Schedule: new schedule</td>
 </tr>
 </tbody></table>
 </body>

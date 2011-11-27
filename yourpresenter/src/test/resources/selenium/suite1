@@ -8,10 +8,12 @@
 <body>
 <table id="suiteTable" cellpadding="1" cellspacing="1" border="1" class="selenium"><tbody>
 <tr><td><b>Test Suite</b></td></tr>
-<tr><td><a href="presenterNoSchedule">main/errScheduleCreate</a></td></tr>
-<tr><td><a href="createSchedule">main/okScheduleCreate</a></td></tr>
-<tr><td><a href="add2Songs">presenter/okSongCreate2</a></td></tr>
-<tr><td><a href="add2SongsToSchedule">presenter/okScheduleAdd2SongsDnD</a></td></tr>
+<tr><td><a href="main/errScheduleCreate">main/errScheduleCreate</a></td></tr>
+<tr><td><a href="main/okScheduleCreate">main/okScheduleCreate</a></td></tr>
+<tr><td><a href="presenter/dialogSongEdit/okClose">presenter/dialogSongEdit/okClose</a></td></tr>
+<tr><td><a href="presenter/errSongCreate">presenter/errSongCreate</a></td></tr>
+<tr><td><a href="presenter/okSongCreate2">presenter/okSongCreate2</a></td></tr>
+<tr><td><a href="presenter/okScheduleAddSongsDnD">okScheduleAddSongsDnD</a></td></tr>
 </tbody></table>
 </body>
 </html>
