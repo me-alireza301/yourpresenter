@@ -37,7 +37,7 @@ public class ProjectorDataJSONController {
 	                properties = @Property( name="includeMethod", value="false" )
 				)
 			)
-	@RequestMapping(value="/state/{name}", method = { RequestMethod.GET, RequestMethod.POST }, consumes="application/json", produces="application/json")
+	@RequestMapping(value="/state/{name}", method = { RequestMethod.GET, RequestMethod.POST }/*, consumes="application/json", produces="application/json"*/)
 	public @ResponseBody StateDTO getState(@PathVariable("name") String scheduleName) {
 		logger.debug("called getState for: " + scheduleName);
 		Slide slide = this.slideService.findActiveSlide(scheduleName);

@@ -41,7 +41,7 @@ public class PresenterPageIT {
 	public static final String SCHEDULE_NAME = "New schedule";
 	public static final String PRESENTER_URL = "http://localhost:8081/yourpresenter/presenter/presenter.jsf";
 	
-	private static final String RESOURCE_PATH = "target/test-classes/com/google/code/yourpresenter/selenium/";
+	public static final String RESOURCE_PATH = "target/test-classes/com/google/code/yourpresenter/selenium/";
 
 	@Autowired
 	private ScheduleRestTemplate scheduleRestTemplate;
@@ -201,7 +201,7 @@ public class PresenterPageIT {
 		Assert.assertEquals(PRESENTER_URL, driver.getCurrentUrl());
 	}
 
-	private String getScheduleName() {
+	protected String getScheduleName() {
 		return SCHEDULE_NAME;
 	}
 	

@@ -19,20 +19,20 @@
 			/* jQuery.noConflict(); */
 			var $ = jQuery.noConflict();
 		</script>
-		
+
 		<script type="text/javascript">
 			var preferences = new Array();
 			preferences['view.font.maxsize.projector'] = <h:outputText value="#{preferencesView.viewFontMaxsizeProjector}" />;
 		</script>
-		
+
 		<!-- <script type="text/javascript" src="../js/projector.js"></script> -->
-				
+
 		<!-- used to fit text size to box
 		see: http://plugins.jquery.com/project/TextFill
 		the call is used also for the all oncomplete for ajax events where necessary 
 		-->
 		<script type="text/javascript" src="../js/jquery-textfill-0.1.js"></script>
-		
+
 		<script type="text/javascript">
 			var data;
 			var state = ""
@@ -58,7 +58,7 @@
 				setUp();
 				queryData();
 			}
-			
+
 			function setUp() {
 				// handle blank/live
 				if (isBlank || !isLive) {
@@ -66,13 +66,13 @@
 				} else {
 					jQuery(".blank").hide();
 				}
-				
+
 				// set fg/bg visibility
 				jQuery(fgClass).show();
 				jQuery(alterClass(fgClass)).hide();
 				jQuery(bgClass).show();
 				jQuery(alterClass(bgClass)).hide();
-				
+
 				// handle clear
 				if (isClear) {
 					jQuery(".template-fg").hide();
@@ -80,150 +80,165 @@
 					jQuery(".template-fg").show();
 				}
 			}
-			
+
 			function queryData() {
-				jQuery.getJSON("../mvc/state/" + scheduleName, function(newData) {
+				jQuery.getJSON("../mvc/state/" + scheduleName,
+						function(newData) {
 
-					// TODO JSON comparison, see:
-					// http://stackoverflow.com/questions/201183/how-do-you-determine-equality-for-two-javascript-objects
-					/* alert(jQuery.JSON.encode(newData)===jQuery.JSON.encode(data)); 
+							// TODO JSON comparison, see:
+							// http://stackoverflow.com/questions/201183/how-do-you-determine-equality-for-two-javascript-objects
+							/* alert(jQuery.JSON.encode(newData)===jQuery.JSON.encode(data)); 
 
-					// in case nothing changed => do nothing
-					if (newData == data) {
-						alert("no update");
-						return;
-					}
-					*/
+							// in case nothing changed => do nothing
+							if (newData == data) {
+								alert("no update");
+								return;
+							}
+							 */
 
-					var newTxt = newData.actualSlide.verse.text;
-					var newIsBlank = newData.schedule.blank; 
-					var newIsClear = newData.schedule.clear;
-					var newIsLive = newData.schedule.live;
-					var newBgId = -1;
-					
-					if (newData.actualSlide.bgImage != null) {
-						var newBgId = newData.actualSlide.bgImage.id	
-					}
-					
-					// blank or live toggled
-					if ((newIsBlank != isBlank)
-							|| (newIsLive != isLive)) {
-						if (newIsBlank || !newIsLive) {
-							jQuery(".blank").fadeIn(transitionDuration);
-						} else {
-							jQuery(".blank").fadeOut(transitionDuration);
-						}
-						isBlank = newIsBlank;
-						isLive = newIsLive;
-					}
-					
-					// clear toggled
-					if (newIsClear != isClear) {
-						if (newIsClear) {
-							jQuery(".template-fg").fadeOut(transitionDuration);
-						} else {
-							jQuery(".template-fg").fadeIn(transitionDuration);
-						}
-						isClear = newIsClear; 
-					}
-					
- 					// txt changed
- 					if (newTxt != txt) {
-						var newFgClass = alterClass(fgClass);
-						
-						// set new txt
-						jQuery(newFgClass).css("z-index", zIdxBehindAll);
-						jQuery(newFgClass).children(".jtextfill").children(".jtextfill-inner").html(newTxt);
-						
-						// align size only for non-empty txt
-						if (newTxt != "") {
-							jQuery(newFgClass).children(".jtextfill").textfill({maxFontPixels : preferences['view.font.maxsize.projector']});	
-						}
-						 
-						//
-						// hide old and show new
-						//
-						
-						// hide new and move it in front
-						jQuery(newFgClass).hide();
-						jQuery(newFgClass).css("z-index", zIdxFg + 1);
+							var newTxt = newData.actualSlide.verse.text;
+							var newIsBlank = newData.schedule.blank;
+							var newIsClear = newData.schedule.clear;
+							var newIsLive = newData.schedule.live;
+							var newBgId = -1;
 
-						// if to be displayed do the effect
-						if (!isClear) {
-							jQuery(fgClass).fadeOut(transitionDuration);
-							// jQuery(newFgClass).fadeIn(transitionDuration);
-							jQuery(newFgClass).fadeIn(transitionDuration, 
-									function () {
-										jQuery(newFgClass).css("z-index", zIdxFg);
-							});
-						} else {
-							jQuery(newFgClass).css("z-index", zIdxFg);
-						}
+							if (newData.actualSlide.bgImage != null) {
+								newBgId = newData.actualSlide.bgImage.id
+							}
 
-						txt = newTxt;
-						fgClass = newFgClass;
-					} 
+							handleBlankAndLive(newIsBlank, newIsLive);
+							handleClear(newIsClear);
+							handleFg(newTxt, isClear);
+							handleBg(newBgId);
 
-					// bg changed
- 					if ( newBgId != bgId) {
-						var newBgClass = alterClass(bgClass);
-						
-						// put new bg div to the back
-						jQuery(newBgClass).css("z-index", zIdxBehindAll);
-						jQuery(newBgClass).show();
-						
-						if (newBgId == -1) {
-							jQuery(newBgClass).css({"background-image":"none"});
-						} else {
-							var imgPath = "/yourpresenter/mvc/image/" + newBgId;
-							jQuery(newBgClass).css({"background-image":"url('" + imgPath + "')"}); 
-						} 
-
-						//
-						// hide old and show new
-						//
-						
-						jQuery(newBgClass).hide();
-						jQuery(newBgClass).css("z-index", zIdxBg + 1);
-						
- 						// hide old and show new
-						jQuery(bgClass).fadeOut(transitionDuration);
-						jQuery(newBgClass).fadeIn(transitionDuration, 
-								function () {
-									jQuery(newBgClass).css("z-index", zIdxBg);
+							data = newData;
 						});
-						
-						bgId = newBgId;
-						bgClass = newBgClass;
-					}
-				
-					/* preload bg image first, fade it in only afterwards
-						see: http://stackoverflow.com/questions/5365509/calling-a-function-when-the-background-image-finishes-loading */
-					/*
-					var img = new Image();
-					img.onload = function() {
-						// css + jquery: http://www.jquery4u.com/dynamic-css-2/change-css-jquery/
-						jQuery(".one-bg").css({"background-image":"url('" + imgPath + "')"});
-						
-						jQuery(".one-bg").fadeIn(transitionDuration); 
-						// jQuery(".one-bg").fadeIn(transitionDuration, function() {
-						//	jQuery(".one-fg").children(":first").children(":first").html(newData.actualSlide.verse.text);
-						//	jQuery(".jtextfill").textfill({maxFontPixels : 70});  
-						//	jQuery(".one-fg").fadeIn(transitionDuration);
-						//}); 
-						jQuery(".one-fg").children(":first").children(":first").html(newData.actualSlide.verse.text);
-						jQuery(".jtextfill").textfill({maxFontPixels : 70});  
-						jQuery(".one-fg").fadeIn(transitionDuration);
-					};
-					img.src = imgPath;
-					*/
-					
-					data = newData;
-				});
-				
+
 				setTimeout('queryData()', 1000);
 			}
-			
+
+			function handleBlankAndLive(newIsBlank, newIsLive) {
+				// blank and live not toggled => do nothing
+				if ((newIsBlank == isBlank) &amp;&amp; (newIsLive == isLive)) {
+					return;
+				}
+
+				if (newIsBlank || !newIsLive) {
+					jQuery(".blank").fadeIn(transitionDuration);
+				} else {
+					jQuery(".blank").fadeOut(transitionDuration);
+				}
+				
+				isBlank = newIsBlank;
+				isLive = newIsLive;
+			}
+
+			function handleClear(newIsClear) {
+				// clear not toggled => do nothing
+				if (newIsClear == isClear) {
+					return;
+				}
+
+				if (newIsClear) {
+					jQuery(".template-fg").fadeOut(transitionDuration);
+				} else {
+					jQuery(".template-fg").fadeIn(transitionDuration);
+				}
+
+				isClear = newIsClear;
+			}
+
+			function handleFg(newTxt, isClear) {
+				// txt not changed => do nothing
+				if (newTxt == txt) {
+					return;
+				}
+
+				var newFgClass = alterClass(fgClass);
+
+				// set new txt
+				jQuery(newFgClass).css("z-index", zIdxBehindAll);
+				jQuery(newFgClass).children(".jtextfill").children(
+						".jtextfill-inner").html(newTxt);
+
+				// align size only for non-empty txt
+				if (newTxt != "") {
+					jQuery(newFgClass).show();
+					jQuery(newFgClass)
+							.children(".jtextfill")
+							.textfill(
+									{
+										maxFontPixels : preferences['view.font.maxsize.projector']
+									});
+				}
+
+				//
+				// hide old and show new
+				//
+
+				// hide new and move it in front
+				jQuery(newFgClass).hide();
+				jQuery(newFgClass).css("z-index", zIdxFg);
+
+				// fadeout/hide causes fading in text font to be not autosized 
+				// => rather move to very back 
+				jQuery(fgClass).css("z-index", zIdxBehindAll);
+				/* jQuery(fgClass).fadeOut(transitionDuration); */
+
+				// if to be displayed do the effect
+				if (!isClear &amp;&amp; newTxt != "") {
+					jQuery(newFgClass).fadeIn(transitionDuration);
+				}
+
+				txt = newTxt;
+				fgClass = newFgClass;
+			}
+
+			function handleBg(newBgId) {
+				// bg not changed => do nothing
+				if (newBgId == bgId) {
+					return;
+				}
+
+				var newBgClass = alterClass(bgClass);
+
+				// if new bg is empty
+				if (newBgId == -1) {
+					jQuery(newBgClass).css({
+						"background-image" : "none"
+					});
+					jQuery(newBgClass).css("z-index", zIdxBg);
+					jQuery(newBgClass).show();
+
+					// hide old and show new
+					jQuery(bgClass).fadeOut(transitionDuration);
+
+					bgId = newBgId;
+					bgClass = newBgClass;
+				} else {
+					var imgPath = "/yourpresenter/mvc/image/" + newBgId;
+
+					jQuery(newBgClass).css({
+						"background-image" : "url('" + imgPath + "')"
+					});
+
+					//
+					// hide old and show new
+					//
+					jQuery(newBgClass).css("z-index", zIdxBg + 1);
+
+					// hide old and show new
+					jQuery(newBgClass).fadeIn(transitionDuration, function() {
+						jQuery(bgClass).css("z-index", zIdxBehindAll);
+						jQuery(bgClass).hide();
+						jQuery(newBgClass).css("z-index", zIdxBg);
+
+						bgId = newBgId;
+						bgClass = newBgClass;
+					});
+				}
+			}
+
 			function alterClass(oldClass) {
 				var newClass = "";
 				if (oldClass.substring(0, ".one".length) === ".one") {
@@ -231,7 +246,7 @@
 				} else {
 					newClass = oldClass.replace("two", "one");
 				}
-				return newClass; 
+				return newClass;
 			}
 		</script>
 
@@ -296,11 +311,10 @@
 	/* border around text needed */
 	/* padding: 10%; */
 	/* by default hidden */
-	margin:auto;
-	
+	margin: auto;
 	/* display: none; */
 	display: table;
-	table-layout:fixed;
+	table-layout: fixed;
 }
 
 .one-bg .one-fg .two-bg .two-fg {
@@ -309,17 +323,14 @@
 
 /* [BEGIN] slide styles */
 .jtextfill {
-	padding: 5%; 
+	padding: 5%;
 	/* border: 2px;
 	border-style: solid;
 	border-color: #00ff00; */
 	border: 0px;
-	
 	/* make background transparent */
 	background: transparent;
-
 	color: white;
-	
 	/* text with border */
 	color: white;
 	/* text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000; */
@@ -329,13 +340,12 @@
 	font-smooth: always;
 	/* wrap text on explicit line breaks only */
 	white-space: nowrap;
-
-	text-align: center;	
-	display:table-cell;
+	text-align: center;
+	display: table-cell;
 	vertical-align: middle;
-} 
-.jtextfill-inner {
-	/* border: 2px;
+}
+
+.jtextfill-inner { /* border: 2px;
 	border-style: solid;
 	border-color: #00ff00; */
 	border: 0px;
@@ -346,28 +356,27 @@
 	text-decoration: none
 }
 /* [END] slide styles */
-
 </style>
 	</h:head>
 	<h:body>
 		<!-- default background -->
 		<div class="board"></div>
-			
+
 		<div class="template-bg one-bg"></div>
 		<div class="template-bg two-bg"></div>
-		
+
 		<div class="template-fg one-fg">
 			<div class="jtextfill">
-			<span class="jtextfill-inner"></span>
+				<span class="jtextfill-inner"></span>
+			</div>
 		</div>
-		</div>
-		
+
 		<div class="template-fg two-fg">
 			<div class="jtextfill">
-			<span class="jtextfill-inner"></span>
+				<span class="jtextfill-inner"></span>
+			</div>
 		</div>
-		</div>
-		
+
 		<div class="blank"></div>
 	</h:body>
 </f:view>
