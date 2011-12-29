@@ -47,4 +47,5 @@ public interface ISongService {
      */
     public Song createOrEditSong(Long id);
 
+	public int deleteAll();
 }

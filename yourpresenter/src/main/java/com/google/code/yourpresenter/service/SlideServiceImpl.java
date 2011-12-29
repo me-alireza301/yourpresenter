@@ -92,4 +92,11 @@ public class SlideServiceImpl implements ISlideService, Serializable {
 		slide.setBgImage(bgImage);
 		this.persist(slide);
 	}
+	
+	@Transactional
+	@Override
+	public int deleteAll() {
+		Query query = em.createQuery("DELETE FROM Slide s");
+		return query.executeUpdate();
+	}
 }

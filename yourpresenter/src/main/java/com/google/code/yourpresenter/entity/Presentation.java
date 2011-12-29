@@ -119,7 +119,7 @@ public class Presentation implements Serializable {
 	 * 
 	 * @return the slides
 	 */
-	@OneToMany(mappedBy = "presentation", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = false)
+	@OneToMany(mappedBy = "presentation", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	@OrderColumn(name = "possition")
 	public List<Slide> getSlides() {
 		return slides;

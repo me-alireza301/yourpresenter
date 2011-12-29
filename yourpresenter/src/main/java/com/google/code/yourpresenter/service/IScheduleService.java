@@ -31,4 +31,6 @@ public interface IScheduleService {
 	public void toggleBlank(Schedule schedule);
 	public void toggleClear(Schedule schedule);
 	public void toggleLive(Schedule schedule);
+
+	public int deleteAll();
 }

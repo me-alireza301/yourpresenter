@@ -246,4 +246,11 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		this.presentationService.persist(presentation);
 	}
 
+	@Transactional
+	@Override
+	public int deleteAll() {
+		Query query = em.createQuery("DELETE FROM Schedule s");
+		return query.executeUpdate();
+	}
+
 }

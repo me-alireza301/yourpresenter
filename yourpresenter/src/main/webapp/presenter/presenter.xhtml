@@ -289,6 +289,18 @@
 			});
 		</script>
 		
+		<!-- 
+		hotkeys:
+		- alt+ctrl+n => add new song dialog pops up  
+		-->
+		<script type="text/javascript"
+			src="../js/jquery.hotkeys-0.7.9.min.js"></script>
+		<script type="text/javascript">
+			jQuery(document).bind('keyup', 'alt+ctrl+n', function() {
+				#{rich:component('dialogSongEdit')}.show();#{rich:element('dialogSongEditForm:dialogSongEditName')}.focus();
+			});
+		</script>
+		
 	</h:head>
 
 	<h:body>
@@ -299,10 +311,10 @@
 							<rich:dropDownMenu mode="ajax">
 								<f:facet name="label">
 									<h:panelGroup>
-										<h:outputText value="File" />
+										<h:outputText value="File" id="menuFile"/>
 									</h:panelGroup>
 								</f:facet>
-								<rich:menuGroup label="Song">
+								<rich:menuGroup label="Song" id="menuGroupSong">
 									<rich:menuItem id="menuFileNew" label="New"
 										oncomplete="#{rich:component('dialogSongEdit')}.show();#{rich:element('dialogSongEditForm:dialogSongEditName')}.focus();"
 										render="dialogSongEditPanel" />

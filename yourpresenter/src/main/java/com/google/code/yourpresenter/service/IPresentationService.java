@@ -18,4 +18,6 @@ public interface IPresentationService {
 	public void setBgImage(long presentationId, BgImage bgImage);
 
 	public void setBgImage(Presentation presentation, BgImage bgImage);
+	
+	public int deleteAll();
 }

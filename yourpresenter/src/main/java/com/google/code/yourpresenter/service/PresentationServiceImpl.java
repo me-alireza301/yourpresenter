@@ -22,10 +22,11 @@ import com.google.code.yourpresenter.entity.Verse;
 @SuppressWarnings("serial")
 @Service("presentationService")
 @Repository
-public class PresentationServiceImpl implements IPresentationService, Serializable {
+public class PresentationServiceImpl implements IPresentationService,
+		Serializable {
 
 	private transient EntityManager em;
-	
+
 	@Autowired
 	private ISlideService slideService;
 
@@ -36,19 +37,20 @@ public class PresentationServiceImpl implements IPresentationService, Serializab
 	public void setEntityManager(EntityManager em) {
 		this.em = em;
 	}
-	
+
 	public Presentation findById(Long id) {
 		return em.find(Presentation.class, id);
 	}
-	
+
 	public int findPositionById(Long id) {
-		Query query = em.createQuery(
-				"SELECT p.possition FROM Presentation p WHERE p.id = :id");
+		Query query = em
+				.createQuery("SELECT p.possition FROM Presentation p WHERE p.id = :id");
 		query.setParameter("id", id);
-		
-		// for some reason following string doesn't work ok and returns 0 allways 
+
+		// for some reason following string doesn't work ok and returns 0
+		// allways
 		// => rather iterate over list
-//		return query.getFirstResult();
+		// return query.getFirstResult();
 		@SuppressWarnings("unchecked")
 		List<Integer> positions = query.getResultList();
 		if (!CollectionUtils.isEmpty(positions)) {
@@ -100,16 +102,22 @@ public class PresentationServiceImpl implements IPresentationService, Serializab
 	public void setBgImage(Presentation presentation, BgImage bgImage) {
 		presentation.setBgImage(bgImage);
 		this.persist(presentation);
-		
+
 		for (Slide slide : presentation.getSlides()) {
 			// persist in DB only in case of changed bgImage
 			if (bgImage.equals(slide.getBgImage())) {
 				continue;
 			}
-			
+
 			slide.setBgImage(bgImage);
-			this.slideService.persist(slide);	
+			this.slideService.persist(slide);
 		}
 	}
 
+	@Transactional
+	@Override
+	public int deleteAll() {
+		Query query = em.createQuery("DELETE FROM Presentation p");
+		return query.executeUpdate();
+	}
 }

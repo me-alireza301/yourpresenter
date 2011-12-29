@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -85,6 +86,13 @@ public class SongServiceImpl implements ISongService, Serializable {
 		} else {
 			return "%";
 		}
+	}
+
+	@Transactional
+	@Override
+	public int deleteAll() {
+		Query query = em.createQuery("DELETE FROM Song s");
+		return query.executeUpdate();
 	}
 
 }
