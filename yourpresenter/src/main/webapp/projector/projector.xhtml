@@ -8,8 +8,7 @@
 <f:view contentType="text/html">
 
 	<h:head>
-		<title><ui:insert name="title">Projector</ui:insert>
-		</title>
+		<title><ui:insert name="title">Projector</ui:insert></title>
 		<meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
 
 		<script type="text/javascript" src="../js/jquery-1.7.min.js"></script>
@@ -108,8 +107,8 @@
 
 							handleBlankAndLive(newIsBlank, newIsLive);
 							handleClear(newIsClear);
-							handleFg(newTxt, isClear);
 							handleBg(newBgId);
+							handleFg(newTxt, isClear);
 
 							data = newData;
 						});
@@ -166,24 +165,18 @@
 					jQuery(newFgClass).show();
 					jQuery(newFgClass)
 							.children(".jtextfill")
-							.textfill(
-									{
-										maxFontPixels : preferences['view.font.maxsize.projector']
-									});
+							.textfill({maxFontPixels : preferences['view.font.maxsize.projector']});
 				}
 
-				//
-				// hide old and show new
-				//
-
 				// hide new and move it in front
-				jQuery(newFgClass).hide();
-				jQuery(newFgClass).css("z-index", zIdxFg);
+				jQuery(newFgClass)
+					.hide()
+					.css("z-index", zIdxFg);
 
-				// fadeout/hide causes fading in text font to be not autosized 
-				// => rather move to very back 
-				jQuery(fgClass).css("z-index", zIdxBehindAll);
-				/* jQuery(fgClass).fadeOut(transitionDuration); */
+				// old fade out + move back
+				jQuery(fgClass)
+					.fadeOut(transitionDuration)
+					.css("z-index", zIdxBehindAll);
 
 				// if to be displayed do the effect
 				if (!isClear &amp;&amp; newTxt != "") {
@@ -204,38 +197,45 @@
 
 				// if new bg is empty
 				if (newBgId == -1) {
-					jQuery(newBgClass).css({
-						"background-image" : "none"
-					});
-					jQuery(newBgClass).css("z-index", zIdxBg);
-					jQuery(newBgClass).show();
-
-					// hide old and show new
-					jQuery(bgClass).fadeOut(transitionDuration);
-
-					bgId = newBgId;
-					bgClass = newBgClass;
+					jQuery(newBgClass)
+						.css({"background-image" : "none"})
+						.css("z-index", zIdxBg)
+						.show(
+							function() {
+								// hide old and show new
+								jQuery(bgClass).fadeOut(transitionDuration);
+								
+								bgId = newBgId;
+								bgClass = newBgClass;
+						});
 				} else {
 					var imgPath = "/yourpresenter/mvc/image/" + newBgId;
 
-					jQuery(newBgClass).css({
-						"background-image" : "url('" + imgPath + "')"
-					});
-
-					//
-					// hide old and show new
-					//
-					jQuery(newBgClass).css("z-index", zIdxBg + 1);
-
-					// hide old and show new
-					jQuery(newBgClass).fadeIn(transitionDuration, function() {
-						jQuery(bgClass).css("z-index", zIdxBehindAll);
-						jQuery(bgClass).hide();
-						jQuery(newBgClass).css("z-index", zIdxBg);
-
-						bgId = newBgId;
-						bgClass = newBgClass;
-					});
+					/* preload bg image first, fade it in only afterwards
+					see: http://stackoverflow.com/questions/5365509/calling-a-function-when-the-background-image-finishes-loading */
+					var img = new Image();
+					img.onload = function() {
+						
+						//
+						// hide old and show new
+						//
+						jQuery(newBgClass)
+							.css({"background-image" : "url('" + imgPath + "')"})
+							.css("z-index", zIdxBg + 1)
+							.fadeIn(transitionDuration, 
+								function() {
+									jQuery(bgClass)
+										.css("z-index", zIdxBehindAll)
+										.hide(
+											function() {
+												jQuery(newBgClass).css("z-index", zIdxBg);
+												
+												bgId = newBgId;
+												bgClass = newBgClass;	
+										});
+							});
+					};
+					img.src = imgPath;
 				}
 			}
 
@@ -351,7 +351,7 @@
 	border: 0px;
 }
 
-.jtextfill-inner a { /* TODO check */
+.jtextfill-inner a {
 	/* prevent underlined text in slides in google chrome/safari */
 	text-decoration: none
 }
@@ -359,12 +359,14 @@
 </style>
 	</h:head>
 	<h:body>
-		<!-- default background -->
+		<!-- default very background -->
 		<div class="board"></div>
 
+		<!-- backgrounds -->
 		<div class="template-bg one-bg"></div>
 		<div class="template-bg two-bg"></div>
 
+		<!-- foregrounds -->
 		<div class="template-fg one-fg">
 			<div class="jtextfill">
 				<span class="jtextfill-inner"></span>
@@ -377,6 +379,7 @@
 			</div>
 		</div>
 
+		<!-- curtain - for the canses of (blank || !live) -->
 		<div class="blank"></div>
 	</h:body>
 </f:view>
