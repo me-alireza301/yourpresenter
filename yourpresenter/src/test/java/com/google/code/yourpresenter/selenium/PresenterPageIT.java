@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.browserlaunchers.Sleeper;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -40,7 +41,7 @@ public class PresenterPageIT {
 
 	public static final String SCHEDULE_NAME = "New schedule";
 	public static final String PRESENTER_URL = "http://localhost:8081/yourpresenter/presenter/presenter.jsf";
-	
+
 	public static final String RESOURCE_PATH = "target/test-classes/com/google/code/yourpresenter/selenium/";
 
 	@Autowired
@@ -56,8 +57,15 @@ public class PresenterPageIT {
 
 	@BeforeClass
 	public static void setUpAll() throws Exception {
-		driver = new FirefoxDriver();
-		driver.manage().timeouts().implicitlyWait(ITConstant.DRIVER_WAIT, TimeUnit.SECONDS);
+		// for drag and drop to be working on linux:
+		// Enabling features that are disabled by default in Firefox
+		// see: http://code.google.com/p/selenium/wiki/TipsAndTricks
+		FirefoxProfile profile = new FirefoxProfile();
+		profile.setEnableNativeEvents(true);
+		driver = new FirefoxDriver(profile);
+
+		driver.manage().timeouts()
+				.implicitlyWait(ITConstant.DRIVER_WAIT, TimeUnit.SECONDS);
 	}
 
 	@Before
@@ -66,7 +74,7 @@ public class PresenterPageIT {
 		presenterPage = new PresenterPage(driver);
 		addChangeSongDialog = new AddChangeSongDialog(driver);
 	}
-	
+
 	@AfterClass
 	public static void cleanUpAll() {
 		driver.quit();
@@ -82,15 +90,10 @@ public class PresenterPageIT {
 		scheduleRestTemplate.deleteAll();
 	}
 
-//	@Test
-//	public void testCreateSchedule() {
-//		createSchedule(getScheduleName());
-//	}
-
 	@Test
 	public void testAddChangeSongDialogCancel() {
 		createSchedule(getScheduleName());
-		
+
 		Assert.assertFalse(addChangeSongDialog.isDisplayed());
 		presenterPage.openAddSongDialog();
 		addChangeSongDialog.clickCancelButton();
@@ -101,9 +104,10 @@ public class PresenterPageIT {
 		createSchedule(getScheduleName());
 		presenterPage.openAddSongDialog();
 		addChangeSongDialog.clickOkButton();
-		
+
 		// check error message displayed
-		Assert.assertEquals("dialogSongEditForm:dialogSongEditName: Validation Error: Value is required.",
+		Assert.assertEquals(
+				"dialogSongEditForm:dialogSongEditName: Validation Error: Value is required.",
 				addChangeSongDialog.getErrorsSumText());
 	}
 
@@ -111,20 +115,20 @@ public class PresenterPageIT {
 	public void testAddSongTooLongTxt() throws IOException {
 		createSchedule(getScheduleName());
 		createSong("song_too_long_txt.txt", "cp1250");
-		
+
 		// check error message displayed
 		Assert.assertEquals("size must be between 0 and 1000",
 				addChangeSongDialog.getErrorsSumText());
 	}
-	
-//	@Test
+
+	// @Test
 	public void testAddSongs() throws IOException, YpException {
 		createSchedule(getScheduleName());
 		Song song = createSong("song1_cp1250.txt", "cp1250");
 		addChangeSongDialog.waitDialogNotDisplayed();
 		presenterPage.waitAjaxDone();
 		Assert.assertEquals(song.getName(), presenterPage.getSongName(0));
-		
+
 		driver.get(PRESENTER_URL);
 		song = createSong("song2_cp1250.txt", "cp1250");
 		addChangeSongDialog.waitDialogNotDisplayed();
@@ -132,58 +136,72 @@ public class PresenterPageIT {
 		Assert.assertEquals(song.getName(), presenterPage.getSongName(1));
 	}
 
-//	@Test
+	// @Test
 	public void testAddSongsToSchedule() throws IOException, YpException {
 		testAddSongs();
-		
+
 		// workaround - only till drag&drop can be done without full refresh
 		driver.get(PRESENTER_URL);
 		presenterPage.addSongToScheduleBeginning(0);
 		presenterPage.waitAjaxDone();
-		Assert.assertEquals(presenterPage.getSongName(0), presenterPage.getPresentationName(0));
-		
+		Assert.assertEquals(presenterPage.getSongName(0),
+				presenterPage.getPresentationName(0));
+
 		presenterPage.addSongToSchedule(1, 0);
 		presenterPage.waitAjaxDone();
-		Assert.assertEquals(presenterPage.getSongName(0), presenterPage.getPresentationName(0));
-		Assert.assertEquals(presenterPage.getSongName(1), presenterPage.getPresentationName(1));
-		
+		Assert.assertEquals(presenterPage.getSongName(0),
+				presenterPage.getPresentationName(0));
+		Assert.assertEquals(presenterPage.getSongName(1),
+				presenterPage.getPresentationName(1));
+
 		presenterPage.addSongToSchedule(1, 1);
 		presenterPage.waitAjaxDone();
-		Assert.assertEquals(presenterPage.getSongName(0), presenterPage.getPresentationName(0));
-		Assert.assertEquals(presenterPage.getSongName(1), presenterPage.getPresentationName(1));
-		Assert.assertEquals(presenterPage.getSongName(1), presenterPage.getPresentationName(2));
+		Assert.assertEquals(presenterPage.getSongName(0),
+				presenterPage.getPresentationName(0));
+		Assert.assertEquals(presenterPage.getSongName(1),
+				presenterPage.getPresentationName(1));
+		Assert.assertEquals(presenterPage.getSongName(1),
+				presenterPage.getPresentationName(2));
 	}
-	
+
 	@Test
 	public void testPresentationReorder() throws IOException, YpException {
 		testAddSongsToSchedule();
-		
+
 		presenterPage.movePresentationToBeginning(1);
 		presenterPage.waitAjaxDone();
-		Assert.assertEquals(presenterPage.getSongName(1), presenterPage.getPresentationName(0));
-		Assert.assertEquals(presenterPage.getSongName(0), presenterPage.getPresentationName(1));
-		Assert.assertEquals(presenterPage.getSongName(1), presenterPage.getPresentationName(2));
-		
+		Assert.assertEquals(presenterPage.getSongName(1),
+				presenterPage.getPresentationName(0));
+		Assert.assertEquals(presenterPage.getSongName(0),
+				presenterPage.getPresentationName(1));
+		Assert.assertEquals(presenterPage.getSongName(1),
+				presenterPage.getPresentationName(2));
+
 		presenterPage.movePresentation(0, 1);
 		presenterPage.waitAjaxDone();
-		Assert.assertEquals(presenterPage.getSongName(0), presenterPage.getPresentationName(0));
-		Assert.assertEquals(presenterPage.getSongName(1), presenterPage.getPresentationName(1));
-		Assert.assertEquals(presenterPage.getSongName(1), presenterPage.getPresentationName(2));
+		Assert.assertEquals(presenterPage.getSongName(0),
+				presenterPage.getPresentationName(0));
+		Assert.assertEquals(presenterPage.getSongName(1),
+				presenterPage.getPresentationName(1));
+		Assert.assertEquals(presenterPage.getSongName(1),
+				presenterPage.getPresentationName(2));
 	}
 
-	private Song createSong(String fileName, String fileEncoding) throws IOException {
+	private Song createSong(String fileName, String fileEncoding)
+			throws IOException {
 		presenterPage.openAddSongDialog();
-		Song song = new SongPlainTxtUnmarshaller().unmarshall(new File(RESOURCE_PATH + fileName), fileEncoding);
+		Song song = new SongPlainTxtUnmarshaller().unmarshall(new File(
+				RESOURCE_PATH + fileName), fileEncoding);
 		addChangeSongDialog.waitDialogDisplayed();
 		addChangeSongDialog.setSongName(song.getName());
 		addChangeSongDialog.setSongText(song.getText());
 		addChangeSongDialog.clickOkButton();
 		return song;
 	}
-	
+
 	private void createSchedule(String scheduleName) {
 		driver.get("http://localhost:8081/yourpresenter/main.jsf");
-		
+
 		mainPage.setScheduleName(scheduleName);
 		mainPage.clickPresenterButton();
 
@@ -204,11 +222,12 @@ public class PresenterPageIT {
 	protected String getScheduleName() {
 		return SCHEDULE_NAME;
 	}
-	
-//	private String getRandScheduleName(String scheduleName) {
-//		String time = Long.toString(System.currentTimeMillis());
-//		String randInt = Integer.toString(new Random().nextInt(1000));
-//		scheduleName = new StringBuilder(scheduleName).append(time).append(randInt).toString();
-//		return scheduleName;
-//	}
+
+	// private String getRandScheduleName(String scheduleName) {
+	// String time = Long.toString(System.currentTimeMillis());
+	// String randInt = Integer.toString(new Random().nextInt(1000));
+	// scheduleName = new
+	// StringBuilder(scheduleName).append(time).append(randInt).toString();
+	// return scheduleName;
+	// }
 }

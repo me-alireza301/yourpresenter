@@ -30,14 +30,6 @@ public class MainPage {
 //		this.driver = driver;
 	}
 
-//	public void open(String url) {
-//		driver.get(url);
-//	}
-//
-//	public void close() {
-//		driver.quit();
-//	}
-	
 	public void clickPresenterButton() {
 		presenterButton.click();
 	}
