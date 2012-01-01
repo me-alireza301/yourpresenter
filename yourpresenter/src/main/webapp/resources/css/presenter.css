@@ -1,0 +1,215 @@
+/* [BEGIN] drag and drop */
+.panel-draggable {
+	cursor: pointer;
+}
+
+.dropTargetPanel {
+	width: 100%;
+}
+
+.rf-ind-drag.default {
+	background-image:
+		url("#{facesContext.externalContext.requestContextPath}/images/dnd/default.gif");
+	background-position: 5px;
+	background-repeat: no-repeat;
+	padding-left: 30px;
+	border: 2px solid red;
+	/* as we use jQuery Layout make sure what's dragged is displayed */
+	z-index: 20 !important;
+	overflow: visible;
+}
+
+.rf-ind-drag.accept {
+	background-image:
+		url("#{facesContext.externalContext.requestContextPath}/images/dnd/accept.gif");
+	background-position: 5px;
+	background-repeat: no-repeat;
+	border: 2px solid green;
+	/* as we use jQuery Layout make sure what's dragged is displayed */
+	z-index: 20 !important;
+	overflow: visible;
+}
+
+.rf-ind-drag.reject {
+	background-image:
+		url("#{facesContext.externalContext.requestContextPath}/images/dnd/reject.gif");
+	background-position: 5px;
+	background-repeat: no-repeat;
+	border: 2px solid red;
+	/* as we use jQuery Layout make sure what's dragged is displayed */
+	z-index: 20 !important;
+	overflow: visible;
+}
+ 
+/* header area used for drop */
+.header-panel { /* make background transparent */
+	background: transparent;
+}
+/* [END] drag and drop */
+
+/* [BEGIN] songTable styles */
+.songTable-even-row {
+	background-color: #FCFFFE;
+}
+
+.songTable-odd-row {
+	background-color: #ECF3FE;
+}
+
+.songTable-active-row {
+	background-color: #FFEBDA !important;
+	cursor: pointer;
+}
+
+/* [END] songTable styles */
+
+/* [BEGIN] misc default styles */
+.label {
+	font-weight: bold;
+}
+
+.rf-dg,.rf-dg-c {
+	border: none;
+}
+/* [END] misc default styles */
+
+/* [BEGIN] slide styles - to enable auto-text size */
+.slidebox {
+	border: 2px;
+	border-style: solid;
+	padding: 0pt;
+	/* background-size: 100%; */
+	background-color: black;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.slidebox-active {
+	border-color: #00ff00;
+}
+
+.slidebox-active:hover {
+	cursor: default;
+}
+
+.slidebox-inactive {
+	border-color: black;	
+}
+
+.slidebox-inactive:hover {
+	cursor: pointer;
+}
+
+.slidebox-link {
+	text-decoration: none;
+	cursor: default;
+}
+
+.rf-p {
+	/* uncomment for UI layout debugging purposes */
+	/* border: 2px;
+	border-style: solid;
+	border-color: #00ffff; */
+}
+
+.rf-p-b {
+	/* uncomment for UI layout debugging purposes */
+	/* border: 2px;
+	border-style: solid;
+	border-color: #000000; */
+	
+	padding: 0px;
+}
+
+.jtextfill {
+	width: 200px;
+	height: 150px;
+
+	padding: 5%;
+
+	border: 0px;
+	/* uncomment for UI layout debugging purposes */ 
+	/* border: 2px;
+	border-style: solid;
+	border-color: #00ff00; */
+	
+	/* make background transparent */
+	background: transparent;
+
+	color: white;
+	
+	/* text with border */
+	color: white;
+	/* text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000; */
+	text-shadow: 2px -2px 3px #000;
+	/* text-decoration: none; */
+	font-family: Verdana, Helvetica, sans-serif;
+	font-smooth: always;
+	/* wrap text on explicit line breaks only */
+	white-space: nowrap;
+
+	text-align: center;	
+	display:table-cell;
+	vertical-align: middle;
+} 
+.jtextfill-inner {
+	border: 0px;
+	/* uncomment for UI layout debugging purposes */
+	/* border: 2px;
+	border-style: solid;
+	border-color: #00ff00; */
+	
+	color: white;
+}
+/* [END] slide styles */
+
+/* [BEGIN] media for background styles */
+.media-image {
+	width: 160px;
+	height: 120px;
+	padding: 0px;
+	/* background-size: 100%; */
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+/* [END] slide styles */
+
+
+/* [BEGIN] toggle button */
+.toggleButton {
+    padding: 1pt 5pt 1pt 5pt;
+    cursor: pointer;
+    color: black;
+    text-align: center;
+}
+
+.toggleButton:link {
+	text-decoration: none;
+}
+
+.toggleButton:hover {
+	/*color: black;
+	text-decoration: none; */
+	background: transparent;
+}
+
+.toggleButton-up {
+	background-color:#eeeeee;
+	
+    border-top: solid 1px #eaeaea;
+    border-left: solid 1px #eaeaea;
+    border-bottom: solid 1px #777;
+    border-right: solid 1px #777;    
+}
+
+.toggleButton-down {
+	background-color:#dddddd;
+	
+	border-top: solid 1px #777;
+    border-left: solid 1px #777;
+    border-bottom: solid 1px #eaeaea;
+    border-right: solid 1px #eaeaea;
+}
+/* [END] toggle button */

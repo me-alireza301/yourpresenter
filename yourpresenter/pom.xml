@@ -12,8 +12,7 @@
 		<org.hsqldb-version>2.2.6</org.hsqldb-version>
 		<!-- <org.springframework.security-version>3.0.2.RELEASE</org.springframework.security-version> -->
 		<!-- <jsf-version>2.0.3</jsf-version> -->
-		<org.richfaces.bom.version>4.0.0.Final</org.richfaces.bom.version>
-		<!-- <org.richfaces.bom.version>4.1.0.20111101-M4</org.richfaces.bom.version> -->
+		<org.richfaces.bom.version>4.1.0.Final</org.richfaces.bom.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 

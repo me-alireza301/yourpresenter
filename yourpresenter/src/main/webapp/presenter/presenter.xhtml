@@ -7,349 +7,136 @@
 	xmlns:a4j="http://richfaces.org/a4j">
 <f:view contentType="text/html">
 	<h:head>
-		<title><ui:insert name="title">Yourpresenter</ui:insert></title>
+		<title><ui:insert name="title">Yourpresenter: Presenter</ui:insert>
+		</title>
 		<meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
-		<link type="text/css" rel="stylesheet"
-			href="#{request.contextPath}/themes/#{preferencesView.theme}/skin.css" />
-
-		<style type="text/css">
-
-/* [BEGIN] drag and drop */
-.panel-draggable {
-	cursor: pointer;
-}
-
-.dropTargetPanel {
-	width: 100%;
-}
-
-.rf-ind-drag.default {
-	background-image:
-		url("#{facesContext.externalContext.requestContextPath}/images/dnd/default.gif");
-	background-position: 5px;
-	background-repeat: no-repeat;
-	padding-left: 30px;
-	border: 2px solid red;
-	/* as we use jQuery Layout make sure what's dragged is displayed */
-	z-index: 20 !important;
-	overflow: visible;
-}
-
-.rf-ind-drag.accept {
-	background-image:
-		url("#{facesContext.externalContext.requestContextPath}/images/dnd/accept.gif");
-	background-position: 5px;
-	background-repeat: no-repeat;
-	border: 2px solid green;
-	/* as we use jQuery Layout make sure what's dragged is displayed */
-	z-index: 20 !important;
-	overflow: visible;
-}
-
-.rf-ind-drag.reject {
-	background-image:
-		url("#{facesContext.externalContext.requestContextPath}/images/dnd/reject.gif");
-	background-position: 5px;
-	background-repeat: no-repeat;
-	border: 2px solid red;
-	/* as we use jQuery Layout make sure what's dragged is displayed */
-	z-index: 20 !important;
-	overflow: visible;
-}
-
-/* header area used for drop */
-.header-panel { /* make background transparent */
-	background: transparent;
-}
-/* [END] drag and drop */
-
-/* [BEGIN] songTable styles */
-.songTable-even-row {
-	background-color: #FCFFFE;
-}
-
-.songTable-odd-row {
-	background-color: #ECF3FE;
-}
-
-.songTable-active-row {
-	background-color: #FFEBDA !important;
-	cursor: pointer;
-}
-
-/* [END] songTable styles */
-
-/* [BEGIN] misc default styles */
-.label {
-	font-weight: bold;
-}
-
-.rf-dg,.rf-dg-c {
-	border: none;
-}
-/* [END] misc default styles */
-
-/* [BEGIN] slide styles - to enable auto-text size */
-.slidebox {
-	border: 2px;
-	border-style: solid;
-	padding: 0pt;
-	/* background-size: 100%; */
-	background-color: black;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-position: center;
-}
-
-.slidebox-active {
-	border-color: #00ff00;
-}
-
-.slidebox-active:hover {
-	cursor: default;
-}
-
-.slidebox-inactive {
-	border-color: black;	
-}
-
-.slidebox-inactive:hover {
-	cursor: pointer;
-}
-
-.slidebox-link {
-	text-decoration: none;
-	cursor: default;
-}
-
-.rf-p {
-	/* uncomment for UI layout debugging purposes */
-	/* border: 2px;
-	border-style: solid;
-	border-color: #00ffff; */
-}
-
-.rf-p-b {
-	/* uncomment for UI layout debugging purposes */
-	/* border: 2px;
-	border-style: solid;
-	border-color: #000000; */
-	
-	padding: 0px;
-}
-
-.jtextfill {
-	width: 200px;
-	height: 150px;
-
-	padding: 5%;
-
-	border: 0px;
-	/* uncomment for UI layout debugging purposes */ 
-	/* border: 2px;
-	border-style: solid;
-	border-color: #00ff00; */
-	
-	/* make background transparent */
-	background: transparent;
-
-	color: white;
-	
-	/* text with border */
-	color: white;
-	/* text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000; */
-	text-shadow: 2px -2px 3px #000;
-	/* text-decoration: none; */
-	font-family: Verdana, Helvetica, sans-serif;
-	font-smooth: always;
-	/* wrap text on explicit line breaks only */
-	white-space: nowrap;
-
-	text-align: center;	
-	display:table-cell;
-	vertical-align: middle;
-} 
-.jtextfill-inner {
-	border: 0px;
-	/* uncomment for UI layout debugging purposes */
-	/* border: 2px;
-	border-style: solid;
-	border-color: #00ff00; */
-	
-	color: white;
-}
-/* [END] slide styles */
-
-/* [BEGIN] media for background styles */
-.media-image {
-	width: 160px;
-	height: 120px;
-	padding: 0px;
-	/* background-size: 100%; */
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-position: center;
-}
-/* [END] slide styles */
-
-
-/* [BEGIN] toggle button */
-.toggleButton {
-    padding: 1pt 5pt 1pt 5pt;
-    cursor: pointer;
-    color: black;
-    text-align: center;
-}
-
-.toggleButton:link {
-	text-decoration: none;
-}
-
-.toggleButton:hover {
-	/*color: black;
-	text-decoration: none; */
-	background: transparent;
-}
-
-.toggleButton-up {
-	background-color:#eeeeee;
-	
-    border-top: solid 1px #eaeaea;
-    border-left: solid 1px #eaeaea;
-    border-bottom: solid 1px #777;
-    border-right: solid 1px #777;    
-}
-
-.toggleButton-down {
-	background-color:#dddddd;
-	
-	border-top: solid 1px #777;
-    border-left: solid 1px #777;
-    border-bottom: solid 1px #eaeaea;
-    border-right: solid 1px #eaeaea;
-}
-/* [END] toggle button */
-
-</style>
 		<rich:jQuery />
-		<!-- when using newer jquery like this => DnD doens't work => stick with the one used in richfaces -->
-		<!-- <script type="text/javascript" src="../js/jquery-1.7.min.js"></script> 
-		<script type="text/javascript">
-			/* 	as we don't use jQuery distributed with Richfaces => need this
-				see: http://docs.jquery.com/Using_jQuery_with_Other_Libraries */
-			/* jQuery.noConflict(); */
-			/* var $ = jQuery.noConflict(); */
-		</script>
+	</h:head>
+
+	<h:body>
+		<!-- 
+			h:outputStylesheet usage, 
+			see: http://www.mkyong.com/jsf2/how-to-include-cascading-style-sheets-css-in-jsf/ 
 		-->
-		
-		<script type="text/javascript">
+		<h:outputStylesheet library="css" name="presenter.css" />
+
+		<h:outputScript target="head">
 			var preferences = new Array();
-			preferences['view.font.maxsize.presenter'] = <h:outputText value="#{preferencesView.viewFontMaxsizeProjector}"/>;
-		</script>
+			preferences['view.font.maxsize.presenter'] = <h:outputText
+				value="#{preferencesView.viewFontMaxsizeProjector}" />;
+		</h:outputScript>
+
+		<!-- 
+			richfaces 4.0/4.1 don't integrate layout component, but based on this
+			site: http://community.jboss.org/message/598687
+			it's recommended to use - jQuery UI.Layout Plug-in see: http://layout.jquery-dev.net/
 		
-		<script type="text/javascript"
-			src="../js/jquery-ui-1.8.16.custom.min.js"></script>
-
-		<!-- richfaces 4 don't integrate layout component, but based on this
-		site: http://community.jboss.org/message/598687
-		it's recommended to use - jQuery UI.Layout Plug-in see: http://layout.jquery-dev.net/
-	
-		inspirational examples mostly:
-		http://layout.jquery-dev.net/demos/example.html
-		and 
-		http://layout.jquery-dev.net/demos/nested.html
+			inspirational examples mostly:
+			http://layout.jquery-dev.net/demos/example.html
+			and 
+			http://layout.jquery-dev.net/demos/nested.html
 	 	-->
-		<script type="text/javascript"
-			src="../js/jquery.layout-1.3.0-rc-29.15.js"></script>
-
-		<script type="text/javascript">
-			/* jQuery.noConflict(); */
+		<!-- 
+	 		h:outputScript usage, 
+	 		see: http://www.ibm.com/developerworks/java/library/j-jsf2fu1/index.html
+	 	 -->
+		<h:outputScript library="js" target="head"
+			name="jquery-ui-1.8.16.custom.min.js" />
+		<h:outputScript library="js" target="head"
+			name="jquery.layout-1.3.0-rc-29.15.js" />
+		<h:outputScript target="head">
 			jQuery(document).ready(function() {
 				jQuery('body').layout({
-					defaults: {
-		            	applyDefaultStyles: true,
-		            	/* sample jquery layout setup:
-		            	http://stackoverflow.com/questions/4935516/jquery-ui-layout-sizepane-is-resetting-my-options */
-		            	enableCursorHotkey: false,
-		            }
+					defaults : {
+						applyDefaultStyles : true,
+						/* sample jquery layout setup:
+						http://stackoverflow.com/questions/4935516/jquery-ui-layout-sizepane-is-resetting-my-options */
+						enableCursorHotkey : false,
+					}
 				});
 			});
-		</script>
+		</h:outputScript>
 
-		<!-- used to fit text size to box
-		see: http://plugins.jquery.com/project/TextFill
-		the call is used also for the all oncomplete for ajax events where necessary 
+		<!-- 	
+			used to fit text size to box
+			see: http://plugins.jquery.com/project/TextFill
+			the call is used also for the all oncomplete for ajax events where necessary 
 		-->
-		<script type="text/javascript" src="../js/jquery-textfill-0.1.js"></script>
-		<script type="text/javascript">
-			jQuery(document).ready(function() {
+		<h:outputScript library="js" target="head"
+			name="jquery-textfill-0.1.js" />
+		<h:outputScript target="head">
+		jQuery(document).ready(function() {
 				jQuery('.jtextfill').textfill({
 					maxFontPixels : preferences['view.font.maxsize.presenter']
 				})
 			});
-		</script>
-		
-		<!-- 
-		hotkeys:
-		- alt+ctrl+n => add new song dialog pops up  
-		-->
-		<script type="text/javascript"
-			src="../js/jquery.hotkeys-0.7.9.min.js"></script>
-		<script type="text/javascript">
-			jQuery(document).bind('keyup', 'alt+ctrl+n', function() {
-				#{rich:component('dialogSongEdit')}.show();#{rich:element('dialogSongEditForm:dialogSongEditName')}.focus();
-			});
-		</script>
-		
-	</h:head>
+		</h:outputScript>
 
-	<h:body>
+		<!-- 
+			hotkeys:
+			- alt+ctrl+n => add new song dialog pops up  
+		-->
+		<!--
+			there is still problem in dialogSongEdit.xhtml see "TODO:" seciton there
+			=> rich:hotkey in Richfaces 4.1.1 could solve it 
+		 -->
+		<h:outputScript library="js" target="head"
+			name="jquery.hotkeys-20100223.js" />
+		<h:outputScript target="head"> 
+			jQuery(document).bind('keyup', 'alt+ctrl+n', function() {
+				#{rich:component('dialogSongEdit')}.show();
+			});
+		</h:outputScript>		
+ 
 		<div class="ui-layout-north">
 			<h:panelGrid columns="3" cellspacing="0">
-					<h:form>
-						<rich:toolbar height="26px">
-							<rich:dropDownMenu mode="ajax">
-								<f:facet name="label">
-									<h:panelGroup>
-										<h:outputText value="File" id="menuFile"/>
-									</h:panelGroup>
-								</f:facet>
-								<rich:menuGroup label="Song" id="menuGroupSong">
-									<rich:menuItem id="menuFileNew" label="New"
-										oncomplete="#{rich:component('dialogSongEdit')}.show();#{rich:element('dialogSongEditForm:dialogSongEditName')}.focus();"
-										render="dialogSongEditPanel" />
-								</rich:menuGroup>
-							</rich:dropDownMenu>
-						</rich:toolbar>
-					</h:form>
-	
+				<h:form>
+					<rich:toolbar height="26px">
+						<rich:dropDownMenu mode="ajax">
+							<f:facet name="label">
+								<h:panelGroup>
+									<h:outputText value="File" id="menuFile" />
+								</h:panelGroup>
+							</f:facet>
+							<rich:menuGroup label="Song" id="menuGroupSong">
+								<rich:menuItem id="menuFileNew" label="New"
+									oncomplete="#{rich:component('dialogSongEdit')}.show();"
+									render="dialogSongEditPanel" />
+							</rich:menuGroup>
+						</rich:dropDownMenu>
+					</rich:toolbar>
+				</h:form>
+
 				<h:panelGrid columns="3" cellspacing="3" id="toggleButtons">
 					<h:form>
-						<a4j:commandLink action="#{scheduleView.toggleBlank}" id="blankButton" 
-							styleClass="toggleButton toggleButton-#{scheduleView.toggleBlankCssSuffix}" >
- 							<h:outputText value="Blank" />
- 						</a4j:commandLink>
- 						<a4j:commandLink action="#{scheduleView.toggleClear}" id="clearButton" 
-							styleClass="toggleButton toggleButton-#{scheduleView.toggleClearCssSuffix}" >
- 							<h:outputText value="Clear" />
- 						</a4j:commandLink>
- 						<a4j:commandLink action="#{scheduleView.toggleLive}" id="liveButton" 
-							styleClass="toggleButton toggleButton-#{scheduleView.toggleLiveCssSuffix}" >
- 							<h:outputText value="Live" />
- 						</a4j:commandLink>
- 						
- 						<rich:jQuery selector=".toggleButton" event="click" 
+						<a4j:commandLink action="#{scheduleView.toggleBlank}"
+							id="blankButton"
+							styleClass="toggleButton toggleButton-#{scheduleView.toggleBlankCssSuffix}">
+							<h:outputText value="Blank" />
+						</a4j:commandLink>
+						<a4j:commandLink action="#{scheduleView.toggleClear}"
+							id="clearButton"
+							styleClass="toggleButton toggleButton-#{scheduleView.toggleClearCssSuffix}">
+							<h:outputText value="Clear" />
+						</a4j:commandLink>
+						<a4j:commandLink action="#{scheduleView.toggleLive}"
+							id="liveButton"
+							styleClass="toggleButton toggleButton-#{scheduleView.toggleLiveCssSuffix}">
+							<h:outputText value="Live" />
+						</a4j:commandLink>
+
+						<rich:jQuery selector=".toggleButton" event="click"
 							query="jQuery(this).toggleClass('toggleButton-down').toggleClass('toggleButton-up');" />
 					</h:form>
 				</h:panelGrid>
-				
+
 				<a4j:status>
 					<f:facet name="start">
 						<h:graphicImage value="/images/ajax/ai.gif" alt="ai" />
 					</f:facet>
 				</a4j:status>
 			</h:panelGrid>
-			
+
 			<ui:include src="dialogSongEdit.xhtml" />
 		</div>
 
@@ -406,14 +193,14 @@
 						rejectClass="reject" draggingClass="default">
 						Move Presentation to other possition in schedule...
 					</rich:dragIndicator>
-   										
+
 					<rich:panel styleClass="dropTargetPanel">
 						<f:facet name="header">
 							<rich:panel id="scheduleName" styleClass="header-panel">
 								<rich:dropTarget acceptedTypes="bgImage, song, presentation"
 									dropValue="schedule_#{schedule.name}"
 									dropListener="#{scheduleView.dropped}" render="schedule"
-									oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:preferences['view.font.maxsize.presenter']})" />
+									oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:preferences['view.font.maxsize.presenter']});" />
 
 								<h:outputText value="Schedule: ${scheduleView.schedule.name}" />
 							</rich:panel>
@@ -425,8 +212,10 @@
 							<rich:column>
 								<rich:panel>
 									<f:facet name="header">
-										<rich:panel id="panelHeaderPresentation" styleClass="header-panel">
-											<rich:dragSource type="presentation" dragIndicator="presentationDragInd"
+										<rich:panel id="panelHeaderPresentation"
+											styleClass="header-panel">
+											<rich:dragSource type="presentation"
+												dragIndicator="presentationDragInd"
 												dragValue="#{presentation}" />
 											<rich:dropTarget acceptedTypes="bgImage, song, presentation"
 												dropValue="presentation_#{presentation.id}"
@@ -453,16 +242,22 @@
 											<!-- these panels + styles might look weird, but it's a working solution for jtextfill -->
 											<rich:panel styleClass="slidebox slidebox-#{slide.cssSuffix}"
 												style="background-image:url('/yourpresenter/mvc/thumbnail/#{slide.bgImage.id}');">
-												<rich:panel styleClass="jtextfill">
+
+												<div class="jtextfill">
+													<!-- <span class="jtextfill-inner"></span> -->
 													<h:outputText styleClass="jtextfill-inner"
 														value="#{slide.verse.text}" escape="false" />
-												</rich:panel>
+												</div>
+												<!-- <rich:panel styleClass="jtextfill">
+													<h:outputText styleClass="jtextfill-inner"
+														value="#{slide.verse.text}" escape="false" />
+												</rich:panel> -->
 											</rich:panel>
 										</a4j:commandLink>
 
- 										<rich:jQuery selector=".slidebox" event="click"
+										<rich:jQuery selector=".slidebox" event="click"
 											query="jQuery('.slidebox-active').not(this).addClass('slidebox-inactive').removeClass('slidebox-active');jQuery(this).removeClass('slidebox-inactive').addClass('slidebox-active');" />
- 									</rich:dataGrid>
+									</rich:dataGrid>
 
 								</rich:panel>
 							</rich:column>
@@ -498,7 +293,7 @@
 				</rich:tab> -->
 			</rich:tabPanel>
 		</div>
-		
+
 	</h:body>
 </f:view>
 </html>

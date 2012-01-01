@@ -8,10 +8,13 @@
 
 	<rich:popupPanel id="dialogSongEdit" modal="true" autosized="true"
 		resizeable="false"
-		onmaskclick="#{rich:component('dialogSongEdit')}.hide()"
-		domElementAttachment="form">
-
+		onmaskclick="#{rich:component('dialogSongEdit')}.hide();"
+		domElementAttachment="form"
+		onshow="#{rich:element('dialogSongEditForm:dialogSongEditName')}.focus();"	
+		>
+		
 		<h:form id="dialogSongEditForm">
+			
 			<a4j:outputPanel id="dialogSongEditPanel">
 				<!--
 				<f:facet name="header">
@@ -35,11 +38,18 @@
 						value="#{songEditView.song.text}" />
 
 					<h:panelGrid columns="2" cellspacing="3">
-						<!-- make sure error is displayed and in case no error => hide the popup -->
-						<!-- see: http://mkblog.exadel.com/2009/12/richfaces-built-in-client-functions/
-							and: http://docs.jboss.org/richfaces/latest_4_0_X/Component_Reference/en-US/html/chap-Component_Reference-Functions.html -->
+						<!-- 
+							make sure error is displayed and in case no error => hide the popup
+							see: http://mkblog.exadel.com/2009/12/richfaces-built-in-client-functions/
+							and: http://docs.jboss.org/richfaces/latest_4_0_X/Component_Reference/en-US/html/chap-Component_Reference-Functions.html
+							
+							moreover, for hotkeys usage since Richfaces 4.1 panel is not rerendered on show =>
+							clear entered data on "OK" button click
+							TODO: there is still a problem with error messages that are not cleared
+							for Richfaces 4.1.1 it should be replaced with rich:hotkey to prevent this problem
+						-->
 						<a4j:commandButton id="buttonOK" value="OK" action="#{songEditView.update}"
-							oncomplete="if (jQuery(#{rich:element('dialogSongEditForm:newSongErrors')}).is(':empty')) { #{rich:component('dialogSongEdit')}.hide(); }; return true;"		
+							oncomplete="if (jQuery(#{rich:element('dialogSongEditForm:newSongErrors')}).is(':empty')) { #{rich:component('dialogSongEdit')}.hide(); jQuery(#{rich:element('dialogSongEditForm:dialogSongEditName')}).val(''); jQuery(#{rich:element('dialogSongEditForm:dialogSongText')}).val(''); }; return true; "		
 							render="songs" type="submit"/>
 						<a4j:commandButton id="buttonCancel" value="Cancel"
 							oncomplete="#{rich:component('dialogSongEdit')}.hide(); return false;" />

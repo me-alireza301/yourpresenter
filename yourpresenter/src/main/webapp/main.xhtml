@@ -9,18 +9,19 @@
 	<h:head>
 		<title><ui:insert name="title">Yourpresenter</ui:insert></title>
 		<meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
-		
-		<rich:jQuery />
-		
-		<!-- need to focus the 1.st component, solution found in:
-			http://iamjosh.wordpress.com/2008/03/10/jquery-focus-on-first-form-element/ -->
-		<script type="text/javascript">
+		<rich:jQuery />		
+	</h:head>
+	<h:body>
+		<!-- 
+			need to focus the 1.st component, solution found in:
+			http://iamjosh.wordpress.com/2008/03/10/jquery-focus-on-first-form-element/ 
+		-->
+		<h:outputScript target="head">
 			jQuery(document).ready(function() {
 				jQuery(':text:visible:enabled:first').focus();
 			});
-		</script>
-	</h:head>
-	<h:body>
+		</h:outputScript>
+	
 		<h:form>
 			<rich:messages ajaxRendered="true"/>
 			<h:panelGrid columns="3">
