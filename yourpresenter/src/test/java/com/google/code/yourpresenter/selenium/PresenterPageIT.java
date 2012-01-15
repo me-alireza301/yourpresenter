@@ -187,6 +187,64 @@ public class PresenterPageIT {
 				presenterPage.getPresentationName(2));
 	}
 
+	@Test
+	public void testBackground() throws IOException, YpException {
+		testAddSongsToSchedule();
+
+		//
+		// check bg set for all schedule
+		//
+		presenterPage.setBgToSchedule(0);
+		presenterPage.waitAjaxDone();
+
+		// check that all slides in schedule have the same bg
+		for (int i = 0; i < 12; i++) {
+			Assert.assertEquals(presenterPage.getBgImgUrl(0),
+					presenterPage.getSlideBg(i));
+		}
+
+		//
+		// check bg set for 1 presentation
+		//
+		presenterPage.setBgToPresentation(1, 0);
+		presenterPage.waitAjaxDone();
+
+		// check that all slides in schedule have the same bg
+		for (int i = 0; i < 4; i++) {
+			Assert.assertEquals(presenterPage.getBgImgUrl(1),
+					presenterPage.getSlideBg(i));
+		}
+
+		// check that the rest is not affected
+		for (int i = 4; i < 12; i++) {
+			Assert.assertEquals(presenterPage.getBgImgUrl(0),
+					presenterPage.getSlideBg(i));
+		}
+
+		//
+		// check bg set for 1 slide
+		//
+		presenterPage.setBgToSlide(2, 0);
+		presenterPage.waitAjaxDone();
+
+		// check that particular slide has the right bg
+		for (int i = 0; i < 1; i++) {
+			Assert.assertEquals(presenterPage.getBgImgUrl(2),
+					presenterPage.getSlideBg(i));
+		}
+
+		// check that the rest is not affected
+		for (int i = 1; i < 4; i++) {
+			Assert.assertEquals(presenterPage.getBgImgUrl(1),
+					presenterPage.getSlideBg(i));
+		}
+
+		for (int i = 4; i < 12; i++) {
+			Assert.assertEquals(presenterPage.getBgImgUrl(0),
+					presenterPage.getSlideBg(i));
+		}
+	}
+
 	private Song createSong(String fileName, String fileEncoding)
 			throws IOException {
 		presenterPage.openAddSongDialog();
