@@ -6,6 +6,11 @@
 	
 	<application>
 		<el-resolver>org.springframework.web.jsf.el.SpringBeanFacesELResolver</el-resolver>
+		
+		<system-event-listener>
+            <system-event-listener-class>com.google.code.yourpresenter.ajaxpush.TopicsInitializer</system-event-listener-class>
+            <system-event-class>javax.faces.event.PostConstructApplicationEvent</system-event-class>
+        </system-event-listener>
 	</application>
 	
 </faces-config>

@@ -23,7 +23,7 @@ import com.googlecode.ehcache.annotations.KeyGenerator;
 import com.googlecode.ehcache.annotations.Property;
 
 @SuppressWarnings("serial")
-@Service("scheduleService")
+@Service
 @Repository
 public class ScheduleServiceImpl implements IScheduleService, Serializable {
 

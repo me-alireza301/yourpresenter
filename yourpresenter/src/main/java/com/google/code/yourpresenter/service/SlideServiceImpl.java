@@ -17,7 +17,7 @@ import com.google.code.yourpresenter.entity.BgImage;
 import com.google.code.yourpresenter.entity.Slide;
 
 @SuppressWarnings("serial")
-@Service("slideService")
+@Service
 @Repository
 public class SlideServiceImpl implements ISlideService, Serializable {
 

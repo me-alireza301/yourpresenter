@@ -14,7 +14,7 @@ import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
 
 @SuppressWarnings("serial")
-@Service("thumbnailCreator")
+@Service
 public class ThumbnailCreatorImpl implements IThumbnailCreator, Serializable {
 
 	private static Logger log = LoggerFactory.getLogger(ThumbnailCreatorImpl.class);

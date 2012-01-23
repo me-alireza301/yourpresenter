@@ -3,6 +3,7 @@ package com.google.code.yourpresenter.service;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 
 import javax.persistence.EntityManager;
@@ -19,6 +20,7 @@ import com.google.code.yourpresenter.IConstants;
 import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.Preference;
+import com.google.code.yourpresenter.entity.Slide;
 import com.google.code.yourpresenter.util.PostInitialize;
 import com.googlecode.ehcache.annotations.Cacheable;
 import com.googlecode.ehcache.annotations.KeyGenerator;
@@ -26,7 +28,7 @@ import com.googlecode.ehcache.annotations.Property;
 import com.googlecode.ehcache.annotations.TriggersRemove;
 
 @SuppressWarnings("serial")
-@Service("preferenceService")
+@Service
 @Repository
 public class PreferenceServiceImpl implements IPreferenceService, Serializable {
 
@@ -105,7 +107,7 @@ public class PreferenceServiceImpl implements IPreferenceService, Serializable {
 		for(final Object key : prefsDefault.keySet()) {
 			final String value = (String) prefsDefault.getProperty((String) key);
 			if (!StringUtils.isEmpty(value)) {
-				this.persist(new Preference((String) key, value));
+				this.persist(new Preference((String) key, value, null));
 			}
 		}
 	}
@@ -117,6 +119,19 @@ public class PreferenceServiceImpl implements IPreferenceService, Serializable {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public Collection<Preference> findAll() throws YpException {
+		Query query = em.createQuery(
+				"SELECT p FROM Preference p");
+		@SuppressWarnings("unchecked")
+		Collection<Preference> preferences = (Collection<Preference>) query.getResultList();
+		if (CollectionUtils.isEmpty(preferences)) {
+			throw new YpException(YpError.PREFERENCES_NOT_SET);
+		}
+		
+		return preferences;		
 	}
 
 }

@@ -16,6 +16,7 @@
 package com.google.code.yourpresenter.view;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.code.yourpresenter.IConstants;
 import com.google.code.yourpresenter.YpException;
+import com.google.code.yourpresenter.entity.Preference;
 import com.google.code.yourpresenter.service.IPreferenceService;
 
 @Component("preferencesView")
@@ -38,6 +40,8 @@ public class PreferencesView implements Serializable {
 	
 	@Autowired
 	private IPreferenceService preferenceService;
+	
+	private Collection<Preference> allPreferences;
 
 	/**
 	 * Gets the theme.
@@ -68,5 +72,9 @@ public class PreferencesView implements Serializable {
 	
 	public String getViewFontMaxsizePresenter() throws YpException {
 		return this.preferenceService.findStringById(IConstants.VIEW_FONT_MAXSIZE_PRESENTER);
+	}
+
+	public Collection<Preference> getAllPreferences() throws YpException {
+		return preferenceService.findAll();
 	}
 }

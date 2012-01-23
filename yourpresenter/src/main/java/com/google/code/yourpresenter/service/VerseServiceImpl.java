@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @SuppressWarnings("serial")
-@Service("verseService")
+@Service
 @Repository
 public class VerseServiceImpl implements IVerseService, Serializable {
 

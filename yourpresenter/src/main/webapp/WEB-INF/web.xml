@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+    version="3.0">
 
 	<context-param>
 		<param-name>javax.faces.DEFAULT_SUFFIX</param-name>
@@ -32,7 +32,6 @@
 		<param-value>classpath:config/web-application-config.xml</param-value>
 	</context-param>
 
-
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
@@ -54,7 +53,6 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
-
 	<filter>
 		<filter-name>scheduleSelectedFilter</filter-name>
 		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
@@ -71,20 +69,7 @@
 		<filter-name>scheduleSelectedFilter</filter-name>
 		<url-pattern>/projector/*</url-pattern>
 	</filter-mapping>
-	
-<!-- 	<filter>
-		<filter-name>postToGetExposeFilter</filter-name>
-		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-		<init-param>
-			<param-name>targetFilterLifecycle</param-name>
-			<param-value>true</param-value>
-		</init-param>
-	</filter>
-	<filter-mapping>
-		<filter-name>postToGetExposeFilter</filter-name>
-		<url-pattern>/projector/*</url-pattern>
-	</filter-mapping>
- -->
+
 	<servlet>
 		<servlet-name>Faces Servlet</servlet-name>
 		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
@@ -95,6 +80,37 @@
 		<servlet-name>Faces Servlet</servlet-name>
 		<url-pattern>*.jsf</url-pattern>
 	</servlet-mapping>
+
+	<!-- [BEGIN] Setup a4j:push -->
+	<!-- Push Servlet - listens for user sessions -->
+	<servlet>
+		<servlet-name>Push Servlet</servlet-name>
+		<servlet-class>org.richfaces.webapp.PushServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Push Servlet</servlet-name>
+		<url-pattern>/__richfaces_push</url-pattern>
+	</servlet-mapping>
+
+	<!-- setups servlet-mapping in RichFaces configuration -->
+	<context-param>
+		<param-name>org.richfaces.push.handlerMapping</param-name>
+		<param-value>/__richfaces_push</param-value>
+	</context-param>
+	
+
+	<!-- https://community.jboss.org/wiki/UsingRichFaces41PushCDITopicContextForNon-mavenBasedProjects -->
+	<context-param>
+		<param-name>org.richfaces.push.jms.disable</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>org.atmosphere.useBlocking</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<!-- [END] Registers Push -->
+
 
 	<!-- mvc used just to serve static content outside the war. for mixing jsf 
 		with mvc example, see: http://www.javabeat.net/articles/232-integrating-spring-web-flow-with-jsf-1.html -->
@@ -113,5 +129,4 @@
 		<servlet-name>Spring MVC Dispatcher Servlet</servlet-name>
 		<url-pattern>/mvc/*</url-pattern>
 	</servlet-mapping>
-
 </web-app>

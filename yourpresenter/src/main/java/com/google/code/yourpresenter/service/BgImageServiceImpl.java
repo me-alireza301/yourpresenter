@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.code.yourpresenter.entity.BgImage;
 
 @SuppressWarnings("serial")
-@Service("bgImageService")
+@Service
 @Repository
 public class BgImageServiceImpl implements IBgImageService, Serializable {
 

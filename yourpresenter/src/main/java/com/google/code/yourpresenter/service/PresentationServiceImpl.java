@@ -20,7 +20,7 @@ import com.google.code.yourpresenter.entity.Song;
 import com.google.code.yourpresenter.entity.Verse;
 
 @SuppressWarnings("serial")
-@Service("presentationService")
+@Service
 @Repository
 public class PresentationServiceImpl implements IPresentationService,
 		Serializable {

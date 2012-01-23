@@ -16,7 +16,7 @@ import com.google.code.yourpresenter.entity.Song;
 import com.google.code.yourpresenter.entity.Verse;
 
 @SuppressWarnings("serial")
-@Service("songService")
+@Service
 @Repository
 public class SongServiceImpl implements ISongService, Serializable {
 

@@ -18,10 +18,10 @@ import com.google.code.yourpresenter.entity.BgImage;
 import com.google.code.yourpresenter.entity.Presentation;
 import com.google.code.yourpresenter.entity.Schedule;
 import com.google.code.yourpresenter.entity.Song;
-import com.google.code.yourpresenter.service.ICacheService;
 import com.google.code.yourpresenter.service.IPresentationService;
 import com.google.code.yourpresenter.service.IScheduleService;
 import com.google.code.yourpresenter.service.ISlideService;
+import com.google.code.yourpresenter.service.IStateService;
 import com.google.code.yourpresenter.util.Logger;
 import com.google.code.yourpresenter.util.LoggerFactory;
 
@@ -41,7 +41,7 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 	@Autowired
 	private ISlideService slideService;
 	@Autowired
-	private ICacheService cacheService;
+	private IStateService stateService;
 	
 	public Schedule getSchedule() throws IOException {
 		return scheduleService.loadAllSlidesEager(getSchedule(this.scheduleName));
@@ -55,9 +55,11 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 		return getSchedule(this.scheduleName).getName();
 	}
 	
-	public void setSchedule(Schedule schedule) {
+	public void setSchedule(Schedule schedule) throws YpException {
 		this.scheduleName = schedule.getName();
-		this.cacheService.clearScheduleCaches(this.scheduleName);
+
+		// make sure state change is propagated
+		this.stateService.stateChanged(scheduleName);
 	}
 
 	public void dropped(DropEvent dropEvent) throws YpException, IOException {
@@ -109,8 +111,8 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 			logger.error("drop of not supported element type detected: ", dragValue);
 		}
 		
-		// make sure on modification cache is cleared
-		this.cacheService.clearScheduleCaches(this.scheduleName);
+		// make sure state change is propagated
+		this.stateService.stateChanged(scheduleName);
 	}
 	
 	private void dropped(Presentation presentation, long presentationId) throws IOException {
@@ -147,8 +149,8 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 		if (null != songId && !songId.isEmpty()) { 
 			slideService.activateSlide(Long.valueOf(songId));
 			
-			// make sure on modification cache is cleared
-			this.cacheService.clearScheduleCaches(this.scheduleName);
+			// make sure state change is propagated
+			this.stateService.stateChanged(scheduleName);
 		} else {
 			// for the case of drop of background on slide link is called as well 
 			// (seems like activation, but no id is sent)
@@ -162,11 +164,11 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 		return this.getSchedule(scheduleName).isBlank();
 	}
 	
-	public void toggleBlank() {
+	public void toggleBlank() throws YpException {
 		scheduleService.toggleBlank(this.getSchedule(scheduleName));
 		
-		// make sure on modification cache is cleared
-		this.cacheService.clearScheduleCaches(this.scheduleName);
+		// make sure state change is propagated
+		this.stateService.stateChanged(scheduleName);
 	}
 	
 	public String getToggleBlankCssSuffix() {
@@ -177,11 +179,11 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 		return this.getSchedule(scheduleName).isClear();
 	}
 	
-	public void toggleClear() {
+	public void toggleClear() throws YpException {
 		scheduleService.toggleClear(this.getSchedule(scheduleName));
 		
-		// make sure on modification cache is cleared
-		this.cacheService.clearScheduleCaches(this.scheduleName);
+		// make sure state change is propagated
+		this.stateService.stateChanged(scheduleName);
 	}
 	
 	public String getToggleClearCssSuffix() {
@@ -192,11 +194,11 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 		return this.getSchedule(scheduleName).isLive();
 	}
 	
-	public void toggleLive() {
+	public void toggleLive() throws YpException {
 		scheduleService.toggleLive(this.getSchedule(scheduleName));
 		
-		// make sure on modification cache is cleared
-		this.cacheService.clearScheduleCaches(this.scheduleName);
+		// make sure state change is propagated
+		this.stateService.stateChanged(scheduleName);
 	}
 	
 	public String getToggleLiveCssSuffix() {

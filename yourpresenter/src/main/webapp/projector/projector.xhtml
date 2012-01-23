@@ -38,20 +38,23 @@
 		</h:outputScript>
 
 		<h:outputScript target="head">
-			var data;
-			var state = ""
+			// constants:
 			var transitionDuration = 500;
+			var zIdxBehindAll = 0;
+			var zIdxFg = 20;
+			var zIdxBg = 10;
+			var scheduleName = "<h:outputText
+				value="#{scheduleView.scheduleName}" />";
+			
+			// state related vars 
+			/* var data;*/
 			var fgClass = ".one-fg";
 			var bgClass = ".one-bg";
 			var isBlank = <h:outputText value="#{scheduleView.blank}" />;
 			var isClear = <h:outputText value="#{scheduleView.clear}" />;
 			var isLive = <h:outputText value="#{scheduleView.live}" />;
-			var scheduleName = "<h:outputText value="#{scheduleView.scheduleName}" />";
 			var txt = "";
 			var bgId = -1;
-			var zIdxBehindAll = 0;
-			var zIdxFg = 20;
-			var zIdxBg = 10;
 		
 			jQuery(document).ready(function() {
 				/*
@@ -90,35 +93,36 @@
 			
 			function queryData() {
 				jQuery.getJSON("../mvc/state/" + scheduleName,
-						function(newData) {
+					function(newData) {
+						processData(newData);
+					});
+			}
 			
-							// TODO JSON comparison, see:
-							// http://stackoverflow.com/questions/201183/how-do-you-determine-equality-for-two-javascript-objects
-							/*
-							 * alert(jQuery.JSON.encode(newData)===jQuery.JSON.encode(data));
-							 *  // in case nothing changed => do nothing if
-							 * (newData == data) { alert("no update"); return; }
-							 */
-			
-							var newTxt = newData.actualSlide.verse.text;
-							var newIsBlank = newData.schedule.blank;
-							var newIsClear = newData.schedule.clear;
-							var newIsLive = newData.schedule.live;
-							var newBgId = -1;
-			
-							if (newData.actualSlide.bgImage != null) {
-								newBgId = newData.actualSlide.bgImage.id
-							}
-			
-							handleBlankAndLive(newIsBlank, newIsLive);
-							handleClear(newIsClear);
-							handleBg(newBgId);
-							handleFg(newTxt, isClear);
-			
-							data = newData;
-						});
-			
-				setTimeout('queryData()', 1000);
+			function processData(newData) {
+				// TODO JSON comparison, see:
+				// http://stackoverflow.com/questions/201183/how-do-you-determine-equality-for-two-javascript-objects
+				/*
+				 * alert(jQuery.JSON.encode(newData)===jQuery.JSON.encode(data));
+				 *  // in case nothing changed => do nothing if
+				 * (newData == data) { alert("no update"); return; }
+				 */
+
+				var newTxt = newData.actualSlide.verse.text;
+				var newIsBlank = newData.schedule.blank;
+				var newIsClear = newData.schedule.clear;
+				var newIsLive = newData.schedule.live;
+				var newBgId = -1;
+
+				if (newData.actualSlide.bgImage != null) {
+					newBgId = newData.actualSlide.bgImage.id
+				}
+
+				handleBlankAndLive(newIsBlank, newIsLive);
+				handleClear(newIsClear);
+				handleBg(newBgId);
+				handleFg(newTxt, isClear);
+
+				/*data = newData;*/
 			}
 			
 			function handleBlankAndLive(newIsBlank, newIsLive) {
@@ -256,6 +260,10 @@
 				return newClass;
 			}
 		</h:outputScript>
+
+		<h:form>
+			<a4j:push id="statePush" address="pushTopicsContext" ondataavailable="processData(jQuery.parseJSON(event.rf.data));" />
+		</h:form>
 		
 		<!-- default very background -->
 		<div class="board"></div>

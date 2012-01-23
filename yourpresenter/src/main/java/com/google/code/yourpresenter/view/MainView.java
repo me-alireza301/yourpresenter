@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.Schedule;
 import com.google.code.yourpresenter.service.IScheduleService;
 
@@ -68,7 +69,7 @@ public class MainView implements Serializable {
 		// return selectItems;
 //	}
 
-	public String submitSchedule() throws IOException {
+	public String submitSchedule() throws YpException {
 		Schedule schedule = scheduleService.findByName(this.scheduleName);
 		
 		// if new schedule to be created
@@ -84,7 +85,7 @@ public class MainView implements Serializable {
 		return (String) map.get("outcome");
 	}
 
-	public String chooseSchedule() throws IOException {
+	public String chooseSchedule() throws IOException, YpException {
 		Schedule schedule = scheduleService.findByName(this.scheduleName);
 		
 		// if new schedule to be created => error
