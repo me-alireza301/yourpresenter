@@ -7,9 +7,10 @@
 	xmlns:a4j="http://richfaces.org/a4j">
 <f:view contentType="text/html">
 	<h:head>
-		<title><ui:insert name="title">Yourpresenter</ui:insert></title>
+		<title><ui:insert name="title">Yourpresenter</ui:insert>
+		</title>
 		<meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
-		<rich:jQuery />		
+		<rich:jQuery />
 	</h:head>
 	<h:body>
 		<!-- 
@@ -21,40 +22,52 @@
 				jQuery(':text:visible:enabled:first').focus();
 			});
 		</h:outputScript>
-	
-		<h:form>
-			<rich:messages ajaxRendered="true"/>
-			<h:panelGrid columns="3">
-				<h:outputText value="Schedule:" />
-				<rich:autocomplete id="scheduleName" mode="client" minChars="0" autofill="false"
-					autocompleteMethod="#{mainView.allScheduleNames}"
-					value="#{mainView.scheduleName}">
-					<rich:validator event="keyup" />
-					<!-- <rich:validator event="onblur"/> -->
-				</rich:autocomplete>
-				<rich:message for="scheduleName" />
 
+		<h:form>
+			<h:panelGrid columns="3">
 				<h:outputText value="Role:" />
-				<h:panelGrid columns="2">
-					<h:commandButton value="Presenter" id="presenter"
-						action="#{mainView.submitSchedule}" >
-						<!-- to enable URL refresh '?faces-redirect=true' is used,
-							see http://www.coderanch.com/t/522508/JSF/java/commandButton-URL-no-refresh -->
-						<f:param name="outcome" value="presenter/presenter.jsf?faces-redirect=true" />
-					</h:commandButton>
-					<rich:message for="presenter" />
-					
-					<h:button value="Speaker" outcome="speaker.jsf" type="submit" />
-					<rich:message for="abc" />
-					<h:button value="Musician" />
-					<rich:message for="def" />
-					
-					<h:commandButton value="Projector" id="projector"
-						action="#{mainView.chooseSchedule}" binding="#{mainView.submitButton}" >
-						<f:param name="outcome" value="projector/projector.jsf?faces-redirect=true" />
-					</h:commandButton>
-					<rich:message for="projector" />
-				</h:panelGrid>
+				<h:selectOneRadio value="#{mainView.role}" layout="pageDirection">
+					<a4j:ajax event="change" listener="#{mainView.roleChanged}"
+						render="schedulePanel okButton" />
+					<f:selectItems value="#{mainView.roles}" />
+				</h:selectOneRadio>
+
+				<h:panelGroup id="schedulePanel">
+					<h:panelGroup rendered="#{mainView.scheduleCreate}">
+						<h:panelGrid columns="3">
+							<h:outputText value="Create/Choose Schedule:" />
+							<rich:autocomplete id="scheduleEnter" mode="client" minChars="2"
+								maxChars="30" autofill="true"
+								autocompleteMethod="#{mainView.filterScheduleNames}"
+								value="#{mainView.scheduleName}">
+								<rich:validator event="change" />
+							</rich:autocomplete>
+							<rich:message for="scheduleEnter" />
+						</h:panelGrid>
+					</h:panelGroup>
+
+					<!-- <rich:validator event="submit" /> -->
+					<h:panelGroup rendered="#{mainView.scheduleChoose}">
+						<h:panelGrid columns="3">
+							<h:outputText value="Choose Schedule:" />
+							<rich:select id="scheduleChoose" enableManualInput="true"
+								value="#{mainView.scheduleName}"
+								defaultLabel="start typing for select">
+								<f:selectItems value="#{mainView.allScheduleNames}" />
+							</rich:select>
+							<rich:message for="scheduleChoose" />
+						</h:panelGrid>
+					</h:panelGroup>
+				</h:panelGroup>
+
+				<!-- <rich:messages ajaxRendered="true" /> -->
+
+				<h:commandButton value="OK" id="okButton"
+					disabled="#{mainView.roleNotchosen}"
+					action="#{mainView.submitSchedule}">
+					<!-- binding="#{mainView.submitButton}" -->
+				</h:commandButton>
+
 			</h:panelGrid>
 		</h:form>
 	</h:body>

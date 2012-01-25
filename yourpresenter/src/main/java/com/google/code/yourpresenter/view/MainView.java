@@ -1,19 +1,19 @@
 package com.google.code.yourpresenter.view;
 
-import java.io.IOException;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.validation.constraints.Size;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.Schedule;
 import com.google.code.yourpresenter.service.IScheduleService;
@@ -23,89 +23,102 @@ import com.google.code.yourpresenter.service.IScheduleService;
 @SuppressWarnings("serial")
 public class MainView implements Serializable {
 
-	private UIComponent submitButton;
-	
+//	private UIComponent submitButton;
+
 	@Autowired
 	private IScheduleService scheduleService;
 
 	@Autowired
 	private ScheduleView scheduleView;
 
-	@Size(min=2, max=30)
+	@Size(min = 2, max = 30)
 	private String scheduleName;
 
-	public List<String> allScheduleNames(String name) {
+	private Role role;
+
+	private boolean scheduleChoose = false;
+	private boolean scheduleCreate = false;
+
+	private static Map<String, Role> roles;
+
+	static {
+		roles = new LinkedHashMap<String, Role>();
+		for (Role role : Role.values()) {
+			roles.put(role.getTxt(), role); // label, value
+		}
+	}
+
+	public List<String> filterScheduleNames(String name) {
 		return scheduleService.findScheduleNamesByName(name);
 	}
-	
-//	public List<String> getAllScheduleNames() {
-//		List<String> schedules = new ArrayList<String>();
-//
-//		schedules.add("schedule new 1");
-//		schedules.add("schedule new 2");
-//		schedules.add("schedule new 3");
-//		schedules.add("schedule new 4");
-//		schedules.add("schedule new 5");
-//		
-//		List<String> persistedSchedules = scheduleService
-//				.findAllScheduleNames();
-//		return persistedSchedules;
-//		if (null != persistedSchedules) {
-//			if (!persistedSchedules.contains(Schedule.EMPTY)) {
-//				schedules.add(Schedule.EMPTY);
-//			}
-//			schedules.addAll(persistedSchedules);
-//		}
-//
-//		return schedules;
-		// to prevent 'null converter' problem,
-		// solution found on:
-		// http://balusc.blogspot.com/2007/09/objects-in-hselectonemenu.html
-		// fill data for combo/list box
-		// List<SelectItem> selectItems = new ArrayList<SelectItem>();
-		// for (ScheduleNameDTO schedule : schedules) {
-		// selectItems.add(new SelectItem(schedule, schedule.getName()));
-		// }
-		// return selectItems;
-//	}
+
+	public Map<String, Role> getRoles() {
+		return roles;
+	}
 
 	public String submitSchedule() throws YpException {
+		switch (getRole()) {
+		case PROJECTOR:
+		case SPEAKER:
+		case MUSICIAN:
+		case ADMIN:
+			break;
+		case PRESENTER:
+			createOrChooseSchedule();
+			break;
+		default:
+			throw new YpException(YpError.ROLE_NOT_SUPPORTED);
+		}
+
+		return getRole().getUrl();
+	}
+
+	public void createOrChooseSchedule() throws YpException {
 		Schedule schedule = scheduleService.findByName(this.scheduleName);
-		
+
 		// if new schedule to be created
 		if (null == schedule) {
 			schedule = new Schedule(this.scheduleName);
 			scheduleService.persist(schedule);
 		}
 		this.scheduleView.setSchedule(schedule);
-		
-		// redirect to the next page via outcome param value
-		@SuppressWarnings("rawtypes")
-		Map map = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		return (String) map.get("outcome");
 	}
 
-	public String chooseSchedule() throws IOException, YpException {
-		Schedule schedule = scheduleService.findByName(this.scheduleName);
-		
-		// if new schedule to be created => error
-		if (null == schedule) {
-			// add validation error message
-			// see: http://stackoverflow.com/questions/315804/how-to-display-my-applications-errors-in-jsf
-			// and: http://stackoverflow.com/questions/1140426/add-message-from-methode-in-jsf
-			final FacesContext context = FacesContext.getCurrentInstance();
-	        context.addMessage(this.submitButton.getClientId(context), new FacesMessage(FacesMessage.SEVERITY_ERROR, "New schedule can be created by presenter only!", null));
-		    return null;
-		} else {
-			this.scheduleView.setSchedule(schedule);
-		
-			// redirect to the next page via outcome param value
-			@SuppressWarnings("rawtypes")
-			Map map = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-			return (String) map.get("outcome");
+	// parameter is mandatory for listener,
+	// see:
+	// https://issues.jboss.org/browse/RF-11125?page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel&focusedCommentId=12620545#comment-12620545
+	public void roleChanged(AjaxBehaviorEvent event) throws YpException {
+		switch (getRole()) {
+		case PRESENTER:
+			this.scheduleCreate = true;
+			this.scheduleChoose = false;
+			break;
+		case PROJECTOR:
+		case SPEAKER:
+		case MUSICIAN:
+			this.scheduleCreate = false;
+			this.scheduleChoose = true;
+			break;
+		case ADMIN:
+			this.scheduleCreate = false;
+			this.scheduleChoose = false;
+			break;
+		default:
+			throw new YpException(YpError.ROLE_NOT_SUPPORTED);
 		}
 	}
-	
+
+//	public void validateSchedule(ActionEvent event) {
+//		Schedule schedule = scheduleService.findByName(this.scheduleName);
+//
+//		// if new schedule to be created => error
+//		if (null == schedule) {
+//			throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+//					"Choose existing schedule (New one can be created by presenter only!)",
+//					null));
+//		}
+//	}
+
 	public String getScheduleName() {
 		return scheduleName;
 	}
@@ -114,11 +127,59 @@ public class MainView implements Serializable {
 		this.scheduleName = scheduleName;
 	}
 
-	public UIComponent getSubmitButton() {
-		return submitButton;
+//	public UIComponent getSubmitButton() {
+//		return submitButton;
+//	}
+//
+//	public void setSubmitButton(UIComponent submitButton) {
+//		this.submitButton = submitButton;
+//	}
+
+	/**
+	 * @return the scheduleCreate
+	 */
+	public boolean isScheduleCreate() {
+		return scheduleCreate;
 	}
 
-	public void setSubmitButton(UIComponent submitButton) {
-		this.submitButton = submitButton;
+	/**
+	 * @return the scheduleChoose
+	 */
+	public boolean isScheduleChoose() {
+		return scheduleChoose;
+	}
+
+	/**
+	 * @return the role
+	 */
+	public Role getRole() {
+		return role;
+	}
+
+	/**
+	 * @param role
+	 *            the role to set
+	 */
+	public void setRole(Role role) {
+		this.role = role;
+	}
+
+	/**
+	 * @return the allScheduleNames
+	 */
+	public Map<String, String> getAllScheduleNames() {
+		Map<String, String> map = new HashMap<String, String>();
+		List<String> schedules = scheduleService.findScheduleNamesByName(null);
+		for (String schedule : schedules) {
+			map.put(schedule, schedule);
+		}
+		return map;
+	}
+
+	/**
+	 * @return true if role has NOT been chosen, otherwise returns false.
+	 */
+	public boolean isRoleNotchosen() {
+		return null == role;
 	}
 }

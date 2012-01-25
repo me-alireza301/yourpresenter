@@ -3,7 +3,6 @@ package com.google.code.yourpresenter.service;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
 import java.util.Properties;
 
 import javax.persistence.EntityManager;
@@ -20,7 +19,6 @@ import com.google.code.yourpresenter.IConstants;
 import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.Preference;
-import com.google.code.yourpresenter.entity.Slide;
 import com.google.code.yourpresenter.util.PostInitialize;
 import com.googlecode.ehcache.annotations.Cacheable;
 import com.googlecode.ehcache.annotations.KeyGenerator;

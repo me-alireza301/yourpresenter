@@ -69,14 +69,14 @@ public class SampleDataLoader {
 	private void createSchedule(String scheduleName) {
 		driver.get("http://localhost:8081/yourpresenter/main.jsf");
 		
+		mainPage.choosePresenterRole();
 		mainPage.setScheduleName(scheduleName);
-		mainPage.clickPresenterButton();
+		mainPage.clickOkButton();
 
 		// retry
-		if (!("Schedule: " + scheduleName).equals(presenterPage
-				.getScheduleNameText())) {
-			Sleeper.sleepTightInSeconds(1);
-			mainPage.clickPresenterButton();
+		Sleeper.sleepTightInSeconds(1);
+		if(!driver.getCurrentUrl().equals(PresenterPageIT.PRESENTER_URL)) {
+			mainPage.clickOkButton();
 		}
 
 		// check schedule created

@@ -57,12 +57,19 @@ public class PresenterPageIT {
 
 	@BeforeClass
 	public static void setUpAll() throws Exception {
+//		DesiredCapabilities caps = DesiredCapabilities.firefox();
+//		LoggingPreferences logs = new LoggingPreferences();
+//		logs.enable(LogType.DRIVER, Level.ALL);
+//		caps.setCapability(CapabilityType.LOGGING_PREFS, logs);
+//		driver = new FirefoxDriver(caps);
+
 		// for drag and drop to be working on linux:
 		// Enabling features that are disabled by default in Firefox
 		// see: http://code.google.com/p/selenium/wiki/TipsAndTricks
 		FirefoxProfile profile = new FirefoxProfile();
 		profile.setEnableNativeEvents(true);
 		driver = new FirefoxDriver(profile);
+
 
 		driver.manage().timeouts()
 				.implicitlyWait(ITConstant.DRIVER_WAIT, TimeUnit.SECONDS);
@@ -260,14 +267,14 @@ public class PresenterPageIT {
 	private void createSchedule(String scheduleName) {
 		driver.get("http://localhost:8081/yourpresenter/main.jsf");
 
+		mainPage.choosePresenterRole();
 		mainPage.setScheduleName(scheduleName);
-		mainPage.clickPresenterButton();
+		mainPage.clickOkButton();
 
 		// retry
-		if (!("Schedule: " + scheduleName).equals(presenterPage
-				.getScheduleNameText())) {
-			Sleeper.sleepTightInSeconds(1);
-			mainPage.clickPresenterButton();
+		Sleeper.sleepTightInSeconds(1);
+		if(!driver.getCurrentUrl().equals(PRESENTER_URL)) {
+			mainPage.clickOkButton();
 		}
 
 		// check schedule created

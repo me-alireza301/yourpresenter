@@ -1,6 +1,5 @@
 package com.google.code.yourpresenter.selenium.page;
 
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -12,35 +11,38 @@ import com.google.code.yourpresenter.selenium.ITConstant;
 
 public class MainPage {
 
-//	private WebDriver driver;
-
-	@FindBy(xpath = "//input[contains(@id, ':presenter')]")
-	private WebElement presenterButton;
+	@FindBy(xpath = "//input[contains(@id, ':okButton')]")
+	private WebElement okButton;
 	
-	@FindBy(xpath = "//span[@class='rf-msgs-sum']")
-	private WebElement errorsSum;
+	@FindBy(xpath = "//span[@class='rf-msg-err']")
+	private WebElement errorMsg;
 
-	@FindBy(xpath = "//input[contains(@id, ':scheduleNameInput')]")
-	private WebElement scheduleNameInput;
+	@FindBy(xpath = "//input[contains(@id, ':scheduleEnterInput')]")
+	private WebElement scheduleEnterInput;
+	
+	@FindBy(xpath = "//input[@value='PRESENTER']")
+	private WebElement presenterRoleInput;
 	
 	public MainPage(WebDriver driver) {
 		ElementLocatorFactory finder = new AjaxElementLocatorFactory(driver,
 				ITConstant.DRIVER_WAIT);
 		PageFactory.initElements(finder, this);
-//		this.driver = driver;
 	}
 
-	public void clickPresenterButton() {
-		presenterButton.click();
+	public void choosePresenterRole() {
+		presenterRoleInput.click();
 	}
 	
-	public String getErrorsSumText() {
-		return errorsSum.getText();
+	public void clickOkButton() {
+		okButton.click();
+	}
+	
+	public String getErrorMsgText() {
+		return errorMsg.getText();
 	}
 
 	public void setScheduleName(String scheduleName) {
-		scheduleNameInput.clear();
-		scheduleNameInput.sendKeys(scheduleName);
-		scheduleNameInput.sendKeys(Keys.ESCAPE);
+		scheduleEnterInput.clear();
+		scheduleEnterInput.sendKeys(scheduleName);
 	}
 }

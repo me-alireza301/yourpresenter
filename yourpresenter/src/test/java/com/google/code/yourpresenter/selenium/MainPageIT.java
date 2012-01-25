@@ -24,14 +24,20 @@ import com.google.code.yourpresenter.selenium.restclient.ScheduleRestTemplate;
 public class MainPageIT {
 
 	private static WebDriver driver;
-	
+
 	private MainPage page;
-	
+
 	@Autowired
 	private ScheduleRestTemplate scheduleRestTemplate;
 
 	@BeforeClass
 	public static void setUpAll() throws Exception {
+//		DesiredCapabilities caps = DesiredCapabilities.firefox();
+//		LoggingPreferences logs = new LoggingPreferences();
+//		logs.enable(LogType.DRIVER, Level.ALL);
+//		caps.setCapability(CapabilityType.LOGGING_PREFS, logs);
+//		driver = new FirefoxDriver(caps);
+
 		// for drag and drop to be working on linux:
 		// Enabling features that are disabled by default in Firefox
 		// see: http://code.google.com/p/selenium/wiki/TipsAndTricks
@@ -52,7 +58,7 @@ public class MainPageIT {
 	public static void cleanUpAll() {
 		driver.quit();
 	}
-	
+
 	@After
 	public void cleanUp() {
 		scheduleRestTemplate.deleteAll();
@@ -61,10 +67,11 @@ public class MainPageIT {
 	@Test
 	public void testMainErrScheduleCreate() throws Exception {
 		driver.get("http://localhost:8081/yourpresenter");
-		
-		// click Presenter button
-		page.clickPresenterButton();
+
+		page.choosePresenterRole();
+		page.clickOkButton();
 		// check error message displayed
-		Assert.assertEquals("size must be between 2 and 30", page.getErrorsSumText());
+		Assert.assertEquals("size must be between 2 and 30",
+				page.getErrorMsgText());
 	}
 }
