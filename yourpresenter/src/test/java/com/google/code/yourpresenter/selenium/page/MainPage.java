@@ -23,6 +23,9 @@ public class MainPage {
 	@FindBy(xpath = "//input[@value='PRESENTER']")
 	private WebElement presenterRoleInput;
 	
+	@FindBy(xpath = "//input[@value='ADMIN']")
+	private WebElement adminRoleInput;
+	
 	public MainPage(WebDriver driver) {
 		ElementLocatorFactory finder = new AjaxElementLocatorFactory(driver,
 				ITConstant.DRIVER_WAIT);
@@ -31,6 +34,10 @@ public class MainPage {
 
 	public void choosePresenterRole() {
 		presenterRoleInput.click();
+	}
+	
+	public void chooseAdminRole() {
+		adminRoleInput.click();
 	}
 	
 	public void clickOkButton() {

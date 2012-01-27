@@ -179,7 +179,7 @@ public class MainView implements Serializable {
 	/**
 	 * @return true if role has NOT been chosen, otherwise returns false.
 	 */
-	public boolean isRoleNotchosen() {
+	public boolean isRoleNotChosen() {
 		return null == role;
 	}
 }

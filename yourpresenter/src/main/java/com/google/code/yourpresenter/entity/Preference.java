@@ -19,14 +19,14 @@ public class Preference implements Serializable {
 	 * (can't be called values as it causes problems in JPA table creation)
 	 */
 	private String value;
-	
-	private String type;
 
-	public Preference(String name, String value, String type) {
+	public Preference(String name, String value) {
 		super();
-		this.name = name;
-		this.value = value;
-		this.type = type;
+		this.setName(name);
+		this.setValue(value);
+	}
+	
+	public Preference() {
 	}
 
 	@Id
@@ -45,14 +45,6 @@ public class Preference implements Serializable {
 
 	public void setValue(String value) {
 		this.value = value;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
 	}
 
 }	

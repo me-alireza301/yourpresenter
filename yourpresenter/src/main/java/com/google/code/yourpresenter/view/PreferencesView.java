@@ -16,11 +16,13 @@
 package com.google.code.yourpresenter.view;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
-import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
+import javax.faces.event.AjaxBehaviorEvent;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -35,46 +37,87 @@ import com.google.code.yourpresenter.service.IPreferenceService;
 @SuppressWarnings("serial")
 public class PreferencesView implements Serializable {
 
-	/** The theme. */
-	private String theme = "aristo"; //default
-	
 	@Autowired
 	private IPreferenceService preferenceService;
-	
-	private Collection<Preference> allPreferences;
 
-	/**
-	 * Gets the theme.
-	 * 
-	 * @return the theme
-	 */
-	public String getTheme() {
-		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		if(params.containsKey("theme")) {
-			theme = params.get("theme");
-		}
-		return theme;
-	}
+	private String mediaAcceptedExts;
+	private String mediaDirs;
 
-	/**
-	 * Sets the theme.
-	 * 
-	 * @param theme
-	 *            the new theme
-	 */
-	public void setTheme(String theme) {
-		this.theme = theme;
-	}
-	
+	private boolean saveDisabled = true;
+
+
 	public String getViewFontMaxsizeProjector() throws YpException {
-		return this.preferenceService.findStringById(IConstants.VIEW_FONT_MAXSIZE_PROJECTOR);
-	}
-	
-	public String getViewFontMaxsizePresenter() throws YpException {
-		return this.preferenceService.findStringById(IConstants.VIEW_FONT_MAXSIZE_PRESENTER);
+		return this.preferenceService
+				.findStringById(IConstants.VIEW_FONT_MAXSIZE_PROJECTOR);
 	}
 
-	public Collection<Preference> getAllPreferences() throws YpException {
-		return preferenceService.findAll();
+	public String getViewFontMaxsizePresenter() throws YpException {
+		return this.preferenceService
+				.findStringById(IConstants.VIEW_FONT_MAXSIZE_PRESENTER);
+	}
+
+	/**
+	 * @return the mediaAcceptedExts
+	 * @throws YpException
+	 */
+	public String getMediaAcceptedExts() throws YpException {
+		String[] exts = this.preferenceService
+				.findStringArrayById(IConstants.MEDIA_ACCEPTED_EXTS);
+		setMediaAcceptedExts(StringUtils.join(exts, ","));
+		return mediaAcceptedExts;
+	}
+
+	/**
+	 * @param mediaAcceptedExts
+	 *            the mediaAceptedExts to set
+	 */
+	public void setMediaAcceptedExts(String mediaAcceptedExts) {
+		// // null safe equals
+		// if (StringUtils.equals(mediaAcceptedExts, this.mediaAcceptedExts)) {
+		// return;
+		// }
+		//
+		// saveDisabled = false;
+		this.mediaAcceptedExts = mediaAcceptedExts;
+	}
+
+	/**
+	 * @return the mediaDirs
+	 * @throws YpException
+	 */
+	public String getMediaDirs() throws YpException {
+		String[] dirs = this.preferenceService
+				.findStringArrayById(IConstants.MEDIA_DIRS);
+		setMediaDirs(StringUtils.join(dirs, ","));
+		return mediaDirs;
+	}
+
+	/**
+	 * @param mediaDirs
+	 *            the mediaDirs to set
+	 */
+	public void setMediaDirs(String mediaDirs) {
+		this.mediaDirs = mediaDirs;
+	}
+
+	public void save(ActionEvent event) throws YpException {
+		saveDisabled = true;
+		
+		Collection<Preference> preferences = new ArrayList<Preference>();
+		preferences.add(new Preference(IConstants.MEDIA_DIRS, mediaDirs));
+		preferences.add(new Preference(IConstants.MEDIA_ACCEPTED_EXTS,
+				mediaAcceptedExts));
+		this.preferenceService.update(preferences);
+	}
+
+	public boolean isSaveDisabled() {
+		return saveDisabled;
+	}
+
+	// parameter is mandatory for listener,
+	// see:
+	// https://issues.jboss.org/browse/RF-11125?page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel&focusedCommentId=12620545#comment-12620545
+	public void valueChanged(AjaxBehaviorEvent event) throws YpException {
+		saveDisabled = false;
 	}
 }

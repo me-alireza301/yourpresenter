@@ -17,7 +17,7 @@ import com.google.code.yourpresenter.entity.BgImage;
 @Service
 @Repository
 public class BgImageServiceImpl implements IBgImageService, Serializable {
-
+	
 	private transient EntityManager em;
 	
 	public BgImageServiceImpl() {
@@ -35,6 +35,7 @@ public class BgImageServiceImpl implements IBgImageService, Serializable {
 	    return (List<BgImage>) query.getResultList();
 	}
 	
+	@Transactional
 	public void persist(BgImage bgImage) {
 		if (null != bgImage.getId()) {
 			em.merge(bgImage);

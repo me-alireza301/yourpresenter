@@ -4,8 +4,7 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.PostConstructApplicationEvent;
 import javax.faces.event.SystemEvent;
 import javax.faces.event.SystemEventListener;
- 
- 
+
 import org.richfaces.application.push.Topic;
 import org.richfaces.application.push.TopicKey;
 import org.richfaces.application.push.TopicsContext;

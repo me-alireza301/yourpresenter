@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.code.yourpresenter.YpException;
 
-@Service("mediaFileSelector")
+@Service
 public class MediaFileSelectorImpl implements IMediaFileSelector {
 
 	private Set<String> acceptedExts;

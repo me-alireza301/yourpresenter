@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+<f:view contentType="text/html">
+
+	<h:head>
+		<title><ui:insert name="title">Yourpresenter: Administrator</ui:insert>
+		</title>
+		<meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+		<rich:jQuery />
+	</h:head>
+
+	<h:body>
+		<h:form>
+			<rich:panel id="mediaPanel">
+				<f:facet name="header">
+					<h:outputText value="Media" />
+				</f:facet>
+
+				<h:panelGrid columns="2">
+					<h:outputText value="Accepted Extensions:" />
+					<h:inputText readonly="true"
+						value="#{preferencesView.mediaAcceptedExts}" />
+
+					<h:outputText value="Scanned directories:" />
+					<h:inputText value="#{preferencesView.mediaDirs}" input="mediaDirs">
+						<a4j:ajax event="keyup" listener="#{preferencesView.valueChanged}"
+							render="saveButton" />
+						<a4j:ajax event="change" listener="#{preferencesView.valueChanged}"
+							render="saveButton" />
+					</h:inputText>
+				</h:panelGrid>
+			</rich:panel>
+
+			<h:commandButton value="Save" id="saveButton"
+				disabled="#{preferencesView.saveDisabled}"
+				actionListener="#{preferencesView.save}" render="saveButton" />
+
+			<h:commandButton value="Back" id="backButton"
+				action="/main.jsf?faces-redirect=true" />
+
+		</h:form>
+	</h:body>
+</f:view>
+</html>

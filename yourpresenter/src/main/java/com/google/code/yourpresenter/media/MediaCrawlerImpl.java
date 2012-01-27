@@ -23,15 +23,23 @@ import com.google.code.yourpresenter.IConstants;
 import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.BgImage;
+import com.google.code.yourpresenter.entity.Preference;
 import com.google.code.yourpresenter.service.IBgImageService;
 import com.google.code.yourpresenter.service.IPreferenceService;
 import com.google.code.yourpresenter.util.FileObjectUtil;
+import com.google.code.yourpresenter.util.FileUtil;
+import com.google.code.yourpresenter.util.IPreferenceChangedListener;
+import com.google.code.yourpresenter.util.Logger;
+import com.google.code.yourpresenter.util.LoggerFactory;
 import com.google.code.yourpresenter.util.PostInitialize;
 
 @SuppressWarnings("serial")
-@Service("mediaCrawler")
-public class MediaCrawlerImpl implements IMediaCrawler, Serializable {
+@Service
+public class MediaCrawlerImpl implements IMediaCrawler,
+		IPreferenceChangedListener, Serializable {
 
+	private static Logger logger = LoggerFactory.getLogger(MediaCrawlerImpl.class);
+	
 	@Autowired
 	private IPreferenceService preferenceService;
 	@Autowired
@@ -45,11 +53,19 @@ public class MediaCrawlerImpl implements IMediaCrawler, Serializable {
 	}
 
 	@PostInitialize(order = IConstants.POST_INIT_IDX_MEDIA_CRAWLER)
+	public void registerForPreferenceChange() throws YpException {
+		preferenceService.registerPreferenceChangedListener(this,
+				IConstants.MEDIA_DIRS);
+	}
+
 	@Transactional
-	@Async
-	public void crawl() throws YpException {
-		final String[] dirs = preferenceService
-				.findStringArrayById(IConstants.MEDIA_DIRS);
+	public void crawl(String... dirs) throws YpException {
+		if (null == dirs) {
+			dirs = preferenceService.findStringArrayById(IConstants.MEDIA_DIRS);
+		}
+		
+		// replace special dir refs ${XXX}
+		dirs = FileUtil.replaceDirs(dirs);
 
 		List<FileObject> media = new ArrayList<FileObject>();
 		try {
@@ -63,6 +79,7 @@ public class MediaCrawlerImpl implements IMediaCrawler, Serializable {
 				final FileObject[] found = root
 						.findFiles(this.mediaFileSelectorImpl);
 				if (null != found) {
+					logger.debug("Found media files:", Arrays.toString(found));
 					media.addAll(Arrays.asList(found));
 				}
 			}
@@ -74,15 +91,20 @@ public class MediaCrawlerImpl implements IMediaCrawler, Serializable {
 	}
 
 	private void persistImagesDiff(List<FileObject> media) throws YpException {
-		final String thumbDir = this.preferenceService
+		String thumbDir = this.preferenceService
 				.findStringById(IConstants.MEDIA_THUMBNAIL_DIR);
+		thumbDir = FileUtil.replaceDirs(thumbDir);
+		
+		// init thumbnail dir
+		new File(thumbDir).mkdirs();
+		
 		final String thumbExt = this.preferenceService
 				.findStringById(IConstants.MEDIA_THUMBNAIL_EXT);
 		final int thumbWidth = Integer.parseInt(this.preferenceService
 				.findStringById(IConstants.MEDIA_THUMBNAIL_WIDTH));
-		
+
 		this.thumbnailCreatorService.setThumbnailWidth(thumbWidth);
-		
+
 		Collection<BgImage> bgImages = this.bgImageService.findAll();
 		Set<BgImage> bgImagesSet = null;
 		if (!CollectionUtils.isEmpty(bgImages)) {
@@ -91,6 +113,7 @@ public class MediaCrawlerImpl implements IMediaCrawler, Serializable {
 
 		// get modified/new files only
 		for (FileObject fileObject : media) {
+			logger.debug("fileObject: ", fileObject);
 			BgImage bgImage;
 			try {
 				bgImage = new BgImage(
@@ -104,8 +127,8 @@ public class MediaCrawlerImpl implements IMediaCrawler, Serializable {
 		}
 	}
 
-	private void persistImageDiff(final String thumbDir, final String thumbExt, final Set<BgImage> bgImagesSet,
-			BgImage bgImage) throws YpException {
+	private void persistImageDiff(final String thumbDir, final String thumbExt,
+			final Set<BgImage> bgImagesSet, BgImage bgImage) throws YpException {
 		// if not imported yet
 		if ((null == bgImagesSet)
 				|| (null != bgImagesSet && !bgImagesSet.contains(bgImage))) {
@@ -125,4 +148,16 @@ public class MediaCrawlerImpl implements IMediaCrawler, Serializable {
 		}
 	}
 
+	@Override
+	public void preferenceChanged(Preference preference) throws YpException {
+		String dirs = preference.getValue();
+		crawl(dirs.split(","));
+	}
+
+	@PostInitialize(order = IConstants.POST_INIT_IDX_MEDIA_CRAWLER)
+	@Async
+	@Override
+	public void crawl() throws YpException {
+		crawl((String[]) null);
+	}
 }

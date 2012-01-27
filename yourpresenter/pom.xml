@@ -43,7 +43,8 @@
 			</exclusions>
 		</dependency>
 
-		<!-- needed since spring 3.1 as it's optional dependency, but required tx:annotation-driven xml config -->
+		<!-- needed since spring 3.1 as it's optional dependency, but required 
+			tx:annotation-driven xml config -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjweaver</artifactId>
@@ -179,11 +180,11 @@
 		</dependency>
 
 		<!-- Dependencies for Push -->
-        <dependency>
-            <groupId>org.atmosphere</groupId>
-            <artifactId>atmosphere-runtime</artifactId>
-            <!-- version defined by richfaces already  -->
-        </dependency>
+		<dependency>
+			<groupId>org.atmosphere</groupId>
+			<artifactId>atmosphere-runtime</artifactId>
+			<!-- version defined by richfaces already -->
+		</dependency>
 
 		<!-- Logging -->
 		<dependency>
@@ -343,6 +344,19 @@
 			<version>2.17.0</version>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- for XML binding -->
+		<!-- <dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.4.2</version>
+		</dependency> -->
+		
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>11.0.1</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>
@@ -355,27 +369,10 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
-		<!-- For testing against latest Spring snapshots -->
-		<!-- <repository>
-			<id>org.springframework.maven.snapshot</id>
-			<name>Spring Maven Snapshot Repository</name>
-			<url>http://maven.springframework.org/snapshot</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository> -->
 		<!-- For developing against latest Spring milestones -->
-		<repository>
-			<id>org.springframework.maven.milestone</id>
-			<name>Spring Maven Milestone Repository</name>
-			<url>http://maven.springframework.org/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
+		<!-- <repository> <id>org.springframework.maven.milestone</id> <name>Spring 
+			Maven Milestone Repository</name> <url>http://maven.springframework.org/milestone</url> 
+			<snapshots> <enabled>false</enabled> </snapshots> </repository> -->
 		<!-- For Mojarra 2.x -->
 		<repository>
 			<id>java.net.release</id>
@@ -485,39 +482,22 @@
 
 		<profile>
 			<id>ci-jetty</id>
-			<!-- <properties>
-				<database.port>8082</database.port>
-				<database.name>yp</database.name>
-				<database.url>jdbc:hsqldb:hsql://127.0.0.1:${database.port}/${database.name}</database.url>
-			</properties> -->
+			<!-- <properties> <database.port>8082</database.port> <database.name>yp</database.name> 
+				<database.url>jdbc:hsqldb:hsql://127.0.0.1:${database.port}/${database.name}</database.url> 
+				</properties> -->
 			<build>
 				<plugins>
 					<plugin>
 						<artifactId>maven-antrun-plugin</artifactId>
 						<executions>
 							<!-- start hsqldb server -->
-<!-- 							<execution>
-								<id>start-hsqldb</id>
-								<phase>pre-integration-test</phase>
-								<goals>
-									<goal>run</goal>
-								</goals>
-								<configuration>
-									<target>
-										<echo message="Starting HSQLDB" />
-										<java fork="true" spawn="true" dir="." classname="org.hsqldb.Server"
-											classpathref="maven.test.classpath">
-											<arg value="-database.0" />
-											<arg value="target/data/${database.name}" />
-											<arg value="-dbname.0" />
-											<arg value="yp" />
-											<arg value="-port" />
-											<arg value="${database.port}" />
-										</java>
-									</target>
-								</configuration>
-							</execution>
- -->						</executions>
+							<!-- <execution> <id>start-hsqldb</id> <phase>pre-integration-test</phase> 
+								<goals> <goal>run</goal> </goals> <configuration> <target> <echo message="Starting 
+								HSQLDB" /> <java fork="true" spawn="true" dir="." classname="org.hsqldb.Server" 
+								classpathref="maven.test.classpath"> <arg value="-database.0" /> <arg value="target/data/${database.name}" 
+								/> <arg value="-dbname.0" /> <arg value="yp" /> <arg value="-port" /> <arg 
+								value="${database.port}" /> </java> </target> </configuration> </execution> -->
+						</executions>
 					</plugin>
 
 					<!-- integration tests related -->
@@ -563,9 +543,8 @@
 							<container>
 								<containerId>jetty7x</containerId>
 								<type>embedded</type>
-	<!-- 							<systemProperties>
-									<database.url>${database.url}</database.url>
-								</systemProperties> -->
+								<!-- <systemProperties> <database.url>${database.url}</database.url> 
+									</systemProperties> -->
 							</container>
 							<configuration>
 								<properties>
@@ -577,36 +556,14 @@
 					</plugin>
 
 					<!-- stop hsqldb -->
-<!-- 					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>sql-maven-plugin</artifactId>
-						<dependencies>
-							<dependency>
-								<groupId>org.hsqldb</groupId>
-								<artifactId>hsqldb</artifactId>
-								<version>${org.hsqldb-version}</version>
-							</dependency>
-						</dependencies>
-						<configuration>
-							<driver>org.hsqldb.jdbcDriver</driver>
-							<url>${database.url}</url>
-							<username>sa</username>
-							<password></password>
-						</configuration>
-						<executions>
-							<execution>
-								<id>stop-hsqldb</id>
-								<phase>post-integration-test</phase>
-								<goals>
-									<goal>execute</goal>
-								</goals>
-								<configuration>
-									<autocommit>true</autocommit>
-									<sqlCommand>SHUTDOWN</sqlCommand>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin> -->
+					<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>sql-maven-plugin</artifactId> 
+						<dependencies> <dependency> <groupId>org.hsqldb</groupId> <artifactId>hsqldb</artifactId> 
+						<version>${org.hsqldb-version}</version> </dependency> </dependencies> <configuration> 
+						<driver>org.hsqldb.jdbcDriver</driver> <url>${database.url}</url> <username>sa</username> 
+						<password></password> </configuration> <executions> <execution> <id>stop-hsqldb</id> 
+						<phase>post-integration-test</phase> <goals> <goal>execute</goal> </goals> 
+						<configuration> <autocommit>true</autocommit> <sqlCommand>SHUTDOWN</sqlCommand> 
+						</configuration> </execution> </executions> </plugin> -->
 				</plugins>
 			</build>
 		</profile>
@@ -631,13 +588,8 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<!-- <configuration>
-					<configuration>
-						<excludes>
-							<exclude>**/selenium/*.java</exclude>
-						</excludes>
-					</configuration>
-				</configuration> -->
+				<!-- <configuration> <configuration> <excludes> <exclude>**/selenium/*.java</exclude> 
+					</excludes> </configuration> </configuration> -->
 			</plugin>
 		</plugins>
 
@@ -682,11 +634,11 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-	
+
 	<scm>
-        <connection>scm:git:https://code.google.com/p/yourpresenter/</connection>
-        <developerConnection>scm:git:git@https://code.google.com/p/yourpresenter/</developerConnection>
-        <url>http://code.google.com/p/yourpresenter/source/checkout</url>
-    </scm>
-	
+		<connection>scm:git:https://code.google.com/p/yourpresenter/</connection>
+		<developerConnection>scm:git:git@https://code.google.com/p/yourpresenter/</developerConnection>
+		<url>http://code.google.com/p/yourpresenter/source/checkout</url>
+	</scm>
+
 </project>

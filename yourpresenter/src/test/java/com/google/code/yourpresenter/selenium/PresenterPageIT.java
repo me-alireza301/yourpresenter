@@ -40,7 +40,9 @@ public class PresenterPageIT {
 	private static AddChangeSongDialog addChangeSongDialog;
 
 	public static final String SCHEDULE_NAME = "New schedule";
-	public static final String PRESENTER_URL = "http://localhost:8081/yourpresenter/presenter/presenter.jsf";
+	public static final String MAIN_URL = "http://localhost:8081/yourpresenter/";
+	public static final String PRESENTER_URL = MAIN_URL + "presenter/presenter.jsf";
+	public static final String ADMIN_URL = MAIN_URL + "admin/admin.jsf";
 
 	public static final String RESOURCE_PATH = "target/test-classes/com/google/code/yourpresenter/selenium/";
 
@@ -196,6 +198,7 @@ public class PresenterPageIT {
 
 	@Test
 	public void testBackground() throws IOException, YpException {
+//		setUpBg();
 		testAddSongsToSchedule();
 
 		//
@@ -252,6 +255,21 @@ public class PresenterPageIT {
 		}
 	}
 
+//	private void setUpBg() {
+//		openAdminPage();
+//		
+//		adminPage.setMediaDirs("");
+//	}
+//
+//	private void openAdminPage() {
+//		driver.get(MAIN_URL);
+//
+//		mainPage.chooseAdminRole();
+//		mainPage.clickOkButton();
+//		
+//		Assert.assertEquals(ADMIN_URL, driver.getCurrentUrl());
+//	}
+
 	private Song createSong(String fileName, String fileEncoding)
 			throws IOException {
 		presenterPage.openAddSongDialog();
@@ -265,7 +283,7 @@ public class PresenterPageIT {
 	}
 
 	private void createSchedule(String scheduleName) {
-		driver.get("http://localhost:8081/yourpresenter/main.jsf");
+		driver.get(MAIN_URL);
 
 		mainPage.choosePresenterRole();
 		mainPage.setScheduleName(scheduleName);
