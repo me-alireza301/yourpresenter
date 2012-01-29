@@ -123,7 +123,7 @@ public class PresenterPageIT {
 				addChangeSongDialog.getErrorsSumText());
 	}
 
-	// @Test
+	@Test
 	public void testAddSongTooLongTxt() throws IOException {
 		createSchedule(getScheduleName());
 		createSong("song_too_long_txt.txt", "cp1250");
@@ -177,7 +177,7 @@ public class PresenterPageIT {
 				presenterPage.getPresentationName(2));
 	}
 
-	// @Test
+	@Test
 	public void testPresentationReorder() throws IOException, YpException {
 		testAddSongsToSchedule();
 
@@ -200,9 +200,8 @@ public class PresenterPageIT {
 				presenterPage.getPresentationName(2));
 	}
 
-	// @Test
+	@Test
 	public void testBackground() throws IOException, YpException {
-		// setUpBg();
 		testAddSongsToSchedule();
 
 		//
