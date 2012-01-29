@@ -36,16 +36,26 @@ public interface ISongService {
      * Delete song.
      * 
      * @param song the song
+     * @return 
      */
-    public void delete(Song song);
-
-    /**
-     * Creates new or edits existing song.
-     * 
-     * @param id the id
-     * @return the song
-     */
-    public Song createOrEditSong(Long id);
+    public int delete(Song song);
 
 	public int deleteAll();
+
+	/**
+	 * Deletes song by it's Id.
+	 * 
+	 * @param songId id of the song to delete.
+	 * @return 
+	 */
+	public int deleteById(long songId);
+
+	
+	/**
+	 * Finds song name by id.
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public String findNameById(Long id);
 }

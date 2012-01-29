@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.google.code.yourpresenter.IConstants;
 import com.google.code.yourpresenter.YpException;
@@ -33,7 +34,7 @@ import com.google.code.yourpresenter.entity.Preference;
 import com.google.code.yourpresenter.service.IPreferenceService;
 
 @Component("preferencesView")
-@Scope("session")
+@Scope(WebApplicationContext.SCOPE_SESSION)
 @SuppressWarnings("serial")
 public class PreferencesView implements Serializable {
 

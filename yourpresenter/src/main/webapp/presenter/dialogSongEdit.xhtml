@@ -10,8 +10,7 @@
 		resizeable="false"
 		onmaskclick="#{rich:component('dialogSongEdit')}.hide();"
 		domElementAttachment="form"
-		onshow="#{rich:element('dialogSongEditForm:dialogSongEditName')}.focus();"	
-		>
+		onshow="#{rich:element('dialogSongEditForm:dialogSongEditName')}.focus();" >
 		
 		<h:form id="dialogSongEditForm">
 			
@@ -36,6 +35,12 @@
 					<h:outputLabel for="dialogSongText" value="Text: " />
 					<h:inputTextarea id="dialogSongText" rows="15" cols="40"
 						value="#{songEditView.song.text}" />
+						
+					<!-- as there is no view scope for jsf provided by spring/jsf integration
+					and we use request scope on songEditView 
+					=> remember song.id between requests -->
+					<h:inputHidden id="dialogSongEditId"
+						value="#{songEditView.song.id}"/>
 
 					<h:panelGrid columns="2" cellspacing="3">
 						<!-- 
@@ -43,14 +48,12 @@
 							see: http://mkblog.exadel.com/2009/12/richfaces-built-in-client-functions/
 							and: http://docs.jboss.org/richfaces/latest_4_0_X/Component_Reference/en-US/html/chap-Component_Reference-Functions.html
 							
-							moreover, for hotkeys usage since Richfaces 4.1 panel is not rerendered on show =>
-							clear entered data on "OK" button click
-							TODO: there is still a problem with error messages that are not cleared
-							for Richfaces 4.1.1 it should be replaced with rich:hotkey to prevent this problem
+							as render="songs" doesn't help for setting updated value in table - for example for DnD source 
 						-->
 						<a4j:commandButton id="buttonOK" value="OK" action="#{songEditView.update}"
-							oncomplete="if (jQuery(#{rich:element('dialogSongEditForm:newSongErrors')}).is(':empty')) { #{rich:component('dialogSongEdit')}.hide(); jQuery(#{rich:element('dialogSongEditForm:dialogSongEditName')}).val(''); jQuery(#{rich:element('dialogSongEditForm:dialogSongText')}).val(''); }; return true; "		
-							render="songs" type="submit"/>
+							oncomplete="if (jQuery(#{rich:element('dialogSongEditForm:newSongErrors')}).is(':empty')) { #{rich:component('dialogSongEdit')}.hide(); location.reload() }; return true;"		
+							 type="submit"/>
+							<!-- render="songs" -->
 						<a4j:commandButton id="buttonCancel" value="Cancel"
 							oncomplete="#{rich:component('dialogSongEdit')}.hide(); return false;" />
 					</h:panelGrid>

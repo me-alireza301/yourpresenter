@@ -6,20 +6,21 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.google.code.yourpresenter.entity.Song;
 import com.google.code.yourpresenter.service.ISongService;
 
 @Component("songTableView")
-@Scope("session")
+@Scope(WebApplicationContext.SCOPE_SESSION)
 @SuppressWarnings("serial")
 public class SongTableView implements Serializable {
 
 	private ISongService songService;
 	
 	private List<Song> songs;
-	
-	private Song selectedSong;
+
+	private long currentSongId;
 	
 	@Autowired
 	public SongTableView(ISongService songService) {
@@ -35,12 +36,30 @@ public class SongTableView implements Serializable {
 		this.songs = songs;
 	}
 
-	public Song getSelectedSong() {
-		return selectedSong;
+	public void delete() {
+		songService.deleteById(getCurrentSongId());
 	}
 
-	public void setSelectedSong(Song selectedSong) {
-		this.selectedSong = selectedSong;
+	/**
+	 * @return the currentSongId
+	 */
+	public long getCurrentSongId() {
+		return currentSongId;
 	}
-	
+
+	/**
+	 * @param currentSongId the currentSongId to set
+	 */
+	public void setCurrentSongId(long currentSongId) {
+		this.currentSongId = currentSongId;
+	}
+
+	/**
+	 * Returns the name of currently selected song.
+	 * 
+	 * @return
+	 */
+	public String getCurrentSongName() {
+		return songService.findNameById(getCurrentSongId());
+	}
 }

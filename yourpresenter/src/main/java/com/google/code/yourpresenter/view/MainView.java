@@ -12,6 +12,7 @@ import javax.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
@@ -19,7 +20,7 @@ import com.google.code.yourpresenter.entity.Schedule;
 import com.google.code.yourpresenter.service.IScheduleService;
 
 @Component("mainView")
-@Scope("session")
+@Scope(WebApplicationContext.SCOPE_SESSION)
 @SuppressWarnings("serial")
 public class MainView implements Serializable {
 

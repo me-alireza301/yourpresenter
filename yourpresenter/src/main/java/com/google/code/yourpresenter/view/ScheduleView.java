@@ -11,6 +11,7 @@ import org.richfaces.event.DropEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
@@ -26,7 +27,7 @@ import com.google.code.yourpresenter.util.Logger;
 import com.google.code.yourpresenter.util.LoggerFactory;
 
 @Component("scheduleView")
-@Scope("session")
+@Scope(WebApplicationContext.SCOPE_SESSION)
 @SuppressWarnings("serial")
 public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 

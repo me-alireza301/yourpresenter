@@ -1,0 +1,22 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+	<h:form id="dialogSongDeleteForm">
+		<a4j:jsFunction name="remove" action="#{songTableView.delete}"
+			render="songs" />
+		<rich:popupPanel id="dialogSongDelete" autosized="true">
+			Are you sure you want to delete the song: "<h:outputText
+				value="#{songTableView.currentSongName}" />"?
+			<a4j:commandButton id="buttonDelete" value="Delete"
+				onclick="remove(); #{rich:component('dialogSongDelete')}.hide(); return false;" />
+			<a4j:commandButton value="Cancel"
+				onclick="#{rich:component('dialogSongDelete')}.hide(); return false;" />
+		</rich:popupPanel>
+
+	</h:form>
+</ui:composition>

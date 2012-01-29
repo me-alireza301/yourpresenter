@@ -18,9 +18,7 @@ public class AddChangeSongDialog {
 	@FindBy(id = "dialogSongEditForm:buttonOK")
 	private WebElement okButton;
 
-	public static final String cancelButtonId = "dialogSongEditForm:buttonCancel";
-	
-	@FindBy(id = cancelButtonId)
+	@FindBy(id = "dialogSongEditForm:buttonCancel")
 	private WebElement cancelButton;
 
 	@FindBy(xpath = "//span[@class='rf-msgs-sum']")
@@ -52,7 +50,8 @@ public class AddChangeSongDialog {
 	}
 
 	public void waitDialogNotDisplayed() {
-		(new WebDriverWait(driver, ITConstant.DRIVER_WAIT, ITConstant.DRIVER_CYCLIC_SLEEP))
+		(new WebDriverWait(driver, ITConstant.DRIVER_WAIT,
+				ITConstant.DRIVER_CYCLIC_SLEEP))
 				.until(new ExpectedCondition<Boolean>() {
 					public Boolean apply(WebDriver d) {
 						return !cancelButton.isDisplayed();
@@ -61,7 +60,8 @@ public class AddChangeSongDialog {
 	}
 
 	public void waitDialogDisplayed() {
-		(new WebDriverWait(driver, ITConstant.DRIVER_WAIT, ITConstant.DRIVER_CYCLIC_SLEEP))
+		(new WebDriverWait(driver, ITConstant.DRIVER_WAIT,
+				ITConstant.DRIVER_CYCLIC_SLEEP))
 				.until(new ExpectedCondition<Boolean>() {
 					public Boolean apply(WebDriver d) {
 						return cancelButton.isDisplayed();
@@ -74,10 +74,12 @@ public class AddChangeSongDialog {
 	}
 
 	public void setSongName(String songName) {
+		songNameInput.clear();
 		songNameInput.sendKeys(songName);
 	}
 
 	public void setSongText(String songText) {
+		songTextInput.clear();
 		songTextInput.sendKeys(songText);
 	}
 }

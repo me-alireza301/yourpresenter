@@ -25,8 +25,14 @@ public class PresenterPage {
 	@FindBy(xpath = "//div[contains(@id, ':scheduleName')]")
 	private WebElement scheduleNameLabel;
 
-	@FindBy(xpath = "//td[contains(@id, ':songTable:')]")
+	@FindBy(xpath = "//div[contains(@id, ':songTable:')]")
 	private List<WebElement> songNames;
+	
+	@FindBy(xpath = "//a[contains(@id, ':editSongLink')]")
+	private List<WebElement> editSongLinks;
+	
+	@FindBy(xpath = "//a[contains(@id, ':deleteSongLink')]")
+	private List<WebElement> deleteSongLinks;
 
 	@FindBy(xpath = "//div[contains(@id, ':panelHeaderPresentation_body')]")
 	private List<WebElement> presentationNames;
@@ -178,5 +184,19 @@ public class PresenterPage {
 		validateSlideIdx(slideIdx);
 		dragAndDrop(bgImages.get(bgIdx), slides.get(slideIdx));
 	}
+
+	public void clickEditSong(int songIdx) throws YpException {
+		validateSongIdx(songIdx);
+		editSongLinks.get(songIdx).click();
+	}
 	
+	public void clickDeleteSong(int songIdx) throws YpException {
+		validateSongIdx(songIdx);
+		deleteSongLinks.get(songIdx).click();
+	}
+
+	public int getSongCount() {
+		return songNames.size();
+	}
+
 }

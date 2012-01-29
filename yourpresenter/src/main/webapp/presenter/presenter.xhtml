@@ -72,6 +72,9 @@
 			});
 		</h:outputScript>
 
+		<!-- need to render dialogSongEditPanel prio to showing the dialogSongEdit dialog -->
+		<a4j:jsFunction name="addSong" render="dialogSongEditPanel"
+			oncomplete="#{rich:component('dialogSongEdit')}.show();" />
 		<!-- 
 			hotkeys:
 			- alt+ctrl+n => add new song dialog pops up  
@@ -84,10 +87,10 @@
 			name="jquery.hotkeys-20100223.js" />
 		<h:outputScript target="head"> 
 			jQuery(document).bind('keyup', 'alt+ctrl+n', function() {
-				#{rich:component('dialogSongEdit')}.show();
+				addSong();
 			});
-		</h:outputScript>		
- 
+		</h:outputScript>
+
 		<div class="ui-layout-north">
 			<h:panelGrid columns="3" cellspacing="0">
 				<h:form>
@@ -100,8 +103,7 @@
 							</f:facet>
 							<rich:menuGroup label="Song" id="menuGroupSong">
 								<rich:menuItem id="menuFileNew" label="New"
-									oncomplete="#{rich:component('dialogSongEdit')}.show();"
-									render="dialogSongEditPanel" />
+									oncomplete="addSong();" />
 							</rich:menuGroup>
 						</rich:dropDownMenu>
 					</rich:toolbar>
@@ -152,7 +154,7 @@
     							</rich:dragIndicator>
 
 								<rich:dataTable value="#{songTableView.songs}" var="song"
-									id="songTable" styleClass="songTable"
+									id="songTable" styleClass="songTable" iterationStatusVar="it"
 									rowClasses="songTable-odd-row, songTable-even-row">
 
 									<rich:column>
@@ -164,6 +166,24 @@
 												dragValue="#{song}" />
 											<h:outputText value="#{song.name}" />
 										</a4j:outputPanel>
+									</rich:column>
+
+									<rich:column>
+										<a4j:commandLink id="editSongLink"
+											oncomplete="#{rich:component('dialogSongEdit')}.show();"
+											render="dialogSongEditPanel">
+											<h:graphicImage value="/images/action/edit.gif" alt="edit" />
+											<a4j:param value="#{song.id}"
+												assignTo="#{songEditView.currentSongId}" />
+										</a4j:commandLink>
+										<a4j:commandLink id="deleteSongLink" render="dialogSongDelete"
+											oncomplete="#{rich:component('dialogSongDelete')}.show()">
+											<h:graphicImage value="/images/action/delete.gif"
+												alt="delete song" />
+											<a4j:param value="#{song.id}"
+												assignTo="#{songTableView.currentSongId}" />
+										</a4j:commandLink>
+
 									</rich:column>
 								</rich:dataTable>
 							</h:panelGrid>
@@ -178,6 +198,7 @@
 						<rich:jQuery selector=".songTable tr" event="mouseout"
 							query="jQuery(this).removeClass('songTable-active-row')" />
 
+						<ui:include src="dialogSongDelete.xhtml" />
 					</a4j:outputPanel>
 				</rich:tab>
 				<rich:tab header="Bible">

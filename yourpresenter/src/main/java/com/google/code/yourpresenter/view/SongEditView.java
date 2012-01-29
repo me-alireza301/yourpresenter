@@ -2,40 +2,28 @@ package com.google.code.yourpresenter.view;
 
 import java.io.Serializable;
 
-import javax.annotation.PostConstruct;
-import javax.faces.context.FacesContext;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.google.code.yourpresenter.entity.Song;
 import com.google.code.yourpresenter.service.ISongService;
 
 
 @Component("songEditView")
-@Scope("request")
+@Scope(WebApplicationContext.SCOPE_REQUEST)
 @SuppressWarnings("serial")
 public class SongEditView implements Serializable {
 	
-	private Song song;
+	private long currentSongId;
+	
+	private Song song = new Song();
 	private ISongService songService;
 
 	@Autowired
 	public SongEditView(ISongService songService ) {
 		this.songService = songService;
-	}
-	
-	@SuppressWarnings("restriction")
-	@PostConstruct
-	public void onLoad() {
-		String songId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("songId");
-		if (null == songId) {
-			this.song = this.songService.createOrEditSong(null);
-		} else {
-			this.song = this.songService.createOrEditSong(Long.valueOf(songId));	
-		}
-		
 	}
 	
 	public Song getSong() {
@@ -48,8 +36,21 @@ public class SongEditView implements Serializable {
 	
 	public void update() {
 		songService.persist(song);
-//		FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Song is updated successfully", "OK");
-//		FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 	}
 
+	/**
+	 * @return the currentSongId
+	 */
+	public long getCurrentSongId() {
+		return currentSongId;
+	}
+
+	/**
+	 * @param currentSongId the currentSongId to set
+	 */
+	public void setCurrentSongId(long currentSongId) {
+		this.currentSongId = currentSongId;
+		// moreover find the song based on it's id
+		this.song = this.songService.findById(getCurrentSongId());
+	}
 }
