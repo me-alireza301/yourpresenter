@@ -23,8 +23,10 @@ import com.google.code.yourpresenter.IConstants;
 import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.BgImage;
+import com.google.code.yourpresenter.entity.BgImageType;
 import com.google.code.yourpresenter.entity.Preference;
 import com.google.code.yourpresenter.service.IBgImageService;
+import com.google.code.yourpresenter.service.IBgImageTypeService;
 import com.google.code.yourpresenter.service.IPreferenceService;
 import com.google.code.yourpresenter.util.FileObjectUtil;
 import com.google.code.yourpresenter.util.FileUtil;
@@ -38,16 +40,17 @@ import com.google.code.yourpresenter.util.PostInitialize;
 public class MediaCrawlerImpl implements IMediaCrawler,
 		IPreferenceChangedListener, Serializable {
 
-	private static Logger logger = LoggerFactory.getLogger(MediaCrawlerImpl.class);
-	
+	private static Logger logger = LoggerFactory
+			.getLogger(MediaCrawlerImpl.class);
+
 	@Autowired
 	private IPreferenceService preferenceService;
 	@Autowired
 	private IBgImageService bgImageService;
 	@Autowired
-	private IThumbnailCreator thumbnailCreatorService;
-	@Autowired
 	private IMediaFileSelector mediaFileSelectorImpl;
+	@Autowired
+	private IBgImageTypeService bgImageTypeService;
 
 	public MediaCrawlerImpl() {
 	}
@@ -63,7 +66,7 @@ public class MediaCrawlerImpl implements IMediaCrawler,
 		if (null == dirs) {
 			dirs = preferenceService.findStringArrayById(IConstants.MEDIA_DIRS);
 		}
-		
+
 		// replace special dir refs ${XXX}
 		dirs = FileUtil.replaceDirs(dirs);
 
@@ -90,26 +93,15 @@ public class MediaCrawlerImpl implements IMediaCrawler,
 		persistImagesDiff(media);
 	}
 
-	private void persistImagesDiff(List<FileObject> media) throws YpException {
-		String thumbDir = this.preferenceService
-				.findStringById(IConstants.MEDIA_THUMBNAIL_DIR);
-		thumbDir = FileUtil.replaceDirs(thumbDir);
-		
-		// init thumbnail dir
-		new File(thumbDir).mkdirs();
-		
-		final String thumbExt = this.preferenceService
-				.findStringById(IConstants.MEDIA_THUMBNAIL_EXT);
-		final int thumbWidth = Integer.parseInt(this.preferenceService
-				.findStringById(IConstants.MEDIA_THUMBNAIL_WIDTH));
-
-		this.thumbnailCreatorService.setThumbnailWidth(thumbWidth);
-
+	private void persistImagesDiff(final List<FileObject> media) throws YpException {
 		Collection<BgImage> bgImages = this.bgImageService.findAll();
 		Set<BgImage> bgImagesSet = null;
 		if (!CollectionUtils.isEmpty(bgImages)) {
 			bgImagesSet = new HashSet<BgImage>(bgImages);
 		}
+
+		BgImageType bgImageType = bgImageTypeService
+				.findByName(IConstants.BG_IMAGE_TYPE_IMG);
 
 		// get modified/new files only
 		for (FileObject fileObject : media) {
@@ -118,33 +110,24 @@ public class MediaCrawlerImpl implements IMediaCrawler,
 			try {
 				bgImage = new BgImage(
 						FileObjectUtil.getAbsolutePath(fileObject), fileObject
-								.getContent().getLastModifiedTime());
+								.getContent().getLastModifiedTime(), true,
+						bgImageType);
 			} catch (FileSystemException e) {
 				throw new YpException(YpError.MEDIA_CRAWLING_FAILED, e);
 			}
 
-			persistImageDiff(thumbDir, thumbExt, bgImagesSet, bgImage);
+			persistImageDiff(bgImagesSet, bgImage);
 		}
 	}
 
-	private void persistImageDiff(final String thumbDir, final String thumbExt,
-			final Set<BgImage> bgImagesSet, BgImage bgImage) throws YpException {
+	private void persistImageDiff(final Set<BgImage> bgImagesSet,
+			BgImage bgImage) throws YpException {
 		// if not imported yet
 		if ((null == bgImagesSet)
 				|| (null != bgImagesSet && !bgImagesSet.contains(bgImage))) {
 			this.bgImageService.persist(bgImage);
-
-			final String thumbnailName = new StringBuilder(
-					Long.toString(bgImage.getId())).append(".")
-					.append(thumbExt).toString();
-			final File thumbnail = new File(thumbDir, thumbnailName);
-
-			this.thumbnailCreatorService.generateThumbnail(bgImage.getImage(),
-					thumbnail);
-
-			// TODO change so that it can be served as static content possibly
-			bgImage.setThumbnail(thumbnail.getAbsolutePath());
-			this.bgImageService.persist(bgImage);
+			// generate and store the thumbnail
+			bgImageService.handleThumbnail(bgImage);
 		}
 	}
 

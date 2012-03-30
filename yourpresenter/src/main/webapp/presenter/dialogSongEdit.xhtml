@@ -6,6 +6,16 @@
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:a4j="http://richfaces.org/a4j">
 
+	<!-- <rich:notify id="notifySongSaved" stack="notifyStack"
+		summary="Song saved"
+		detail="Song: '#{songEditView.song.name}' has been saved."
+		stayTime="#{preferencesView.viewNotifyStayTime}" sticky="#{preferencesView.viewNotifySticky}"
+		nonblocking="#{preferencesView.viewNotifyNonblocking}"
+		nonblockingOpacity="#{preferencesView.viewNotifyNonblockingOpacity}"
+		showShadow="#{preferencesView.viewNotifyShowShadow}"
+		showCloseButton="#{preferencesView.viewNotifyShowCloseButton}">
+	</rich:notify> -->
+	
 	<rich:popupPanel id="dialogSongEdit" modal="true" autosized="true"
 		resizeable="false"
 		onmaskclick="#{rich:component('dialogSongEdit')}.hide();"
@@ -52,8 +62,8 @@
 						-->
 						<a4j:commandButton id="buttonOK" value="OK" action="#{songEditView.update}"
 							oncomplete="if (jQuery(#{rich:element('dialogSongEditForm:newSongErrors')}).is(':empty')) { #{rich:component('dialogSongEdit')}.hide(); location.reload() }; return true;"		
-							 type="submit"/>
-							<!-- render="songs" -->
+							 type="submit" render="songs"/>
+							<!-- render="songs notifySongSaved" -->
 						<a4j:commandButton id="buttonCancel" value="Cancel"
 							oncomplete="#{rich:component('dialogSongEdit')}.hide(); return false;" />
 					</h:panelGrid>

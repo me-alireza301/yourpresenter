@@ -46,5 +46,4 @@ public class DeleteSongDialog {
 	public void clickDeleteButton() {
 		deleteButton.click();
 	}
-
 }

@@ -16,6 +16,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.BgImage;
+import com.google.code.yourpresenter.entity.MediaMisc;
 import com.google.code.yourpresenter.entity.Presentation;
 import com.google.code.yourpresenter.entity.Schedule;
 import com.google.code.yourpresenter.entity.Song;
@@ -92,6 +93,14 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 				// add song after presentation (position id)
 				dropped((Song) dragValue, id);
 			}
+		} else if (dragValue instanceof MediaMisc) {
+			if (level.equals("schedule")) {
+				// add MediaMisc at start (position 0)
+				dropped((MediaMisc) dragValue, -1);
+			} else if (level.equals("presentation")) {
+				// add MediaMisc after presentation (position id)
+				dropped((MediaMisc) dragValue, id);
+			}
 		} else if (dragValue instanceof Presentation) {
 				if (level.equals("schedule")) {
 					// move presentation to the start (position 0)
@@ -116,6 +125,12 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 		this.stateService.stateChanged(scheduleName);
 	}
 	
+	private void dropped(MediaMisc mediaMisc, long presentationId) throws IOException {
+		logger.debug("Added MediaMisc (mediaMisc.id=", mediaMisc.getId(), ") to schedule (schedule=", this.scheduleName, 
+				") after presentation (presentation.id=", presentationId, ")");
+		this.scheduleService.addPresentation(this.getSchedule(), presentationId, null, mediaMisc);
+	}
+
 	private void dropped(Presentation presentation, long presentationId) throws IOException {
 		logger.debug("Moved presentation (presentation.id=", presentation.getId(), ") in (schedule=", this.scheduleName, 
 				") after presentation (presentation.id=", presentationId, ")");
@@ -125,7 +140,7 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 	public void dropped(Song song, long presentationId) throws IOException {
 		logger.debug("Added Song (song.id=", song.getId(), ") to schedule (schedule=", this.scheduleName, 
 				") after presentation (presentation.id=", presentationId, ")");
-		this.scheduleService.addPresentation(this.getSchedule(), presentationId, song);
+		this.scheduleService.addPresentation(this.getSchedule(), presentationId, song, null);
 	}
 	
 	public void droppedToSlide(BgImage bgImage, long slideId) {

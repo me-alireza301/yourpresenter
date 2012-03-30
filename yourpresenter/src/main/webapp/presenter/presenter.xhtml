@@ -91,7 +91,14 @@
 			});
 		</h:outputScript>
 
+		<!-- notifications not usable till problem fix available of: https://community.jboss.org/message/723043 -->
+		<!-- notification stack -->
+		<!-- <rich:notifyStack id="notifyStack" position="topRight" direction="vertical" method="last" /> -->
+
 		<div class="ui-layout-north">
+			<a4j:jsFunction name="upload" render="dialogUpload"
+						oncomplete="#{rich:component('dialogUpload')}.show();" />
+						
 			<h:panelGrid columns="3" cellspacing="0">
 				<h:form>
 					<rich:toolbar height="26px">
@@ -105,6 +112,14 @@
 								<rich:menuItem id="menuFileNew" label="New"
 									oncomplete="addSong();" />
 							</rich:menuGroup>
+							<rich:menuGroup label="Media" id="menuGroupMedia">
+								<rich:menuItem id="mediaUpload" label="Upload"
+									oncomplete="upload();">
+									<a4j:param value="#{uploadView.miscAcceptedTypes}"
+										assignTo="#{uploadView.acceptedTypes}" />
+								</rich:menuItem>
+							</rich:menuGroup>
+							
 						</rich:dropDownMenu>
 					</rich:toolbar>
 				</h:form>
@@ -218,7 +233,8 @@
 					<rich:panel styleClass="dropTargetPanel">
 						<f:facet name="header">
 							<rich:panel id="scheduleName" styleClass="header-panel">
-								<rich:dropTarget acceptedTypes="bgImage, song, presentation"
+								<rich:dropTarget
+									acceptedTypes="bgImage, song, presentation, mediaMisc"
 									dropValue="schedule_#{schedule.name}"
 									dropListener="#{scheduleView.dropped}" render="schedule"
 									oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:preferences['view.font.maxsize.presenter']});" />
@@ -238,21 +254,22 @@
 											<rich:dragSource type="presentation"
 												dragIndicator="presentationDragInd"
 												dragValue="#{presentation}" />
-											<rich:dropTarget acceptedTypes="bgImage, song, presentation"
+											<rich:dropTarget
+												acceptedTypes="bgImage, song, presentation, mediaMisc"
 												dropValue="presentation_#{presentation.id}"
 												dropListener="#{scheduleView.dropped}" render="schedule"
 												oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:preferences['view.font.maxsize.presenter']})" />
 
-											<h:outputText value="${presentation.song.name}" />
+											<h:outputText value="${presentation.name}" />
 										</rich:panel>
 									</f:facet>
 
 									<!--  elements="9" -->
 									<rich:dataGrid value="#{presentation.slides}" var="slide"
-										columns="4" border="0">
+											columns="4" border="0">
 
 										<a4j:commandLink action="#{scheduleView.activateSlide}"
-											render="" styleClass="slidebox-link">
+											render="none" styleClass="slidebox-link" execute="@none">
 											<f:param name="id" value="#{slide.id}" />
 
 											<rich:dropTarget acceptedTypes="bgImage"
@@ -260,19 +277,13 @@
 												dropListener="#{scheduleView.dropped}" render="schedule"
 												oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:preferences['view.font.maxsize.presenter']})" />
 
-											<!-- these panels + styles might look weird, but it's a working solution for jtextfill -->
 											<rich:panel styleClass="slidebox slidebox-#{slide.cssSuffix}"
 												style="background-image:url('/yourpresenter/mvc/thumbnail/#{slide.bgImage.id}');">
 
 												<div class="jtextfill">
-													<!-- <span class="jtextfill-inner"></span> -->
 													<h:outputText styleClass="jtextfill-inner"
-														value="#{slide.verse.text}" escape="false" />
+														value="#{slide.text}" escape="false" />
 												</div>
-												<!-- <rich:panel styleClass="jtextfill">
-													<h:outputText styleClass="jtextfill-inner"
-														value="#{slide.verse.text}" escape="false" />
-												</rich:panel> -->
 											</rich:panel>
 										</a4j:commandLink>
 
@@ -310,9 +321,28 @@
 						</h:form>
 					</a4j:outputPanel>
 				</rich:tab>
-				<!-- <rich:tab header="Video">
-				</rich:tab> -->
+				<rich:tab header="Video">
+				</rich:tab>
+
+				<rich:tab id="tabMisc" header="Misc">
+					<rich:dragIndicator id="miscDragInd" acceptClass="accept"
+						rejectClass="reject" draggingClass="default">
+       						Drag media to presentation ...
+					</rich:dragIndicator>
+
+					<rich:dataGrid value="#{miscView.mediaMisc}" var="mediaMisc"
+						columns="6" border="0">
+						<rich:panel styleClass="media-image"
+							style="background-image:url('/yourpresenter/mvc/thumbnail/#{mediaMisc.coverArt.bgImage.id}');">
+
+							<rich:dragSource type="mediaMisc" dragIndicator="miscDragInd"
+								dragValue="#{mediaMisc}" />
+						</rich:panel>
+					</rich:dataGrid>
+				</rich:tab>
 			</rich:tabPanel>
+
+			<ui:include src="dialogUpload.xhtml" />
 		</div>
 
 	</h:body>

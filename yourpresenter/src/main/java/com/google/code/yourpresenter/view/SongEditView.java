@@ -35,7 +35,7 @@ public class SongEditView implements Serializable {
 	}
 	
 	public void update() {
-		songService.persist(song);
+		songService.update(song);
 	}
 
 	/**

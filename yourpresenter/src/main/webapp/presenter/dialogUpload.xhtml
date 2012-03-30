@@ -1,0 +1,114 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+	<!-- <rich:notify id="notifyImportStarted" stack="notifyStack"
+		summary="Import started"
+		stayTime="#{preferencesView.viewNotifyStayTime}" sticky="#{preferencesView.viewNotifySticky}"
+		nonblocking="#{preferencesView.viewNotifyNonblocking}"
+		nonblockingOpacity="#{preferencesView.viewNotifyNonblockingOpacity}"
+		showShadow="#{preferencesView.viewNotifyShowShadow}"
+		showCloseButton="#{preferencesView.viewNotifyShowCloseButton}">
+	</rich:notify>
+	
+	<rich:notify id="notifyImportDone" stack="notifyStack"
+		summary="Import done"
+		stayTime="#{preferencesView.viewNotifyStayTime}" sticky="#{preferencesView.viewNotifySticky}"
+		nonblocking="#{preferencesView.viewNotifyNonblocking}"
+		nonblockingOpacity="#{preferencesView.viewNotifyNonblockingOpacity}"
+		showShadow="#{preferencesView.viewNotifyShowShadow}"
+		showCloseButton="#{preferencesView.viewNotifyShowCloseButton}">
+	</rich:notify> -->
+
+	<h:form id="dialogUploadForm">
+		<!-- domElementAttachment is a must, otherwise rich:fileUpload doesn't work in rich:popupPanel,
+		see: https://community.jboss.org/thread/172441 -->
+		<rich:popupPanel id="dialogUpload" autosized="true"
+			domElementAttachment="form">
+
+			<a4j:outputPanel id="importWizardPanel">
+				<!-- <rich:progressBar mode="ajax"
+					value="#{uploadView.currentImportValue}" interval="60000"
+					enabled="true" id="importProgress" minValue="0" maxValue="100">
+					<f:facet name="initial"> -->
+						<h:panelGroup>
+							<rich:fileUpload fileUploadListener="#{uploadView.upload}"
+								id="upload" acceptedTypes="#{uploadView.acceptedTypes}"
+								ontyperejected="alert('Only file types: #{uploadView.acceptedTypes} are accepted');">
+								<a4j:ajax event="uploadcomplete" execute="@none"
+									render="buttonImport" />
+							</rich:fileUpload>
+
+							<a4j:commandButton 
+								id="buttonImport" value="Start Import" style="float:right"
+								render="importProgress" disabled="#{uploadView.filesSize==0}"
+								action="#{uploadView.startImport}" onclick="#{rich:component('dialogUpload')}.hide(); return true" />
+								
+						</h:panelGroup>
+					<!-- </f:facet>
+					<f:facet name="finish">
+						<h:panelGroup>
+							<h:outputText value="Import Done" />
+
+							<a4j:commandButton style="float:right" value="Close"
+								id="buttonClose"
+								onclick="#{rich:component('dialogUpload')}.hide();">
+							</a4j:commandButton>
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText value="#{uploadBean.currentImportValue} %" />
+				</rich:progressBar>
+ -->
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+				<!-- <a4j:commandButton style="float:right" value="Close"
+					id="buttonClose"
+					onclick="#{rich:component('dialogUpload')}.hide();">
+				</a4j:commandButton> -->
+			</a4j:outputPanel>
+
+			<!-- 					<a4j:outputPanel id="importWizardPanel">
+						<rich:progressBar mode="ajax"
+							value="#{uploadView.currentImportValue}" interval="2000"
+							enabled="#{uploadView.importStarted}" id="importProgress"
+							minValue="0" maxValue="100"
+							reRenderAfterComplete="importWizardPanel">
+							<f:facet name="initial">
+								<h:panelGroup>
+									<a4j:commandButton action="#{uploadView.startImport}"
+										value="Start Import" execute="@form" render="importProgress" />
+									rendered="#{!uploadView.importStarted}"
+								</h:panelGroup>
+							</f:facet>
+							<f:facet name="finish">
+								<h:panelGroup>
+									<h:outputText value="Process Done" />
+								</h:panelGroup>
+							</f:facet>
+							<h:outputText value="#{uploadBean.currentImportValue} %" />
+						</rich:progressBar>
+
+						<a4j:commandButton style="float:right" value="Next &gt;&gt;">
+							<rich:toggleControl targetItem="@next" event="click" />
+						</a4j:commandButton>
+					</a4j:outputPanel>
+			</rich:togglePanel> 
+
+
+			<a4j:commandButton style="float:right" value="Close"
+				onclick="#{rich:component('dialogUpload')}.hide(); return true;" />
+				-->
+		</rich:popupPanel>
+
+	</h:form>
+</ui:composition>

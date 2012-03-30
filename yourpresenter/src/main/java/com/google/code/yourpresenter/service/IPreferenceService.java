@@ -22,4 +22,6 @@ public interface IPreferenceService {
 
 	public void unregisterPreferenceChangedListener(
 			IPreferenceChangedListener listener) throws YpException;
+	
+	public void persist(Preference preference);
 }

@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.google.code.yourpresenter.IConstants;
 import com.google.code.yourpresenter.entity.BgImage;
 import com.google.code.yourpresenter.service.IBgImageService;
 
@@ -20,6 +21,6 @@ public class ImageView implements Serializable {
 	IBgImageService bgImageService;
 	
 	public Collection<BgImage> getBgImage() {
-		return this.bgImageService.findAll();
+		return this.bgImageService.findAllByType(IConstants.BG_IMAGE_TYPE_IMG);
 	}
 }

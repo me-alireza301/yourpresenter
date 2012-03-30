@@ -3,8 +3,10 @@ package com.google.code.yourpresenter.entity;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -32,12 +34,20 @@ public class BgImage implements Serializable {
 	@JsonIgnore
 	private long lastModifiedTime;
 
+	@JsonIgnore
+	private boolean replaceable;
+
+	private BgImageType type;
+
 	public BgImage() {
 	}
-			
-	public BgImage(String image, long lastModifiedTime) {
+
+	public BgImage(String image, long lastModifiedTime, boolean replaceable,
+			BgImageType type) {
 		this.image = image;
-		this.lastModifiedTime = lastModifiedTime;
+		this.setLastModifiedTime(lastModifiedTime);
+		this.setReplaceable(replaceable);
+		this.setType(type);
 	}
 
 	/**
@@ -47,7 +57,7 @@ public class BgImage implements Serializable {
 	 */
 	@Id
 	@GeneratedValue
-	@Index(name="BgImageIdIdx")
+	@Index(name = "BgImageIdIdx")
 	public Long getId() {
 		return id;
 	}
@@ -114,5 +124,30 @@ public class BgImage implements Serializable {
 		return new HashCodeBuilder().append(this.image)
 				.append(this.lastModifiedTime).toHashCode();
 	}
-	
+
+	/**
+	 * @return the replaceable
+	 */
+	public boolean isReplaceable() {
+		return replaceable;
+	}
+
+	/**
+	 * @param replaceable
+	 *            the replaceable to set
+	 */
+	public void setReplaceable(boolean replaceable) {
+		this.replaceable = replaceable;
+	}
+
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
+	@Index(name = "BgImageBgImageTypeIdx")
+	public BgImageType getType() {
+		return type;
+	}
+
+	public void setType(BgImageType type) {
+		this.type = type;
+	}
+
 }

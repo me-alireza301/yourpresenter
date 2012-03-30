@@ -24,7 +24,7 @@ import com.google.code.yourpresenter.selenium.page.MainPage;
 import com.google.code.yourpresenter.selenium.page.PresenterPage;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("test-application-config.xml")
+@ContextConfiguration("./../test-application-config.xml")
 public class SampleDataLoader {
 
 	private static WebDriver driver;

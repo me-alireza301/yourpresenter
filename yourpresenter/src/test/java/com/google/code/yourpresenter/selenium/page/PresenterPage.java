@@ -27,10 +27,10 @@ public class PresenterPage {
 
 	@FindBy(xpath = "//div[contains(@id, ':songTable:')]")
 	private List<WebElement> songNames;
-	
+
 	@FindBy(xpath = "//a[contains(@id, ':editSongLink')]")
 	private List<WebElement> editSongLinks;
-	
+
 	@FindBy(xpath = "//a[contains(@id, ':deleteSongLink')]")
 	private List<WebElement> deleteSongLinks;
 
@@ -42,13 +42,19 @@ public class PresenterPage {
 
 	@FindBy(xpath = "//span[@class = 'rf-st-start']")
 	private WebElement ajaxStatus;
-	
+
 	@FindBy(xpath = "//div[contains(@class, 'media-image')]")
 	private List<WebElement> bgImages;
-	
+
 	@FindBy(xpath = "//div[contains(@class, 'slidebox')]")
 	private List<WebElement> slides;
-	
+
+	@FindBy(xpath = "//td[@id = 'tabMisc:header:inactive']")
+	private WebElement miscTab;
+
+	@FindBy(xpath = "//input[contains(@id, ':buttonMiscUpload')]")
+	private WebElement miscMiscUploadButton;
+
 	public PresenterPage(WebDriver driver) {
 		this.driver = driver;
 		ElementLocatorFactory finder = new AjaxElementLocatorFactory(driver,
@@ -133,26 +139,27 @@ public class PresenterPage {
 		validateBgIdx(bgIdx);
 		dragAndDrop(bgImages.get(bgIdx), scheduleName);
 	}
-	
-	public void setBgToPresentation(int bgIdx, int presentationIdx) throws YpException {
+
+	public void setBgToPresentation(int bgIdx, int presentationIdx)
+			throws YpException {
 		validateBgIdx(bgIdx);
 		validatePresentationIdx(presentationIdx);
 		dragAndDrop(bgImages.get(bgIdx), presentationNames.get(presentationIdx));
 	}
 
 	public String getSlideBg(int slideIdx) throws YpException {
-		// TODO more sophisticated computing could help, currently only slide index 
+		// TODO more sophisticated computing could help, currently only slide
+		// index
 		// indexing all the slides on the page available
 
 		validateSlideIdx(slideIdx);
 		return slides.get(slideIdx).getCssValue("background-image");
 	}
-	
+
 	public String getBgImgUrl(int bgIdx) throws YpException {
 		validateBgIdx(bgIdx);
 		return bgImages.get(bgIdx).getCssValue("background-image");
 	}
-
 
 	private void validateSlideIdx(int slideIdx) throws YpException {
 		if (slides.size() <= slideIdx) {
@@ -165,7 +172,7 @@ public class PresenterPage {
 			throw new YpException(YpError.NOT_SUPPORTED_IDX);
 		}
 	}
-	
+
 	private void validatePresentationIdx(int presentationIdx)
 			throws YpException {
 		if (presentationNames.size() <= presentationIdx) {
@@ -189,7 +196,7 @@ public class PresenterPage {
 		validateSongIdx(songIdx);
 		editSongLinks.get(songIdx).click();
 	}
-	
+
 	public void clickDeleteSong(int songIdx) throws YpException {
 		validateSongIdx(songIdx);
 		deleteSongLinks.get(songIdx).click();
@@ -197,6 +204,13 @@ public class PresenterPage {
 
 	public int getSongCount() {
 		return songNames.size();
+	}
+
+	public void openMiscUploadDialog() {
+		miscTab.click();
+		this.waitAjaxDone();
+		miscMiscUploadButton.click();
+		this.waitAjaxDone();
 	}
 
 }

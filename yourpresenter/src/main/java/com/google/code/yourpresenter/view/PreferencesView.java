@@ -46,7 +46,6 @@ public class PreferencesView implements Serializable {
 
 	private boolean saveDisabled = true;
 
-
 	public String getViewFontMaxsizeProjector() throws YpException {
 		return this.preferenceService
 				.findStringById(IConstants.VIEW_FONT_MAXSIZE_PROJECTOR);
@@ -103,7 +102,7 @@ public class PreferencesView implements Serializable {
 
 	public void save(ActionEvent event) throws YpException {
 		saveDisabled = true;
-		
+
 		Collection<Preference> preferences = new ArrayList<Preference>();
 		preferences.add(new Preference(IConstants.MEDIA_DIRS, mediaDirs));
 		preferences.add(new Preference(IConstants.MEDIA_ACCEPTED_EXTS,
@@ -120,5 +119,35 @@ public class PreferencesView implements Serializable {
 	// https://issues.jboss.org/browse/RF-11125?page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel&focusedCommentId=12620545#comment-12620545
 	public void valueChanged(AjaxBehaviorEvent event) throws YpException {
 		saveDisabled = false;
+	}
+
+	public String getViewNotifyNonblocking() throws YpException {
+		return this.preferenceService
+				.findStringById(IConstants.VIEW_NOTIFY_NONBLOCKING);
+	}
+	
+	public String getViewNotifyNonblockingOpacity() throws YpException {
+		return this.preferenceService
+				.findStringById(IConstants.VIEW_NOTIFY_NONBLOCKINGOPACITY);
+	}
+	
+	public String getViewNotifyShowShadow() throws YpException {
+		return this.preferenceService
+				.findStringById(IConstants.VIEW_NOTIFY_SHOWSHADOW);
+	}
+	
+	public String getViewNotifyShowCloseButton() throws YpException {
+		return this.preferenceService
+				.findStringById(IConstants.VIEW_NOTIFY_SHOWCLOSEBUTTON);
+	}
+	
+	public String getViewNotifyStayTime() throws YpException {
+		return this.preferenceService
+				.findStringById(IConstants.VIEW_NOTIFY_STAYTIME);
+	}
+
+	public String getViewNotifySticky() throws YpException {
+		return this.preferenceService
+				.findStringById(IConstants.VIEW_NOTIFY_STICKY);
 	}
 }

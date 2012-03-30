@@ -6,14 +6,25 @@
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:a4j="http://richfaces.org/a4j">
 
+	<!-- <rich:notify id="notifySongDelete" stack="notifyStack"
+		summary="Song deleted"
+		detail="Song: '#{songTableView.currentSongName}' has been deleted."
+		stayTime="#{preferencesView.viewNotifyStayTime}" sticky="#{preferencesView.viewNotifySticky}"
+		nonblocking="#{preferencesView.viewNotifyNonblocking}"
+		nonblockingOpacity="#{preferencesView.viewNotifyNonblockingOpacity}"
+		showShadow="#{preferencesView.viewNotifyShowShadow}"
+		showCloseButton="#{preferencesView.viewNotifyShowCloseButton}">
+	</rich:notify>
+ -->
 	<h:form id="dialogSongDeleteForm">
 		<a4j:jsFunction name="remove" action="#{songTableView.delete}"
-			render="songs" />
+			render="songs " />
+			<!-- notifySongDelete -->
 		<rich:popupPanel id="dialogSongDelete" autosized="true">
 			Are you sure you want to delete the song: "<h:outputText
 				value="#{songTableView.currentSongName}" />"?
 			<a4j:commandButton id="buttonDelete" value="Delete"
-				onclick="remove(); #{rich:component('dialogSongDelete')}.hide(); return false;" />
+				onclick="remove(); #{rich:component('dialogSongDelete')}.hide(); return false;"/>
 			<a4j:commandButton value="Cancel"
 				onclick="#{rich:component('dialogSongDelete')}.hide(); return false;" />
 		</rich:popupPanel>

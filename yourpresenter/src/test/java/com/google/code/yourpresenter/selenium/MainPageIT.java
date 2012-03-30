@@ -20,7 +20,7 @@ import com.google.code.yourpresenter.selenium.page.MainPage;
 import com.google.code.yourpresenter.selenium.restclient.ScheduleRestTemplate;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("test-application-config.xml")
+@ContextConfiguration("./../test-application-config.xml")
 public class MainPageIT {
 
 	private static WebDriver driver;
@@ -64,7 +64,7 @@ public class MainPageIT {
 		scheduleRestTemplate.deleteAll();
 	}
 
-	@Test
+//	@Test
 	public void testMainErrScheduleCreate() throws Exception {
 		driver.get("http://localhost:8081/yourpresenter");
 

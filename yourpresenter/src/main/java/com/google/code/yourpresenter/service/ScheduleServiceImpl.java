@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.google.code.yourpresenter.entity.BgImage;
+import com.google.code.yourpresenter.entity.MediaMisc;
 import com.google.code.yourpresenter.entity.Presentation;
 import com.google.code.yourpresenter.entity.Schedule;
 import com.google.code.yourpresenter.entity.Song;
@@ -34,6 +35,9 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 	@Autowired
 	private ISongService songService;
 
+	@Autowired
+	private IMediaMiscService mediaMiscService;
+
 	public ScheduleServiceImpl() {
 	}
 
@@ -42,6 +46,7 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		this.em = em;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public List<Schedule> findAll() {
@@ -49,12 +54,7 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		return query.getResultList();
 	}
 
-	@Cacheable(cacheName="scheduleCache", 
-	        keyGenerator = @KeyGenerator (
-	                name = "HashCodeCacheKeyGenerator",
-	                properties = @Property( name="includeMethod", value="false" )
-	            )
-	        )
+	@Cacheable(cacheName = "scheduleCache", keyGenerator = @KeyGenerator(name = "HashCodeCacheKeyGenerator", properties = @Property(name = "includeMethod", value = "false")))
 	@Transactional(readOnly = true)
 	public Schedule findByName(String name) {
 		if (null == name) {
@@ -85,23 +85,41 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 
 	@Transactional
 	@Override
-	public void addPresentation(final Schedule schedule,
-			long presentationId, final Song songTr) {
+	public void addPresentation(final Schedule schedule, long presentationId,
+			final Song songTr, final MediaMisc mediaMiscTr) {
 		// to prevent:
 		// Exception: failed to lazily initialize a collection of role:
 		// com.google.code.yourpresenter.entity.Song.verses, no session or
 		// session was closed
-		Song song = songService.findById(songTr.getId());
+		String name = null;
+		Song song = null; 
+		if (null != songTr) {
+			song = songService.findById(songTr.getId());
+			name = song.getName();
+		}
 		
+		MediaMisc mediaMisc = null; 
+		if (null != mediaMiscTr) {
+			mediaMisc = mediaMiscService.findById(mediaMiscTr.getId());
+			name = mediaMisc.getName();
+		}
+
 		// make sure schedule is not detached object => do the merge
 		this.persist(schedule);
-		
+
 		int position = shiftPresentation(presentationId, schedule, true);
 
 		Presentation presentation = presentationService.createOrEdit(null);
+		presentation.setName(name);
 		presentation.setPossition(position);
 		presentation.setSchedule(schedule);
-		presentation.setSong(song);
+		
+		if (null != song) {
+			presentation.setSong(song);
+		} else if (null != mediaMisc) {
+			presentation.setMediaMisc(mediaMisc);
+		}
+		
 		this.presentationService.persist(presentation);
 		// make sure that also slides relevant for song are to be persisted
 		this.presentationService.persistSlides(presentation);
@@ -114,7 +132,8 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		}
 	}
 
-	private int shiftPresentation(long presentationId, Schedule schedule, boolean forward) {
+	private int shiftPresentation(long presentationId, Schedule schedule,
+			boolean forward) {
 		List<Presentation> presentations = schedule.getPresentations();
 
 		// if new schedule
@@ -131,17 +150,18 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		int maxIdx = presentations.size();
 		for (int idx = 0; idx < maxIdx; idx++) {
 			Presentation toShiftPres = presentations.get(idx);
-			// skip all the presentations not to be affected by shift (before target position)
+			// skip all the presentations not to be affected by shift (before
+			// target position)
 			if (toShiftPres.getPossition() < position) {
 				continue;
 			}
-			
+
 			if (forward) {
 				toShiftPres.incrementPossition();
 			} else {
-				toShiftPres.decrementPossition();	
+				toShiftPres.decrementPossition();
 			}
-			this.presentationService.persist(toShiftPres);	
+			this.presentationService.persist(toShiftPres);
 		}
 		return position;
 	}
@@ -225,20 +245,22 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		// Exception: failed to lazily initialize a collection of role:
 		// com.google.code.yourpresenter.entity.Song.verses, no session or
 		// session was closed
-		Presentation presentation = presentationService.findById(presentationTr.getId());
-		
-		// TODO tune performance detect cases where no update necessary and skip DB actions
+		Presentation presentation = presentationService.findById(presentationTr
+				.getId());
+
+		// TODO tune performance detect cases where no update necessary and skip
+		// DB actions
 		// nothing to be done
-//		if (presentation.getPossition() == 1 && presentationId == -1) {
-//			
-//		}
-		
+		// if (presentation.getPossition() == 1 && presentationId == -1) {
+		//
+		// }
+
 		// make sure schedule is not detached object => do the merge
 		this.persist(schedule);
-		
+
 		// move all the presentations after this one in schedule backward
 		shiftPresentation(presentation.getId(), schedule, false);
-		
+
 		// move all the presentations before this one in schedule forward
 		int newPosition = shiftPresentation(presentationId, schedule, true);
 

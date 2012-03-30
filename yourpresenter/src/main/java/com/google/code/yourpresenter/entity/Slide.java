@@ -2,12 +2,15 @@ package com.google.code.yourpresenter.entity;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Index;
@@ -24,11 +27,10 @@ public class Slide implements Serializable {
 	/** The id. */
 	private Long id;
 
-	/** The verse. */
-	private Verse verse;
-
 	/** The background. */
 	private BgImage bgImage;
+	
+	private String text;
 
 	/** The presentation. */
 	@JsonIgnore
@@ -49,8 +51,8 @@ public class Slide implements Serializable {
 	public Slide() {
 	}
 	
-	public Slide(Verse verse, Presentation presentation, int possition) {
-		this.setVerse(verse);
+	public Slide(String text, Presentation presentation, int possition) {
+		this.setText(text);
 		this.setPresentation(presentation);
 		this.setPossition(possition);
 	}
@@ -75,27 +77,6 @@ public class Slide implements Serializable {
 	 */
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	/**
-	 * Gets the verse.
-	 * 
-	 * @return the verse
-	 */
-	@OneToOne
-	@Index(name="SlideVerseIdx")
-	public Verse getVerse() {
-		return verse;
-	}
-
-	/**
-	 * Sets the verse.
-	 * 
-	 * @param verse
-	 *            the new verse
-	 */
-	public void setVerse(Verse verse) {
-		this.verse = verse;
 	}
 
 	/**
@@ -169,5 +150,19 @@ public class Slide implements Serializable {
 	 */
 	public void setPossition(int possition) {
 		this.possition = possition;
+	}
+
+	@Column(columnDefinition = "VARCHAR(1000)")
+	@Size(max = 1000)
+	@NotNull
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		if (null == text) {
+			text = "";
+		}
+		this.text = text;
 	}
 }

@@ -117,4 +117,10 @@ public class SongServiceImpl implements ISongService, Serializable {
 		return null;
 	}
 	
+	@Override
+	@Transactional
+	public void update(Song song) {
+		this.persist(song);
+		
+	}
 }

@@ -58,4 +58,11 @@ public interface ISongService {
 	 * @return
 	 */
 	public String findNameById(Long id);
+
+	/**
+	 * Updates song as well as related presentation.song.text. 
+	 * 
+	 * @param song
+	 */
+	public void update(Song song);
 }

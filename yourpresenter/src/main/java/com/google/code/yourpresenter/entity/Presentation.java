@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
+import javax.validation.constraints.NotNull;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Index;
@@ -33,6 +34,9 @@ public class Presentation implements Serializable {
 	@JsonIgnore
 	private Song song;
 
+	@JsonIgnore
+	private MediaMisc mediaMisc;
+
 	/** The schedule. */
 	@JsonIgnore
 	private Schedule schedule;
@@ -49,6 +53,8 @@ public class Presentation implements Serializable {
 	// seems like position is reserved word => can't be used
 	// see: http://stackoverflow.com/questions/1442127/table-not-found-with-hibernate-and-hsqldb
 	private int possition;
+	
+	private String name;
 	
 	/**
 	 * Gets the id.
@@ -178,5 +184,30 @@ public class Presentation implements Serializable {
 		}
 		
 		this.slides.add(slide);
+	}
+
+	/**
+	 * @return the mediaMisc
+	 */
+	@OneToOne(optional = true)
+	@Index(name="PresentationMediaMiscIdx")
+	public MediaMisc getMediaMisc() {
+		return mediaMisc;
+	}
+
+	/**
+	 * @param mediaMisc the mediaMisc to set
+	 */
+	public void setMediaMisc(MediaMisc mediaMisc) {
+		this.mediaMisc = mediaMisc;
+	}
+
+	@NotNull
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }
