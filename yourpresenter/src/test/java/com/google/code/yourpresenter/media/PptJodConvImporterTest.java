@@ -22,7 +22,7 @@ public class PptJodConvImporterTest {
 	private IPreferenceService preferenceService;
 
 	public static final String RESOURCE_PATH = "target/test-classes/com/google/code/yourpresenter/media";
-	
+
 	private File file;
 
 	@Test
@@ -34,12 +34,13 @@ public class PptJodConvImporterTest {
 						.findStringById(IConstants.MEDIA_IMPORT_PPT_OFFICE_HOME))
 				.thenReturn("C:/Program Files/LibreOffice 3.4");
 
-		((PptJodConvImporter) pptImporter).preferenceService = preferenceService;
-		file = pptImporter.pptToPdf(RESOURCE_PATH + "/1.ppt", new File(RESOURCE_PATH));
-		
-		Assert.assertEquals("1.ppt.pdf", file.getName());
+		pptImporter.preferenceService = preferenceService;
+		file = pptImporter.pptToPdf(RESOURCE_PATH + "/Canada sample.ppt",
+				new File(RESOURCE_PATH));
+
+		Assert.assertEquals("Canada sample.ppt.pdf", file.getName());
 	}
-	
+
 	@After
 	public void cleanup() {
 		if (null != file) {

@@ -8,6 +8,7 @@ import java.util.Set;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.OfficeManager;
+import org.hsqldb.lib.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.google.code.yourpresenter.IConstants;
 import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
+import com.google.code.yourpresenter.util.SystemUtil;
 
 @SuppressWarnings("serial")
 @Service
@@ -26,10 +28,11 @@ public class PptJodConvImporter extends AbstractMediaImporter {
 	protected IMediaImporter pdfImporter;
 
 	private final Set<String> supportedExts = new HashSet<String>(
-			Arrays.asList("ppt", "pptx", "pptm", "odp", "sxi", "ppsx", "pps" ));
+			Arrays.asList("ppt", "pptx", "pptm", "odp", "sxi", "ppsx", "pps"));
 
 	@Override
-	public File[] importMedia(final String media, File outDir) throws YpException {
+	public File[] importMedia(final String media, File outDir)
+			throws YpException {
 		File pdf = pptToPdf(media, outDir);
 		return pdfToPng(pdf.getAbsolutePath(), outDir);
 	}
@@ -41,11 +44,20 @@ public class PptJodConvImporter extends AbstractMediaImporter {
 	protected File pptToPdf(final String media, File outDir) throws YpException {
 		OfficeManager officeManager = null;
 		try {
-			officeManager = new DefaultOfficeManagerConfiguration()
-					.setOfficeHome(
-							preferenceService
-									.findStringById(IConstants.MEDIA_IMPORT_PPT_OFFICE_HOME))
-					.buildOfficeManager();
+			DefaultOfficeManagerConfiguration config = new DefaultOfficeManagerConfiguration();
+
+			switch (SystemUtil.getOS()) {
+			case WINDOWS:
+				String officeHome = preferenceService
+						.findStringById(IConstants.MEDIA_IMPORT_PPT_OFFICE_HOME);
+				
+				if (!StringUtil.isEmpty(officeHome)) {
+					config.setOfficeHome(officeHome);
+				}
+				break;
+			}
+
+			officeManager = config.buildOfficeManager();
 		} catch (IllegalStateException e) {
 			throw new YpException(YpError.FILE_IMPORT_FAILED, e);
 		}

@@ -15,6 +15,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.google.code.yourpresenter.IConstants;
 import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.service.IPreferenceService;
+import com.google.code.yourpresenter.util.SystemUtil;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PdfGhostImporterTest {
@@ -28,10 +29,16 @@ public class PdfGhostImporterTest {
 
 	@Test
 	public void test() throws YpException {
-		Mockito.when(
-				preferenceService
-						.findStringById(IConstants.MEDIA_IMPORT_PDF_GHOSTSCRIPT_HOME))
-				.thenReturn("C:\\Program Files\\gs\\gs9.04");
+		
+		switch (SystemUtil.getOS()) {
+		case WINDOWS:
+			Mockito.when(
+					preferenceService
+							.findStringById(IConstants.MEDIA_IMPORT_PDF_GHOSTSCRIPT_HOME))
+					.thenReturn("C:\\Program Files\\gs\\gs9.04");
+			break;
+		}
+		
 		Mockito.when(
 				preferenceService
 						.findStringById(IConstants.MEDIA_IMPORT_PDF_IMG_TYPE))
