@@ -41,7 +41,7 @@ public class PdfGhostImporter extends AbstractMediaImporter {
 		final String gsHome = preferenceService
 				.findStringById(IConstants.MEDIA_IMPORT_PDF_GHOSTSCRIPT_HOME);
 
-		StringBuilder sb = new StringBuilder(gsHome).append("/bin/");
+		StringBuilder sb = new StringBuilder();
 		switch (SystemUtil.getOS()) {
 		case LINUX:
 		case UNIX:
@@ -49,6 +49,7 @@ public class PdfGhostImporter extends AbstractMediaImporter {
 			sb.append("gs");
 			break;
 		case WINDOWS:
+			sb.append(gsHome).append("/bin/");
 			File dir = new File(sb.toString());
 			if (!dir.isDirectory()) {
 				throw new YpException(YpError.FILE_IMPORT_FAILED,

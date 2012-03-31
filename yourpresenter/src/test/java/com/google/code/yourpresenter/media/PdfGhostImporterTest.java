@@ -1,6 +1,7 @@
 package com.google.code.yourpresenter.media;
 
 import java.io.File;
+import java.util.Arrays;
 
 import junit.framework.Assert;
 
@@ -53,6 +54,9 @@ public class PdfGhostImporterTest {
 		// asserts stuff
 		Assert.assertEquals(6, files.length);
 
+		// for some filesystems files are not in the expected order
+		Arrays.sort(files);
+		
 		int i = 0;
 		for (File file : files) {
 			Assert.assertEquals(file.getName(),
