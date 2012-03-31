@@ -64,7 +64,7 @@ public class MainPageIT {
 		scheduleRestTemplate.deleteAll();
 	}
 
-//	@Test
+	@Test
 	public void testMainErrScheduleCreate() throws Exception {
 		driver.get("http://localhost:8081/yourpresenter");
 

@@ -134,6 +134,7 @@ public class Slide implements Serializable {
 	}
 	
 	@Transient
+	@JsonIgnore
 	public String getCssSuffix() {
 		return (active ? "active" : "inactive" );
 	}

@@ -45,15 +45,15 @@ public class PresenterPage {
 
 	@FindBy(xpath = "//div[contains(@class, 'media-image')]")
 	private List<WebElement> bgImages;
+	
+	@FindBy(xpath = "//div[contains(@class, 'media-misc')]")
+	private List<WebElement> mediaMiscs;
 
 	@FindBy(xpath = "//div[contains(@class, 'slidebox')]")
 	private List<WebElement> slides;
 
 	@FindBy(xpath = "//td[@id = 'tabMisc:header:inactive']")
 	private WebElement miscTab;
-
-	@FindBy(xpath = "//input[contains(@id, ':buttonMiscUpload')]")
-	private WebElement miscMiscUploadButton;
 
 	public PresenterPage(WebDriver driver) {
 		this.driver = driver;
@@ -207,10 +207,35 @@ public class PresenterPage {
 	}
 
 	public void openMiscUploadDialog() {
+		// using menu is very error prone => hotkeys are better
+		scheduleNameLabel.sendKeys(Keys.ALT, Keys.CONTROL, "u");
+		this.waitAjaxDone();
+	}
+
+	public void addMediaMiscToSchedule(int mediaMiscIdx, int presentationIdx)
+			throws YpException {
 		miscTab.click();
 		this.waitAjaxDone();
-		miscMiscUploadButton.click();
+		
+		validateMediaMiscIdx(mediaMiscIdx);
+		validatePresentationIdx(presentationIdx);
+		dragAndDrop(mediaMiscs.get(mediaMiscIdx),
+				presentationNames.get(presentationIdx));
+	}
+
+	private void validateMediaMiscIdx(int mediaMiscIdx) throws YpException {
+		if (mediaMiscs.size() <= mediaMiscIdx) {
+			throw new YpException(YpError.NOT_SUPPORTED_IDX);
+		}
+		
+	}
+
+	public void addMediaMiscToScheduleBeginning(int mediaMiscIdx) throws YpException {
+		miscTab.click();
 		this.waitAjaxDone();
+		
+		validateMediaMiscIdx(mediaMiscIdx);
+		dragAndDrop(mediaMiscs.get(mediaMiscIdx), scheduleName);
 	}
 
 }

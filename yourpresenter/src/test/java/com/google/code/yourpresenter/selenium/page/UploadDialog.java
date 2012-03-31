@@ -87,7 +87,6 @@ public class UploadDialog {
 		// fileUpload selenium solution found on:
 		// http://stackoverflow.com/questions/5610256/file-upload-using-selenium-webdriver-and-java/6130887#6130887
 		uploadAddButton.sendKeys(file.getAbsolutePath());
-
 	}
 
 	public void waitImportEnabled() {

@@ -52,32 +52,6 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<!-- logging -->
-		<!-- <dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<version>1.5.8</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.5.8</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.5.8</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.14</version>
-			<scope>runtime</scope>
-		</dependency>
- -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
@@ -185,7 +159,6 @@
 			<artifactId>atmosphere-runtime</artifactId>
 			<!-- version defined by richfaces already -->
 		</dependency>
-
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -196,6 +169,7 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
 			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -227,7 +201,7 @@
 			</exclusions>
 			<scope>runtime</scope>
 		</dependency>
-		
+
 		<!-- Servlet -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -344,7 +318,31 @@
 			<artifactId>selenium-java</artifactId>
 			<version>2.20.0</version>
 			<scope>test</scope>
+			<exclusions>
+				<!-- make sure we depend upon firefox only -->
+				<exclusion>
+					<groupId>org.seleniumhq.selenium</groupId>
+					<artifactId>selenium-android-driver</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.seleniumhq.selenium</groupId>
+					<artifactId>selenium-chrome-driver</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.seleniumhq.selenium</groupId>
+					<artifactId>selenium-htmlunit-driver</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.seleniumhq.selenium</groupId>
+					<artifactId>selenium-ie-driver</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.seleniumhq.selenium</groupId>
+					<artifactId>selenium-iphone-driver</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+
 
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -367,7 +365,7 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
@@ -504,24 +502,8 @@
 
 		<profile>
 			<id>ci-jetty</id>
-			<!-- <properties> <database.port>8082</database.port> <database.name>yp</database.name> 
-				<database.url>jdbc:hsqldb:hsql://127.0.0.1:${database.port}/${database.name}</database.url> 
-				</properties> -->
 			<build>
 				<plugins>
-					<plugin>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<executions>
-							<!-- start hsqldb server -->
-							<!-- <execution> <id>start-hsqldb</id> <phase>pre-integration-test</phase> 
-								<goals> <goal>run</goal> </goals> <configuration> <target> <echo message="Starting 
-								HSQLDB" /> <java fork="true" spawn="true" dir="." classname="org.hsqldb.Server" 
-								classpathref="maven.test.classpath"> <arg value="-database.0" /> <arg value="target/data/${database.name}" 
-								/> <arg value="-dbname.0" /> <arg value="yp" /> <arg value="-port" /> <arg 
-								value="${database.port}" /> </java> </target> </configuration> </execution> -->
-						</executions>
-					</plugin>
-
 					<!-- integration tests related -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -576,16 +558,6 @@
 							</configuration>
 						</configuration>
 					</plugin>
-
-					<!-- stop hsqldb -->
-					<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>sql-maven-plugin</artifactId> 
-						<dependencies> <dependency> <groupId>org.hsqldb</groupId> <artifactId>hsqldb</artifactId> 
-						<version>${org.hsqldb-version}</version> </dependency> </dependencies> <configuration> 
-						<driver>org.hsqldb.jdbcDriver</driver> <url>${database.url}</url> <username>sa</username> 
-						<password></password> </configuration> <executions> <execution> <id>stop-hsqldb</id> 
-						<phase>post-integration-test</phase> <goals> <goal>execute</goal> </goals> 
-						<configuration> <autocommit>true</autocommit> <sqlCommand>SHUTDOWN</sqlCommand> 
-						</configuration> </execution> </executions> </plugin> -->
 				</plugins>
 			</build>
 		</profile>
@@ -610,8 +582,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<!-- <configuration> <configuration> <excludes> <exclude>**/selenium/*.java</exclude> 
-					</excludes> </configuration> </configuration> -->
 			</plugin>
 		</plugins>
 

@@ -90,6 +90,11 @@
 				addSong();
 			});
 		</h:outputScript>
+		<h:outputScript target="head"> 
+			jQuery(document).bind('keyup', 'alt+ctrl+u', function() {
+				upload();
+			});
+		</h:outputScript>
 
 		<!-- notifications not usable till problem fix available of: https://community.jboss.org/message/723043 -->
 		<!-- notification stack -->
@@ -267,7 +272,7 @@
 											columns="4" border="0">
 
 										<a4j:commandLink action="#{scheduleView.activateSlide}"
-											render="none" styleClass="slidebox-link" execute="@none">
+											render="none" styleClass="slidebox-link" >
 											<f:param name="id" value="#{slide.id}" />
 
 											<rich:dropTarget acceptedTypes="bgImage"
@@ -330,7 +335,7 @@
 
 					<rich:dataGrid value="#{miscView.mediaMisc}" var="mediaMisc"
 						columns="6" border="0">
-						<rich:panel styleClass="media-image"
+						<rich:panel styleClass="media-misc"
 							style="background-image:url('/yourpresenter/mvc/thumbnail/#{mediaMisc.coverArt.bgImage.id}');">
 
 							<rich:dragSource type="mediaMisc" dragIndicator="miscDragInd"

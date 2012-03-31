@@ -166,7 +166,7 @@
 /* [END] slide styles */
 
 /* [BEGIN] media for background styles */
-.media-image {
+.media-image, .media-misc {
 	width: 160px;
 	height: 120px;
 	padding: 0px;

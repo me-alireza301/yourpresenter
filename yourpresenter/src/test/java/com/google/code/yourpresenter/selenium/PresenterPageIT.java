@@ -366,7 +366,26 @@ public class PresenterPageIT {
 		uploadDialog.clickImportButton();
 		presenterPage.waitAjaxDone();
 		
-		// TODO later checks
+		// TODO workaround no rerendering on import complete yet
+		driver.get(PRESENTER_URL);
+		
+		//
+		// check bg set for all schedule
+		//
+		presenterPage.addMediaMiscToScheduleBeginning(0);
+		presenterPage.waitAjaxDone();
+
+		// check that all slides in schedule have the same bg
+//		for (int i = 0; i < 12; i++) {
+//			Assert.assertEquals(presenterPage.getBgImgUrl(0),
+//					presenterPage.getSlideBg(i));
+//		}
+
+		//
+		// check bg set for 1 presentation
+		//
+		presenterPage.addMediaMiscToSchedule(0, 0);
+		presenterPage.waitAjaxDone();
 	}
 	
 }
