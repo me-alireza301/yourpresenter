@@ -5,10 +5,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.OfficeManager;
-import org.hsqldb.lib.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -51,7 +51,7 @@ public class PptJodConvImporter extends AbstractMediaImporter {
 				String officeHome = preferenceService
 						.findStringById(IConstants.MEDIA_IMPORT_PPT_OFFICE_HOME);
 				
-				if (!StringUtil.isEmpty(officeHome)) {
+				if (!StringUtils.isEmpty(officeHome)) {
 					config.setOfficeHome(officeHome);
 				}
 				break;
