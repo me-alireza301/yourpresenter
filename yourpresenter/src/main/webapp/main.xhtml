@@ -27,7 +27,7 @@
 			<h:panelGrid columns="3">
 				<h:outputText value="Role:" />
 				<h:selectOneRadio value="#{mainView.role}" layout="pageDirection">
-					<a4j:ajax event="change" listener="#{mainView.roleChanged}"
+					<a4j:ajax event="change" listener="#{mainView.roleChanged}" 
 						render="schedulePanel okButton" />
 					<f:selectItems value="#{mainView.roles}" />
 				</h:selectOneRadio>

@@ -78,23 +78,10 @@
 		<!-- 
 			hotkeys:
 			- alt+ctrl+n => add new song dialog pops up  
+			- alt+ctrl+u => upload media dialog pops up
 		-->
-		<!--
-			there is still problem in dialogSongEdit.xhtml see "TODO:" seciton there
-			=> rich:hotkey in Richfaces 4.1.1 could solve it 
-		 -->
-		<h:outputScript library="js" target="head"
-			name="jquery.hotkeys-20100223.js" />
-		<h:outputScript target="head"> 
-			jQuery(document).bind('keyup', 'alt+ctrl+n', function() {
-				addSong();
-			});
-		</h:outputScript>
-		<h:outputScript target="head"> 
-			jQuery(document).bind('keyup', 'alt+ctrl+u', function() {
-				upload();
-			});
-		</h:outputScript>
+		<rich:hotKey key="alt+ctrl+n" onkeyup="addSong();" />
+		<rich:hotKey key="alt+ctrl+u" onkeyup="upload();" />
 
 		<!-- notifications not usable till problem fix available of: https://community.jboss.org/message/723043 -->
 		<!-- notification stack -->
