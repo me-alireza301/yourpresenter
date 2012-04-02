@@ -8,7 +8,7 @@
 
 	<!-- <rich:notify id="notifySongSaved" stack="notifyStack"
 		summary="Song saved"
-		detail="Song: '#{songEditView.song.name}' has been saved."
+		detail="Song: '#{songTableView.editedSong.name}' has been saved."
 		stayTime="#{preferencesView.viewNotifyStayTime}" sticky="#{preferencesView.viewNotifySticky}"
 		nonblocking="#{preferencesView.viewNotifyNonblocking}"
 		nonblockingOpacity="#{preferencesView.viewNotifyNonblockingOpacity}"
@@ -40,18 +40,11 @@
 					<rich:messages id="newSongErrors" ajaxRendered="true"/>
 					<h:outputLabel for="dialogSongEditName" value="Name: " />
 					<h:inputText id="dialogSongEditName"
-						value="#{songEditView.song.name}" required="true" />
+						value="#{songTableView.editedSong.name}" required="true" />
 
 					<h:outputLabel for="dialogSongText" value="Text: " />
 					<h:inputTextarea id="dialogSongText" rows="15" cols="40"
-						value="#{songEditView.song.text}" />
-						
-					<!-- as there is no view scope for jsf provided by spring/jsf integration
-					and we use request scope on songEditView 
-					=> remember song.id between requests -->
-					<h:inputHidden id="dialogSongEditId"
-						value="#{songEditView.song.id}"/>
-
+						value="#{songTableView.editedSong.text}" />
 					<h:panelGrid columns="2" cellspacing="3">
 						<!-- 
 							make sure error is displayed and in case no error => hide the popup
@@ -60,8 +53,9 @@
 							
 							as render="songs" doesn't help for setting updated value in table - for example for DnD source 
 						-->
-						<a4j:commandButton id="buttonOK" value="OK" action="#{songEditView.update}"
-							oncomplete="if (jQuery(#{rich:element('dialogSongEditForm:newSongErrors')}).is(':empty')) { #{rich:component('dialogSongEdit')}.hide(); location.reload() }; return true;"		
+						<!-- oncomplete="if (jQuery(#{rich:element('dialogSongEditForm:newSongErrors')}).is(':empty')) { #{rich:component('dialogSongEdit')}.hide(); location.reload() }; return true;" -->
+						<a4j:commandButton id="buttonOK" value="OK" action="#{songTableView.update}"
+							oncomplete="if (jQuery(#{rich:element('dialogSongEditForm:newSongErrors')}).is(':empty')) { #{rich:component('dialogSongEdit')}.hide(); }; return true;"		
 							 type="submit" render="songs"/>
 							<!-- render="songs notifySongSaved" -->
 						<a4j:commandButton id="buttonCancel" value="Cancel"

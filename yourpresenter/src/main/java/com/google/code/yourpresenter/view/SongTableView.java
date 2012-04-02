@@ -1,8 +1,13 @@
 package com.google.code.yourpresenter.view;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import javax.faces.event.AjaxBehaviorEvent;
+
+import org.richfaces.component.UIExtendedDataTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -17,11 +22,12 @@ import com.google.code.yourpresenter.service.ISongService;
 public class SongTableView implements Serializable {
 
 	private ISongService songService;
-	
-	private List<Song> songs;
 
-	private long currentSongId;
-	
+	private Song editedSong;
+	private List<Song> songs;
+	private Collection<Object> selection;
+	private List<Song> selectedSongs = new ArrayList<Song>();
+
 	@Autowired
 	public SongTableView(ISongService songService) {
 		this.songService = songService;
@@ -37,29 +43,62 @@ public class SongTableView implements Serializable {
 	}
 
 	public void delete() {
-		songService.deleteById(getCurrentSongId());
+		songService.deleteById(getSelectedSong().getId());
 	}
 
-	/**
-	 * @return the currentSongId
-	 */
-	public long getCurrentSongId() {
-		return currentSongId;
+	public Collection<Object> getSelection() {
+		return selection;
 	}
 
-	/**
-	 * @param currentSongId the currentSongId to set
-	 */
-	public void setCurrentSongId(long currentSongId) {
-		this.currentSongId = currentSongId;
+	public void setSelection(Collection<Object> selection) {
+		this.selection = selection;
 	}
 
-	/**
-	 * Returns the name of currently selected song.
-	 * 
-	 * @return
-	 */
-	public String getCurrentSongName() {
-		return songService.findNameById(getCurrentSongId());
+	public Song getSelectedSong() {
+		if (selectedSongs == null || selectedSongs.isEmpty()) {
+			return null;
+		}
+		return selectedSongs.get(0);
+	}
+
+	public void update() {
+		songService.update(editedSong);
+		editedSong = null;
+	}
+
+	public void selectionListener(AjaxBehaviorEvent event) {
+		UIExtendedDataTable dataTable = (UIExtendedDataTable) event
+				.getComponent();
+		Object originalKey = dataTable.getRowKey();
+		selectedSongs.clear();
+		for (Object selectionKey : selection) {
+			dataTable.setRowKey(selectionKey);
+			if (dataTable.isRowAvailable()) {
+				selectedSongs.add((Song) dataTable.getRowData());
+			}
+		}
+		dataTable.setRowKey(originalKey);
+	}
+
+	public Song getEditedSong() {
+		if (null != getSelectedSong()) {
+			editedSong = getSelectedSong();
+		} else if (null == editedSong) {
+			editedSong = new Song();
+		}
+
+		return editedSong;
+	}
+
+	public void setEditedSong(Song editedSong) {
+		this.editedSong = editedSong;
+	}
+
+	public void setEditedSong(String editedSong) {
+		this.editedSong = null;
+	}
+
+	public void setResetEditedSong(String editedSong) {
+		this.editedSong = null;
 	}
 }

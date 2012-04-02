@@ -8,7 +8,7 @@
 
 	<!-- <rich:notify id="notifySongDelete" stack="notifyStack"
 		summary="Song deleted"
-		detail="Song: '#{songTableView.currentSongName}' has been deleted."
+		detail="Song: '#{songTableView.selectedSong.name}' has been deleted."
 		stayTime="#{preferencesView.viewNotifyStayTime}" sticky="#{preferencesView.viewNotifySticky}"
 		nonblocking="#{preferencesView.viewNotifyNonblocking}"
 		nonblockingOpacity="#{preferencesView.viewNotifyNonblockingOpacity}"
@@ -22,7 +22,7 @@
 			<!-- notifySongDelete -->
 		<rich:popupPanel id="dialogSongDelete" autosized="true">
 			Are you sure you want to delete the song: "<h:outputText
-				value="#{songTableView.currentSongName}" />"?
+				value="#{songTableView.selectedSong.name}" />"?
 			<a4j:commandButton id="buttonDelete" value="Delete"
 				onclick="remove(); #{rich:component('dialogSongDelete')}.hide(); return false;"/>
 			<a4j:commandButton value="Cancel"

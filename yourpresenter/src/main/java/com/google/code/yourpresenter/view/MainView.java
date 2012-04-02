@@ -24,8 +24,6 @@ import com.google.code.yourpresenter.service.IScheduleService;
 @SuppressWarnings("serial")
 public class MainView implements Serializable {
 
-//	private UIComponent submitButton;
-
 	@Autowired
 	private IScheduleService scheduleService;
 
@@ -109,17 +107,6 @@ public class MainView implements Serializable {
 		}
 	}
 
-//	public void validateSchedule(ActionEvent event) {
-//		Schedule schedule = scheduleService.findByName(this.scheduleName);
-//
-//		// if new schedule to be created => error
-//		if (null == schedule) {
-//			throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-//					"Choose existing schedule (New one can be created by presenter only!)",
-//					null));
-//		}
-//	}
-
 	public String getScheduleName() {
 		return scheduleName;
 	}
@@ -127,14 +114,6 @@ public class MainView implements Serializable {
 	public void setScheduleName(String scheduleName) {
 		this.scheduleName = scheduleName;
 	}
-
-//	public UIComponent getSubmitButton() {
-//		return submitButton;
-//	}
-//
-//	public void setSubmitButton(UIComponent submitButton) {
-//		this.submitButton = submitButton;
-//	}
 
 	/**
 	 * @return the scheduleCreate

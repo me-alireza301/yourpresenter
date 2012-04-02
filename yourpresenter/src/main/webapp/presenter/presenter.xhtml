@@ -74,7 +74,10 @@
 
 		<!-- need to render dialogSongEditPanel prio to showing the dialogSongEdit dialog -->
 		<a4j:jsFunction name="addSong" render="dialogSongEditPanel"
-			oncomplete="#{rich:component('dialogSongEdit')}.show();" />
+			oncomplete="#{rich:component('dialogSongEdit')}.show();" >
+			<!-- this is a workaround to make sure that for new song edited song data are cleared -->
+			<a4j:param value="null" assignTo="#{songTableView.resetEditedSong}" />
+		</a4j:jsFunction>
 		<!-- 
 			hotkeys:
 			- alt+ctrl+n => add new song dialog pops up  
@@ -89,8 +92,8 @@
 
 		<div class="ui-layout-north">
 			<a4j:jsFunction name="upload" render="dialogUpload"
-						oncomplete="#{rich:component('dialogUpload')}.show();" />
-						
+				oncomplete="#{rich:component('dialogUpload')}.show();" />
+
 			<h:panelGrid columns="3" cellspacing="0">
 				<h:form>
 					<rich:toolbar height="26px">
@@ -109,7 +112,7 @@
 									oncomplete="upload();">
 								</rich:menuItem>
 							</rich:menuGroup>
-							
+
 						</rich:dropDownMenu>
 					</rich:toolbar>
 				</h:form>
@@ -158,9 +161,14 @@
         							Drag song to schedule area ...
     							</rich:dragIndicator>
 
-								<rich:dataTable value="#{songTableView.songs}" var="song"
-									id="songTable" styleClass="songTable" iterationStatusVar="it"
-									rowClasses="songTable-odd-row, songTable-even-row">
+								<rich:extendedDataTable value="#{songTableView.songs}"
+									var="song" id="songTable" styleClass="songTable"
+									iterationStatusVar="it" selectionMode="single"
+									rowClasses="songTable-odd-row, songTable-even-row"
+									selection="#{songTableView.selection}">
+
+									<a4j:ajax execute="@form" event="selectionchange"
+										listener="#{songTableView.selectionListener}" render=":res" />
 
 									<rich:column>
 										<f:facet name="header">
@@ -172,25 +180,16 @@
 											<h:outputText value="#{song.name}" />
 										</a4j:outputPanel>
 									</rich:column>
+								</rich:extendedDataTable>
 
-									<rich:column>
-										<a4j:commandLink id="editSongLink"
-											oncomplete="#{rich:component('dialogSongEdit')}.show();"
-											render="dialogSongEditPanel">
-											<h:graphicImage value="/images/action/edit.gif" alt="edit" />
-											<a4j:param value="#{song.id}"
-												assignTo="#{songEditView.currentSongId}" />
-										</a4j:commandLink>
-										<a4j:commandLink id="deleteSongLink" render="dialogSongDelete"
-											oncomplete="#{rich:component('dialogSongDelete')}.show()">
-											<h:graphicImage value="/images/action/delete.gif"
-												alt="delete song" />
-											<a4j:param value="#{song.id}"
-												assignTo="#{songTableView.currentSongId}" />
-										</a4j:commandLink>
-
-									</rich:column>
-								</rich:dataTable>
+								<rich:contextMenu target="songTable" mode="ajax">
+									<rich:menuItem label="Edit" render="dialogSongEditPanel"
+										oncomplete="#{rich:component('dialogSongEdit')}.show();"
+										mode="ajax" icon="/images/action/edit.gif" />
+									<rich:menuItem label="Delete" render="dialogSongDelete"
+										oncomplete="#{rich:component('dialogSongDelete')}.show();"
+										mode="ajax" icon="/images/action/delete.gif" />
+								</rich:contextMenu>
 							</h:panelGrid>
 						</h:form>
 
@@ -256,10 +255,10 @@
 
 									<!--  elements="9" -->
 									<rich:dataGrid value="#{presentation.slides}" var="slide"
-											columns="4" border="0">
+										columns="4" border="0">
 
 										<a4j:commandLink action="#{scheduleView.activateSlide}"
-											render="none" styleClass="slidebox-link" >
+											render="none" styleClass="slidebox-link">
 											<f:param name="id" value="#{slide.id}" />
 
 											<rich:dropTarget acceptedTypes="bgImage"
