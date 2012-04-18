@@ -64,7 +64,7 @@ public class PresenterPageIT {
 	private SongRestTemplate songRestTemplate;
 
 	@BeforeClass
-	public static void setUpAll() throws Exception {
+	public static void beforeClass() throws Exception {
 		// DesiredCapabilities caps = DesiredCapabilities.firefox();
 		// LoggingPreferences logs = new LoggingPreferences();
 		// logs.enable(LogType.DRIVER, Level.ALL);
@@ -83,7 +83,12 @@ public class PresenterPageIT {
 	}
 
 	@Before
-	public void setUp() throws Exception {
+	public void before() throws Exception {
+		// make sure that in case there is something left from the last failed
+		// tests,
+		// it'll be cleaned up
+		cleanUp();
+
 		mainPage = new MainPage(driver);
 		presenterPage = new PresenterPage(driver);
 		addChangeSongDialog = new AddChangeSongDialog(driver);
@@ -92,13 +97,17 @@ public class PresenterPageIT {
 	}
 
 	@AfterClass
-	public static void cleanUpAll() {
+	public static void afterAll() {
 		driver.quit();
 	}
 
 	@After
-	public void cleanUp() {
+	public void after() {
 		presenterPage.waitAjaxDone();
+		cleanUp();
+	}
+
+	public void cleanUp() {
 		slideRestTemplate.deleteAll();
 		verseRestTemplate.deleteAll();
 		presenationRestTemplate.deleteAll();
@@ -106,28 +115,31 @@ public class PresenterPageIT {
 		scheduleRestTemplate.deleteAll();
 	}
 
-	// @Test
+	@Test
 	public void testAddChangeSongDialogCancel() {
 		createSchedule(getScheduleName());
 
 		Assert.assertFalse(addChangeSongDialog.isDisplayed());
 		presenterPage.openAddSongDialog();
+		presenterPage.waitAjaxDone();
 		addChangeSongDialog.clickCancelButton();
 	}
 
-	// @Test
+	@Test
 	public void testAddSongEmptyName() {
 		createSchedule(getScheduleName());
 		presenterPage.openAddSongDialog();
+		addChangeSongDialog.waitDialogDisplayed();
 		addChangeSongDialog.clickOkButton();
-
+		presenterPage.waitAjaxDone();
+		
 		// check error message displayed
 		Assert.assertEquals(
 				"dialogSongEditForm:dialogSongEditName: Validation Error: Value is required.",
 				addChangeSongDialog.getErrorsSumText());
 	}
 
-//	@Test
+	@Test
 	public void testAddSongTooLongTxt() throws IOException {
 		createSchedule(getScheduleName());
 		createSong("song_too_long_txt.txt", "cp1250");
@@ -145,20 +157,16 @@ public class PresenterPageIT {
 		presenterPage.waitAjaxDone();
 		Assert.assertEquals(song.getName(), presenterPage.getSongName(0));
 
-		driver.get(PRESENTER_URL);
 		song = createSong("song2_cp1250.txt", "cp1250");
 		addChangeSongDialog.waitDialogNotDisplayed();
 		presenterPage.waitAjaxDone();
 		Assert.assertEquals(song.getName(), presenterPage.getSongName(1));
 	}
 
-	// @Test
+	@Test
 	public void testAddSongsToSchedule() throws IOException, YpException {
 		testAddSongs();
 
-		// workaround - only till drag&drop can be done without full refresh
-		// TODO - currently workaround applied in application itself
-		// driver.get(PRESENTER_URL);
 		presenterPage.addSongToScheduleBeginning(0);
 		presenterPage.waitAjaxDone();
 		Assert.assertEquals(presenterPage.getSongName(0),
@@ -181,7 +189,7 @@ public class PresenterPageIT {
 				presenterPage.getPresentationName(2));
 	}
 
-	// @Test
+	@Test
 	public void testPresentationReorder() throws IOException, YpException {
 		testAddSongsToSchedule();
 
@@ -204,7 +212,7 @@ public class PresenterPageIT {
 				presenterPage.getPresentationName(2));
 	}
 
-	// @Test
+	@Test
 	public void testBackground() throws IOException, YpException {
 		testAddSongsToSchedule();
 
@@ -313,7 +321,7 @@ public class PresenterPageIT {
 		return SCHEDULE_NAME;
 	}
 
-//	@Test
+	@Test
 	public void testUpdateDeleteSong() throws IOException, YpException {
 		// add schedule
 		createSchedule(getScheduleName());
@@ -353,39 +361,42 @@ public class PresenterPageIT {
 	public void testImportMediaMisc() throws IOException, YpException {
 		// add schedule
 		createSchedule(getScheduleName());
-		
+
 		// test import
 		presenterPage.openMiscUploadDialog();
 		File[] files = new File[] { new File(
-				PptJodConvImporterTest.RESOURCE_PATH
-						+ "/appa.pdf") };
+				PptJodConvImporterTest.RESOURCE_PATH + "/appa.pdf") };
 		uploadDialog.addImportFiles(files);
 		uploadDialog.waitUploadDisplayed();
 		uploadDialog.clickUploadButton();
 		uploadDialog.waitImportEnabled();
 		uploadDialog.clickImportButton();
 		presenterPage.waitAjaxDone();
-		
+
 		// TODO workaround no rerendering on import complete yet
 		driver.get(PRESENTER_URL);
-		
+
 		//
-		// check bg set for all schedule
+		// add media misc to schedule
 		//
 		presenterPage.addMediaMiscToScheduleBeginning(0);
 		presenterPage.waitAjaxDone();
 
 		// check that all slides in schedule have the same bg
-//		for (int i = 0; i < 12; i++) {
-//			Assert.assertEquals(presenterPage.getBgImgUrl(0),
-//					presenterPage.getSlideBg(i));
-//		}
+		Assert.assertEquals(presenterPage.getMediaMiscUrl(0),
+				presenterPage.getSlideBg(0));
 
 		//
-		// check bg set for 1 presentation
+		// add media misc to schedule
 		//
 		presenterPage.addMediaMiscToSchedule(0, 0);
 		presenterPage.waitAjaxDone();
+
+		Assert.assertEquals(presenterPage.getMediaMiscUrl(0),
+				presenterPage.getSlideBg(0));
+
+		Assert.assertEquals(presenterPage.getMediaMiscUrl(0),
+				presenterPage.getSlideBg(6));
 	}
-	
+
 }

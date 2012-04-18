@@ -57,13 +57,13 @@ public class SampleDataLoader {
 		Song song = createSong("song1_cp1250.txt", "cp1250");
 		addChangeSongDialog.waitDialogNotDisplayed();
 		presenterPage.waitAjaxDone();
-		Assert.assertEquals(song.getName(), presenterPage.getSongName(0));
+		Assert.assertEquals(song.getName(), presenterPage.getSongName(1));
 
 		driver.get(PresenterPageIT.PRESENTER_URL);
 		song = createSong("song2_cp1250.txt", "cp1250");
 		addChangeSongDialog.waitDialogNotDisplayed();
 		presenterPage.waitAjaxDone();
-		Assert.assertEquals(song.getName(), presenterPage.getSongName(1));
+		Assert.assertEquals(song.getName(), presenterPage.getSongName(2));
 	}
 	
 	private void createSchedule(String scheduleName) {

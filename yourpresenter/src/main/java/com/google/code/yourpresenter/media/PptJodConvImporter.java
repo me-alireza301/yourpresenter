@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import com.google.code.yourpresenter.IConstants;
 import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
+import com.google.code.yourpresenter.entity.MediaType;
+import com.google.code.yourpresenter.util.FileUtil;
 import com.google.code.yourpresenter.util.SystemUtil;
 
 @SuppressWarnings("serial")
@@ -66,8 +68,10 @@ public class PptJodConvImporter extends AbstractMediaImporter {
 		OfficeDocumentConverter converter = new OfficeDocumentConverter(
 				officeManager);
 
-		File pdf = new File(outDir, new File(media).getName() + ".pdf");
-		converter.convert(new File(media), pdf);
+		File mediaFile = new File(media);
+		
+		File pdf = new File(outDir, mediaFile.getName() + ".pdf");
+		converter.convert(mediaFile, pdf);
 		officeManager.stop();
 		return pdf;
 	}
@@ -75,5 +79,15 @@ public class PptJodConvImporter extends AbstractMediaImporter {
 	@Override
 	public Set<String> getSupportedExts() {
 		return supportedExts;
+	}
+
+	@Override
+	public MediaType getMediaType() throws YpException {
+		return mediaTypeService.findByName(IConstants.MEDIA_TYPE_MISC);
+	}
+	
+	@Override
+	public String getMediaUploadDir() throws YpException {
+		return FileUtil.replaceDirs(preferenceService.findStringById(IConstants.MEDIA_UPLOAD_DIR_MISC));
 	}
 }

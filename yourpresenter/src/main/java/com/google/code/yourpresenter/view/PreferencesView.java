@@ -41,7 +41,6 @@ public class PreferencesView implements Serializable {
 	@Autowired
 	private IPreferenceService preferenceService;
 
-	private String mediaAcceptedExts;
 	private String mediaDirs;
 
 	private boolean saveDisabled = true;
@@ -54,31 +53,6 @@ public class PreferencesView implements Serializable {
 	public String getViewFontMaxsizePresenter() throws YpException {
 		return this.preferenceService
 				.findStringById(IConstants.VIEW_FONT_MAXSIZE_PRESENTER);
-	}
-
-	/**
-	 * @return the mediaAcceptedExts
-	 * @throws YpException
-	 */
-	public String getMediaAcceptedExts() throws YpException {
-		String[] exts = this.preferenceService
-				.findStringArrayById(IConstants.MEDIA_ACCEPTED_EXTS);
-		setMediaAcceptedExts(StringUtils.join(exts, ","));
-		return mediaAcceptedExts;
-	}
-
-	/**
-	 * @param mediaAcceptedExts
-	 *            the mediaAceptedExts to set
-	 */
-	public void setMediaAcceptedExts(String mediaAcceptedExts) {
-		// // null safe equals
-		// if (StringUtils.equals(mediaAcceptedExts, this.mediaAcceptedExts)) {
-		// return;
-		// }
-		//
-		// saveDisabled = false;
-		this.mediaAcceptedExts = mediaAcceptedExts;
 	}
 
 	/**
@@ -105,8 +79,6 @@ public class PreferencesView implements Serializable {
 
 		Collection<Preference> preferences = new ArrayList<Preference>();
 		preferences.add(new Preference(IConstants.MEDIA_DIRS, mediaDirs));
-		preferences.add(new Preference(IConstants.MEDIA_ACCEPTED_EXTS,
-				mediaAcceptedExts));
 		this.preferenceService.update(preferences);
 	}
 

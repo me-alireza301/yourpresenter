@@ -14,23 +14,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.code.yourpresenter.entity.BgImage;
-import com.google.code.yourpresenter.entity.MediaMisc;
-import com.google.code.yourpresenter.entity.MediaMiscImage;
+import com.google.code.yourpresenter.entity.Media;
 import com.google.code.yourpresenter.entity.Presentation;
 import com.google.code.yourpresenter.entity.Slide;
 import com.google.code.yourpresenter.entity.Song;
 import com.google.code.yourpresenter.entity.Verse;
-import com.google.code.yourpresenter.util.Logger;
-import com.google.code.yourpresenter.util.LoggerFactory;
 
 @SuppressWarnings("serial")
 @Service
 @Repository
 public class PresentationServiceImpl implements IPresentationService,
 		Serializable {
-
-	private static Logger logger = LoggerFactory
-			.getLogger(PresentationServiceImpl.class);
 
 	private transient EntityManager em;
 
@@ -88,7 +82,7 @@ public class PresentationServiceImpl implements IPresentationService,
 	@Override
 	public void persistSlides(Presentation presentation) {
 		Song song = null;
-		MediaMisc mediaMisc = null;
+		Media media = null;
 		if (null != (song = presentation.getSong())) {
 			int i = 0;
 			for (Verse verse : song.getVerses()) {
@@ -96,12 +90,12 @@ public class PresentationServiceImpl implements IPresentationService,
 				this.slideService.persist(slide);
 				presentation.addSlide(slide);
 			}
-		} else if (null != (mediaMisc = presentation.getMediaMisc())) {
+		} else if (null != (media = presentation.getMedia())) {
 			int i = 0;
-			for (MediaMiscImage mediaMiscImage : mediaMisc.getMediaMiscImages()) {
+			for (BgImage bgImage : media.getBgImages()) {
 				// keep txt as empty string rather than null
 				Slide slide = new Slide(null, presentation, i++);
-				slide.setBgImage(mediaMiscImage.getBgImage());
+				slide.setBgImage(bgImage);
 				this.slideService.persist(slide);
 				presentation.addSlide(slide);
 			}
@@ -111,8 +105,7 @@ public class PresentationServiceImpl implements IPresentationService,
 	@Transactional
 	@Override
 	public void setBgImage(long presentationId, BgImage bgImage) {
-		Presentation presentation = findById(presentationId);
-		this.setBgImage(presentation, bgImage);
+		this.setBgImage(findById(presentationId), bgImage);
 	}
 
 	@Transactional
@@ -120,23 +113,8 @@ public class PresentationServiceImpl implements IPresentationService,
 	public void setBgImage(Presentation presentation, BgImage bgImage) {
 		presentation.setBgImage(bgImage);
 		this.persist(presentation);
-
 		for (Slide slide : presentation.getSlides()) {
-			// persist in DB only in case of changed bgImage
-			if (bgImage.equals(slide.getBgImage())) {
-				continue;
-			}
-
-			// in case bgImage is fixed and can't be replaced
-			if ((null != slide.getBgImage()) && !slide.getBgImage().isReplaceable()) {
-				logger.debug(
-						"Slide bgImage is not replacable => keeping untouched: ",
-						slide);
-				continue;
-			}
-
-			slide.setBgImage(bgImage);
-			this.slideService.persist(slide);
+			this.slideService.setBgImage(slide.getId(), bgImage);
 		}
 	}
 

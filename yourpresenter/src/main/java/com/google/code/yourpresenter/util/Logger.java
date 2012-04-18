@@ -1,5 +1,7 @@
 package com.google.code.yourpresenter.util;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 public class Logger {
 
 	private final org.slf4j.Logger sl4jLogger;
@@ -47,6 +49,12 @@ public class Logger {
 	public void error(Object...strings) {
 		if (this.sl4jLogger.isErrorEnabled()) {
 			this.sl4jLogger.error(concat(strings));
+		}
+	}
+	
+	public void error(Throwable t) {
+		if (this.sl4jLogger.isErrorEnabled()) {
+			this.sl4jLogger.error(ExceptionUtils.getStackTrace(t));
 		}
 	}
 	

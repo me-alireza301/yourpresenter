@@ -15,8 +15,7 @@
 	padding-left: 30px;
 	border: 2px solid red;
 	/* as we use jQuery Layout make sure what's dragged is displayed */
-	z-index: 20 !important;
-	overflow: visible;
+	z-index: 20;
 }
 
 .rf-ind-drag.accept {
@@ -26,8 +25,7 @@
 	background-repeat: no-repeat;
 	border: 2px solid green;
 	/* as we use jQuery Layout make sure what's dragged is displayed */
-	z-index: 20 !important;
-	overflow: visible;
+	z-index: 20;
 }
 
 .rf-ind-drag.reject {
@@ -37,8 +35,7 @@
 	background-repeat: no-repeat;
 	border: 2px solid red;
 	/* as we use jQuery Layout make sure what's dragged is displayed */
-	z-index: 20 !important;
-	overflow: visible;
+	z-index: 20;
 }
  
 /* header area used for drop */
@@ -166,7 +163,7 @@
 /* [END] slide styles */
 
 /* [BEGIN] media for background styles */
-.media-image, .media-misc {
+.media-image, .media-video, .media-misc {
 	width: 160px;
 	height: 120px;
 	padding: 0px;

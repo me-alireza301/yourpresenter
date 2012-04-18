@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.google.code.yourpresenter.YpError;
+import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.Song;
 import com.google.code.yourpresenter.service.ISongService;
 
@@ -21,17 +23,13 @@ import com.google.code.yourpresenter.service.ISongService;
 @SuppressWarnings("serial")
 public class SongTableView implements Serializable {
 
+	@Autowired
 	private ISongService songService;
 
 	private Song editedSong;
 	private List<Song> songs;
 	private Collection<Object> selection;
 	private List<Song> selectedSongs = new ArrayList<Song>();
-
-	@Autowired
-	public SongTableView(ISongService songService) {
-		this.songService = songService;
-	}
 
 	public List<Song> getSongs() {
 		songs = this.songService.findByPattern("*");
@@ -42,8 +40,21 @@ public class SongTableView implements Serializable {
 		this.songs = songs;
 	}
 
-	public void delete() {
-		songService.deleteById(getSelectedSong().getId());
+	public void delete() throws YpException {
+		Song song = getSelectedSong();
+		if (null == song) {
+			throw new YpException(YpError.SONG_DELETE_FAILED, "Song to be deleted is null!");
+		}
+		
+		songService.delete(song);
+		clearState();
+	}
+	
+	private void clearState() {
+		// make sure we get rid of selection
+		selectedSongs.clear();
+		selection = null;
+		editedSong = null;
 	}
 
 	public Collection<Object> getSelection() {
@@ -61,9 +72,11 @@ public class SongTableView implements Serializable {
 		return selectedSongs.get(0);
 	}
 
+	
 	public void update() {
 		songService.update(editedSong);
-		editedSong = null;
+		// make sure we get rid of state
+		clearState();
 	}
 
 	public void selectionListener(AjaxBehaviorEvent event) {
@@ -94,11 +107,7 @@ public class SongTableView implements Serializable {
 		this.editedSong = editedSong;
 	}
 
-	public void setEditedSong(String editedSong) {
-		this.editedSong = null;
-	}
-
-	public void setResetEditedSong(String editedSong) {
-		this.editedSong = null;
+	public void resetEditedSong() {
+		clearState();
 	}
 }

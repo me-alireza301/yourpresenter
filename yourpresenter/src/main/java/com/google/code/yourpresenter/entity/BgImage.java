@@ -8,7 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Index;
 
@@ -30,24 +29,34 @@ public class BgImage implements Serializable {
 	@JsonIgnore
 	private String thumbnail;
 
-	/** last modified time in miliseconds */
+	private Media media;
+	
 	@JsonIgnore
-	private long lastModifiedTime;
-
-	@JsonIgnore
-	private boolean replaceable;
-
-	private BgImageType type;
-
+	// in case of correct one: position => java.sql.SQLException: Table not found in statement [select schedule0_.name ...
+	// seems like position is reserved word => can't be used
+	// see: http://stackoverflow.com/questions/1442127/table-not-found-with-hibernate-and-hsqldb
+	private int possition;
+	
 	public BgImage() {
 	}
 
-	public BgImage(String image, long lastModifiedTime, boolean replaceable,
-			BgImageType type) {
-		this.image = image;
-		this.setLastModifiedTime(lastModifiedTime);
-		this.setReplaceable(replaceable);
-		this.setType(type);
+	public BgImage(String image, Media media, int position) {
+		this.setImage(image);
+		this.setMedia(media);
+		this.setPossition(position);
+	}
+
+	/**
+	 * @return the media
+	 */
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
+	@Index(name = "BgImageMediaIdx")
+	public Media getMedia() {
+		return media;
+	}
+	
+	public void setMedia(Media media) {
+		this.media = media;
 	}
 
 	/**
@@ -110,44 +119,13 @@ public class BgImage implements Serializable {
 		this.thumbnail = thumbnail;
 	}
 
-	public long getLastModifiedTime() {
-		return lastModifiedTime;
+	
+	public int getPossition() {
+		return possition;
 	}
 
-	public void setLastModifiedTime(long lastModifiedTime) {
-		this.lastModifiedTime = lastModifiedTime;
-	}
-
-	@Override
-	public int hashCode() {
-		// for updates find, these are the id's to be compared
-		return new HashCodeBuilder().append(this.image)
-				.append(this.lastModifiedTime).toHashCode();
-	}
-
-	/**
-	 * @return the replaceable
-	 */
-	public boolean isReplaceable() {
-		return replaceable;
-	}
-
-	/**
-	 * @param replaceable
-	 *            the replaceable to set
-	 */
-	public void setReplaceable(boolean replaceable) {
-		this.replaceable = replaceable;
-	}
-
-	@ManyToOne(optional = false, fetch = FetchType.EAGER)
-	@Index(name = "BgImageBgImageTypeIdx")
-	public BgImageType getType() {
-		return type;
-	}
-
-	public void setType(BgImageType type) {
-		this.type = type;
+	public void setPossition(int position) {
+		this.possition = position;
 	}
 
 }

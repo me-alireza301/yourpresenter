@@ -5,6 +5,7 @@ import java.util.List;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.browserlaunchers.Sleeper;
 import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
@@ -25,14 +26,20 @@ public class PresenterPage {
 	@FindBy(xpath = "//div[contains(@id, ':scheduleName')]")
 	private WebElement scheduleNameLabel;
 
-	@FindBy(xpath = "//div[contains(@id, ':songTable:')]")
+	@FindBy(xpath = "//span[contains(@id, ':songTableSongName')]")
 	private List<WebElement> songNames;
 
-	@FindBy(xpath = "//a[contains(@id, ':editSongLink')]")
-	private List<WebElement> editSongLinks;
-
-	@FindBy(xpath = "//a[contains(@id, ':deleteSongLink')]")
-	private List<WebElement> deleteSongLinks;
+	@FindBy(xpath = "//div[contains(@id, ':songEdit')]")
+	private List<WebElement> songEdits;
+	
+	@FindBy(xpath = "//div[contains(@id, ':songDelete')]")
+	private List<WebElement> songDeletes;
+	
+//	@FindBy(xpath = "//a[contains(@id, ':editSongLink')]")
+//	private List<WebElement> editSongLinks;
+//
+//	@FindBy(xpath = "//a[contains(@id, ':deleteSongLink')]")
+//	private List<WebElement> deleteSongLinks;
 
 	@FindBy(xpath = "//div[contains(@id, ':panelHeaderPresentation_body')]")
 	private List<WebElement> presentationNames;
@@ -52,8 +59,10 @@ public class PresenterPage {
 	@FindBy(xpath = "//div[contains(@class, 'slidebox')]")
 	private List<WebElement> slides;
 
-	@FindBy(xpath = "//td[@id = 'tabMisc:header:inactive']")
-	private WebElement miscTab;
+//	@FindBy(xpath = "//td[contains(@style, 'table-cell')]")
+//	@FindBy(xpath = "//td[contains(@id, 'tabMisc:header:') AND @style = 'display: table-cell;']")
+	@FindBy(xpath = "//td[contains(@id, 'tabMisc:header:inactive')]")
+	private WebElement miscTabInactive;
 
 	public PresenterPage(WebDriver driver) {
 		this.driver = driver;
@@ -106,7 +115,7 @@ public class PresenterPage {
 					}
 				});
 	}
-
+	
 	public String getPresentationName(int presentationIdx) throws YpException {
 		validatePresentationIdx(presentationIdx);
 		return presentationNames.get(presentationIdx).getText();
@@ -160,6 +169,11 @@ public class PresenterPage {
 		validateBgIdx(bgIdx);
 		return bgImages.get(bgIdx).getCssValue("background-image");
 	}
+	
+	public String getMediaMiscUrl(int bgIdx) throws YpException {
+		validateMediaMiscIdx(bgIdx);
+		return mediaMiscs.get(bgIdx).getCssValue("background-image");
+	}
 
 	private void validateSlideIdx(int slideIdx) throws YpException {
 		if (slides.size() <= slideIdx) {
@@ -193,13 +207,24 @@ public class PresenterPage {
 	}
 
 	public void clickEditSong(int songIdx) throws YpException {
+		rightClickSong(songIdx);
+		songEdits.get(songIdx).click();
+	}
+
+	private void rightClickSong(int songIdx) throws YpException {
 		validateSongIdx(songIdx);
-		editSongLinks.get(songIdx).click();
+		// right click, see: http://code.google.com/p/selenium/issues/detail?id=161
+		Actions builder = new Actions(driver);
+		Action rClick = builder.contextClick(songNames.get(songIdx)).build();
+		rClick.perform();
+
+		Sleeper.sleepTightInSeconds(1);
 	}
 
 	public void clickDeleteSong(int songIdx) throws YpException {
-		validateSongIdx(songIdx);
-		deleteSongLinks.get(songIdx).click();
+		rightClickSong(songIdx);
+		songDeletes.get(songIdx).click();
+		
 	}
 
 	public int getSongCount() {
@@ -214,7 +239,7 @@ public class PresenterPage {
 
 	public void addMediaMiscToSchedule(int mediaMiscIdx, int presentationIdx)
 			throws YpException {
-		miscTab.click();
+//		miscTabInactive.click();
 		this.waitAjaxDone();
 		
 		validateMediaMiscIdx(mediaMiscIdx);
@@ -231,7 +256,7 @@ public class PresenterPage {
 	}
 
 	public void addMediaMiscToScheduleBeginning(int mediaMiscIdx) throws YpException {
-		miscTab.click();
+		miscTabInactive.click();
 		this.waitAjaxDone();
 		
 		validateMediaMiscIdx(mediaMiscIdx);

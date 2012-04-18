@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import com.google.code.yourpresenter.IConstants;
 import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
+import com.google.code.yourpresenter.entity.MediaType;
+import com.google.code.yourpresenter.util.FileUtil;
 import com.google.code.yourpresenter.util.Logger;
 import com.google.code.yourpresenter.util.LoggerFactory;
 import com.google.code.yourpresenter.util.StringOutputStream;
@@ -70,12 +73,12 @@ public class PdfGhostImporter extends AbstractMediaImporter {
 	}
 
 	@Override
-	public File[] importMedia(final String media, File outDir) throws YpException {
+	public File[] importMedia(final String media, File outDir)
+			throws YpException {
 
 		final String ext = preferenceService
 				.findStringById(IConstants.MEDIA_IMPORT_PDF_IMG_TYPE);
 		final File mediaFile = new File(media);
-		final String mediaPath = mediaFile.getAbsolutePath();
 
 		List<String> args = new ArrayList<String>(Arrays.asList(params));
 		args.add(new StringBuilder("-sDEVICE=").append(ext).append("16m")
@@ -84,14 +87,14 @@ public class PdfGhostImporter extends AbstractMediaImporter {
 				.append(outDir.getAbsolutePath()).append("/")
 				.append(mediaFile.getName()).append("_%ld.").append(ext)
 				.toString());
-		args.add(mediaPath);
+		args.add(media);
 
 		// redirect error to string
 		OutputStream err = new StringOutputStream();
 		// redirect output to string
 		OutputStream out = new StringOutputStream();
 
-		SystemUtil.exec(getGsExec(), args, null, out, new File(media), err,
+		SystemUtil.exec(getGsExec(), args, null, out, mediaFile, err, true,
 				false);
 
 		if (!err.toString().isEmpty()) {
@@ -101,15 +104,30 @@ public class PdfGhostImporter extends AbstractMediaImporter {
 		// add the extracted pages to result
 		List<File> files = new ArrayList<File>();
 		for (File file : outDir.listFiles()) {
-			if (!file.getAbsolutePath().equals(mediaPath)) {
+			if (!file.getAbsolutePath().equals(media)) {
 				files.add(file);
 			}
 		}
+
+		// for some filesystems files are not in the expected order
+		Collections.sort(files);
+
 		return files.toArray(new File[files.size()]);
 	}
 
 	@Override
 	public Set<String> getSupportedExts() {
 		return supportedExts;
+	}
+
+	@Override
+	public MediaType getMediaType() throws YpException {
+		return mediaTypeService.findByName(IConstants.MEDIA_TYPE_MISC);
+	}
+
+	@Override
+	public String getMediaUploadDir() throws YpException {
+		return FileUtil.replaceDirs(preferenceService
+				.findStringById(IConstants.MEDIA_UPLOAD_DIR_MISC));
 	}
 }

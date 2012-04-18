@@ -18,6 +18,7 @@ import com.google.code.yourpresenter.IConstants;
 import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.BgImage;
+import com.google.code.yourpresenter.entity.Media;
 import com.google.code.yourpresenter.media.ThumbnailCreator;
 import com.google.code.yourpresenter.util.FileUtil;
 
@@ -66,11 +67,11 @@ public class BgImageServiceImpl implements IBgImageService, Serializable {
 	@Transactional(readOnly = true)
 	public Collection<BgImage> findAllByType(String type) {
 		Query query = em
-				.createQuery("SELECT b FROM BgImage b WHERE b.type = (SELECT bt FROM BgImageType bt WHERE bt.name = :type)");
+				.createQuery("SELECT b FROM BgImage b WHERE b.media IN (SELECT m FROM Media m WHERE m.type = (SELECT mt FROM MediaType mt WHERE mt.name = :type))");
 		query.setParameter("type", type);
 		return (List<BgImage>) query.getResultList();
 	}
-
+	
 	@Transactional
 	@Override
 	public BgImage handleThumbnail(BgImage bgImage) throws YpException {
@@ -107,5 +108,15 @@ public class BgImageServiceImpl implements IBgImageService, Serializable {
 		persist(bgImage);
 
 		return bgImage;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	@Transactional(readOnly = true)
+	public Collection<BgImage> findFirstBgImageByType(String type) {
+		Query query = em
+				.createQuery("SELECT bg FROM BgImage bg WHERE bg.media IN (SELECT m FROM Media m WHERE m.type = (SELECT mt FROM MediaType mt WHERE mt.name = :type)) AND bg.possition = 0");
+		query.setParameter("type", type);
+		return (List<BgImage>) query.getResultList();
 	}
 }

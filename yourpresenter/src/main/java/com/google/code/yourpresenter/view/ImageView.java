@@ -18,9 +18,21 @@ import com.google.code.yourpresenter.service.IBgImageService;
 public class ImageView implements Serializable {
 
 	@Autowired
-	IBgImageService bgImageService;
+	private IBgImageService bgImageService;
 	
-	public Collection<BgImage> getBgImage() {
-		return this.bgImageService.findAllByType(IConstants.BG_IMAGE_TYPE_IMG);
+	public Collection<BgImage> getMisc() {
+		return this.get(IConstants.MEDIA_TYPE_MISC);
+	}
+	
+	public Collection<BgImage> getImage() {
+		return this.get(IConstants.MEDIA_TYPE_IMG);
+	}
+	
+	public Collection<BgImage> getVideo() {
+		return this.get(IConstants.MEDIA_TYPE_VIDEO);
+	}
+	
+	protected Collection<BgImage> get(String mediaType) {
+		return this.bgImageService.findFirstBgImageByType(mediaType);
 	}
 }

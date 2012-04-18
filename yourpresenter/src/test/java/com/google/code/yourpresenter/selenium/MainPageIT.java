@@ -32,12 +32,6 @@ public class MainPageIT {
 
 	@BeforeClass
 	public static void setUpAll() throws Exception {
-//		DesiredCapabilities caps = DesiredCapabilities.firefox();
-//		LoggingPreferences logs = new LoggingPreferences();
-//		logs.enable(LogType.DRIVER, Level.ALL);
-//		caps.setCapability(CapabilityType.LOGGING_PREFS, logs);
-//		driver = new FirefoxDriver(caps);
-
 		// for drag and drop to be working on linux:
 		// Enabling features that are disabled by default in Firefox
 		// see: http://code.google.com/p/selenium/wiki/TipsAndTricks

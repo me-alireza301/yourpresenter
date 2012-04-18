@@ -23,14 +23,16 @@ import com.google.code.yourpresenter.YpException;
 public class SystemUtil {
 
 	private static Logger logger = LoggerFactory.getLogger(SystemUtil.class);
+	
+	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	public static int exec(String cmd, List<String> arguments,
 			Map<String, Object> envVars, OutputStream output, File file,
-			OutputStream error, boolean quiet) throws YpException {
+			OutputStream error, boolean handleQuoting, boolean quiet) throws YpException {
 		InputStream fis = null;
 		try {
 			fis = new FileInputStream(file);
-			return exec(cmd, arguments, envVars, output, fis, error, quiet);
+			return exec(cmd, arguments, envVars, output, fis, error, handleQuoting, quiet);
 		} catch (FileNotFoundException e) {
 			throw new YpException(YpError.EXEC_FAILED, e);
 		} finally {
@@ -64,7 +66,7 @@ public class SystemUtil {
 	 */
 	public static int exec(String cmd, List<String> arguments,
 			Map<String, Object> envVars, OutputStream output,
-			InputStream input, OutputStream error, boolean quiet)
+			InputStream input, OutputStream error, boolean handleQuoting, boolean quiet)
 			throws YpException {
 
 		if (StringUtils.isEmpty(cmd)) {
@@ -77,7 +79,7 @@ public class SystemUtil {
 		CommandLine cmdLine = CommandLine.parse(cmd);
 
 		if (null != arguments) {
-			cmdLine.addArguments(arguments.toArray(new String[arguments.size()]));
+			cmdLine.addArguments(arguments.toArray(new String[arguments.size()]), handleQuoting);
 		}
 
 		@SuppressWarnings("rawtypes")

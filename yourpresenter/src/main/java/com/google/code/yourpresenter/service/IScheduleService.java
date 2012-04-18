@@ -3,7 +3,7 @@ package com.google.code.yourpresenter.service;
 import java.util.List;
 
 import com.google.code.yourpresenter.entity.BgImage;
-import com.google.code.yourpresenter.entity.MediaMisc;
+import com.google.code.yourpresenter.entity.Media;
 import com.google.code.yourpresenter.entity.Presentation;
 import com.google.code.yourpresenter.entity.Schedule;
 import com.google.code.yourpresenter.entity.Song;
@@ -16,7 +16,7 @@ public interface IScheduleService {
 
     public void delete(Schedule schedule);
     
-    public void addPresentation(Schedule schedule, long presentationId, Song song, MediaMisc mediaMisc);
+    public void addPresentation(Schedule schedule, long presentationId, Song song, Media mediaMisc);
 
     public void movePresentation(Schedule schedule, long presentationId,
 			Presentation presentation);

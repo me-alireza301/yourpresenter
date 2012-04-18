@@ -56,13 +56,11 @@ public class SongServiceImpl implements ISongService, Serializable {
 	}
 
 	@Transactional
-	public void persist(Song songTr) {
-		if (null != songTr.getId()) {
-			em.merge(songTr);
+	public void persist(Song song) {
+		if (null != song.getId()) {
+			em.merge(song);
 		} else {
-			em.persist(songTr);
-			// make sure identity field is generated prio to relation
-			em.flush();
+			em.persist(song);
 		}
 	}
 
@@ -121,6 +119,5 @@ public class SongServiceImpl implements ISongService, Serializable {
 	@Transactional
 	public void update(Song song) {
 		this.persist(song);
-		
 	}
 }

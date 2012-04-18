@@ -3,13 +3,9 @@ package com.google.code.yourpresenter.media;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
@@ -22,11 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.code.yourpresenter.IConstants;
 import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
-import com.google.code.yourpresenter.entity.BgImage;
-import com.google.code.yourpresenter.entity.BgImageType;
 import com.google.code.yourpresenter.entity.Preference;
-import com.google.code.yourpresenter.service.IBgImageService;
-import com.google.code.yourpresenter.service.IBgImageTypeService;
+import com.google.code.yourpresenter.service.IMediaService;
 import com.google.code.yourpresenter.service.IPreferenceService;
 import com.google.code.yourpresenter.util.FileObjectUtil;
 import com.google.code.yourpresenter.util.FileUtil;
@@ -44,13 +37,14 @@ public class MediaCrawlerImpl implements IMediaCrawler,
 			.getLogger(MediaCrawlerImpl.class);
 
 	@Autowired
-	private IPreferenceService preferenceService;
+	private List<IMediaImporter> mediaImporters;
+	
 	@Autowired
-	private IBgImageService bgImageService;
+	private IPreferenceService preferenceService;
 	@Autowired
 	private IMediaFileSelector mediaFileSelectorImpl;
 	@Autowired
-	private IBgImageTypeService bgImageTypeService;
+	private IMediaService mediaMiscService;
 
 	public MediaCrawlerImpl() {
 	}
@@ -70,10 +64,9 @@ public class MediaCrawlerImpl implements IMediaCrawler,
 		// replace special dir refs ${XXX}
 		dirs = FileUtil.replaceDirs(dirs);
 
-		List<FileObject> media = new ArrayList<FileObject>();
+		List<File> files = new ArrayList<File>();
 		try {
-			this.mediaFileSelectorImpl.setAcceptedExts(preferenceService
-					.findStringArrayById(IConstants.MEDIA_ACCEPTED_EXTS));
+			this.mediaFileSelectorImpl.setAcceptedExts(this.getAcceptedExts());
 
 			FileSystemManager fsManager = VFS.getManager();
 			for (String dir : dirs) {
@@ -82,52 +75,16 @@ public class MediaCrawlerImpl implements IMediaCrawler,
 				final FileObject[] found = root
 						.findFiles(this.mediaFileSelectorImpl);
 				if (null != found) {
-					logger.debug("Found media files:", Arrays.toString(found));
-					media.addAll(Arrays.asList(found));
+					for (FileObject fileObject : found) {
+						logger.debug("Found media file: ", fileObject);
+						files.add(new File(FileObjectUtil.getAbsolutePath(fileObject)));
+					}
+
+					mediaMiscService.startImport(files/*, this*/);
 				}
 			}
 		} catch (FileSystemException e) {
 			throw new YpException(YpError.MEDIA_CRAWLING_FAILED, e);
-		}
-
-		persistImagesDiff(media);
-	}
-
-	private void persistImagesDiff(final List<FileObject> media) throws YpException {
-		Collection<BgImage> bgImages = this.bgImageService.findAll();
-		Set<BgImage> bgImagesSet = null;
-		if (!CollectionUtils.isEmpty(bgImages)) {
-			bgImagesSet = new HashSet<BgImage>(bgImages);
-		}
-
-		BgImageType bgImageType = bgImageTypeService
-				.findByName(IConstants.BG_IMAGE_TYPE_IMG);
-
-		// get modified/new files only
-		for (FileObject fileObject : media) {
-			logger.debug("fileObject: ", fileObject);
-			BgImage bgImage;
-			try {
-				bgImage = new BgImage(
-						FileObjectUtil.getAbsolutePath(fileObject), fileObject
-								.getContent().getLastModifiedTime(), true,
-						bgImageType);
-			} catch (FileSystemException e) {
-				throw new YpException(YpError.MEDIA_CRAWLING_FAILED, e);
-			}
-
-			persistImageDiff(bgImagesSet, bgImage);
-		}
-	}
-
-	private void persistImageDiff(final Set<BgImage> bgImagesSet,
-			BgImage bgImage) throws YpException {
-		// if not imported yet
-		if ((null == bgImagesSet)
-				|| (null != bgImagesSet && !bgImagesSet.contains(bgImage))) {
-			this.bgImageService.persist(bgImage);
-			// generate and store the thumbnail
-			bgImageService.handleThumbnail(bgImage);
 		}
 	}
 
@@ -142,5 +99,17 @@ public class MediaCrawlerImpl implements IMediaCrawler,
 	@Override
 	public void crawl() throws YpException {
 		crawl((String[]) null);
+	}
+	
+	
+	/**
+	 * @return the accepted extensions
+	 */
+	protected String[] getAcceptedExts() {
+		List<String> exts = new ArrayList<String>();
+		for (IMediaImporter importer : mediaImporters) {
+			exts.addAll(importer.getSupportedExts());
+		}
+		return exts.toArray(new String [exts.size()]);
 	}
 }

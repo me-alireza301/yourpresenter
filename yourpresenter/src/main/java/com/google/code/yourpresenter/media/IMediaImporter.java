@@ -4,7 +4,8 @@ import java.io.File;
 import java.util.Set;
 
 import com.google.code.yourpresenter.YpException;
-import com.google.code.yourpresenter.entity.MediaMisc;
+import com.google.code.yourpresenter.entity.MediaType;
+import com.google.code.yourpresenter.entity.Media;
 
 public interface IMediaImporter {
 
@@ -14,7 +15,12 @@ public interface IMediaImporter {
 	
 	public String getMediaUploadDir() throws YpException;
 
-	public MediaMisc importMedia(MediaMisc mediaMisc, File outDir) throws YpException;
+//	public Media importMedia(File file) throws YpException;
+
+	public File[] importMedia(Media media) throws YpException;
 	
 	public File[] importMedia(final String media, File outDir) throws YpException;
+	
+	public MediaType getMediaType() throws YpException;
+
 }

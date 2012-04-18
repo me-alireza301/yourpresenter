@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.google.code.yourpresenter.entity.BgImage;
-import com.google.code.yourpresenter.entity.MediaMisc;
+import com.google.code.yourpresenter.entity.Media;
 import com.google.code.yourpresenter.entity.Presentation;
 import com.google.code.yourpresenter.entity.Schedule;
 import com.google.code.yourpresenter.entity.Song;
@@ -36,7 +36,7 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 	private ISongService songService;
 
 	@Autowired
-	private IMediaMiscService mediaMiscService;
+	private IMediaService mediaMiscService;
 
 	public ScheduleServiceImpl() {
 	}
@@ -86,7 +86,7 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 	@Transactional
 	@Override
 	public void addPresentation(final Schedule schedule, long presentationId,
-			final Song songTr, final MediaMisc mediaMiscTr) {
+			final Song songTr, final Media mediaMiscTr) {
 		// to prevent:
 		// Exception: failed to lazily initialize a collection of role:
 		// com.google.code.yourpresenter.entity.Song.verses, no session or
@@ -98,7 +98,7 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 			name = song.getName();
 		}
 		
-		MediaMisc mediaMisc = null; 
+		Media mediaMisc = null; 
 		if (null != mediaMiscTr) {
 			mediaMisc = mediaMiscService.findById(mediaMiscTr.getId());
 			name = mediaMisc.getName();
@@ -117,7 +117,7 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		if (null != song) {
 			presentation.setSong(song);
 		} else if (null != mediaMisc) {
-			presentation.setMediaMisc(mediaMisc);
+			presentation.setMedia(mediaMisc);
 		}
 		
 		this.presentationService.persist(presentation);

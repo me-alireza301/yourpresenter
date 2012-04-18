@@ -19,7 +19,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.media.IMediaImporter;
-import com.google.code.yourpresenter.service.IMediaMiscService;
+import com.google.code.yourpresenter.service.IMediaService;
 import com.google.code.yourpresenter.util.IMediaImportProgressListener;
 import com.google.code.yourpresenter.util.Logger;
 import com.google.code.yourpresenter.util.LoggerFactory;
@@ -39,8 +39,25 @@ public class UploadView implements IMediaImportProgressListener, Serializable {
 	private String currentImportValue = "-1";
 
 	@Autowired
-	private IMediaMiscService mediaMiscService;
+	private IMediaService mediaMiscService;
 
+	// TODO issue: http://code.google.com/p/yourpresenter/issues/detail?id=2
+//	public void clear(AjaxBehaviorEvent event) throws Exception {
+//		int i = 0;
+//	}
+	
+	public void discart() {
+		logger.debug("Import discarted, deleting files: ", files);
+		for (File file : files) {
+			try {
+				FileUtils.deleteDirectory(file.getParentFile());
+			} catch (IOException e) {
+				logger.error(e);
+			}	
+		}
+		files.clear();
+	}
+	
 	public void upload(FileUploadEvent event) throws Exception {
 		UploadedFile upFile = event.getUploadedFile();
 
@@ -86,7 +103,7 @@ public class UploadView implements IMediaImportProgressListener, Serializable {
 	}
 
 	public void startImport() throws YpException {
-		mediaMiscService.startImport(files, this);
+		mediaMiscService.startImport(files/*, this*/);
 	}
 
 	public String getCurrentImportValue() {

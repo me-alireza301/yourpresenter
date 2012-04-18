@@ -35,7 +35,7 @@ public class Presentation implements Serializable {
 	private Song song;
 
 	@JsonIgnore
-	private MediaMisc mediaMisc;
+	private Media media;
 
 	/** The schedule. */
 	@JsonIgnore
@@ -187,19 +187,19 @@ public class Presentation implements Serializable {
 	}
 
 	/**
-	 * @return the mediaMisc
+	 * @return the media
 	 */
 	@OneToOne(optional = true)
-	@Index(name="PresentationMediaMiscIdx")
-	public MediaMisc getMediaMisc() {
-		return mediaMisc;
+	@Index(name="PresentationMediaIdx")
+	public Media getMedia() {
+		return media;
 	}
 
 	/**
-	 * @param mediaMisc the mediaMisc to set
+	 * @param media the mediaMisc to set
 	 */
-	public void setMediaMisc(MediaMisc mediaMisc) {
-		this.mediaMisc = mediaMisc;
+	public void setMedia(Media media) {
+		this.media = media;
 	}
 
 	@NotNull

@@ -4,12 +4,13 @@ package com.google.code.yourpresenter;
 public interface IConstants {
 	
 	// preferences keys
-	public static final String MEDIA_ACCEPTED_EXTS = "media.accepted.exts";
 	public static final String MEDIA_DIRS = "media.dirs";
 	public static final String MEDIA_IMPORT_PDF_GHOSTSCRIPT_DPI = "media.import.pdf.ghostscript.dpi";
 	public static final String MEDIA_IMPORT_PDF_GHOSTSCRIPT_HOME = "media.import.pdf.ghostscript.home";
 	public static final String MEDIA_IMPORT_PDF_IMG_TYPE = "media.import.pdf.img.type";
 	public static final String MEDIA_IMPORT_PPT_OFFICE_HOME = "media.import.ppt.office.home";
+	public static final String MEDIA_IMPORT_VIDEO_MPLAYER_HOME = "media.import.video.mplayer.home";
+	public static final String MEDIA_IMPORT_VIDEO_MPLAYER_THUMBNAIL_COUNT = "media.import.video.mplayer.thumbnail.count";
 	public static final String MEDIA_IMAGE_CONTENT_TYPE = "media.image.content.type";
 	public static final String MEDIA_THUMBNAIL_DIR = "media.thumbnail.dir";
 	public static final String MEDIA_THUMBNAIL_EXT = "media.thumbnail.ext";
@@ -29,10 +30,10 @@ public interface IConstants {
 	public static final String VIEW_NOTIFY_STAYTIME = "view.notify.stayTime";
 	public static final String VIEW_NOTIFY_STICKY = "view.notify.sticky";
 	
-	// BgImageType names
-	public static final String BG_IMAGE_TYPE_IMG = "img";
-	public static final String BG_IMAGE_TYPE_VIDEO = "vid";
-	public static final String BG_IMAGE_TYPE_MISC = "misc";
+	// MediaType names
+	public static final String MEDIA_TYPE_IMG = "img";
+	public static final String MEDIA_TYPE_VIDEO = "vid";
+	public static final String MEDIA_TYPE_MISC = "misc";
 	
 	// @PostInitialize indexes
 	public static final int POST_INIT_IDX_DEFAULT_DATA_LOAD = 1;

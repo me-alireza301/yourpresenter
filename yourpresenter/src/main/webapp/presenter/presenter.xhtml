@@ -25,7 +25,6 @@
 			preferences['view.font.maxsize.presenter'] = <h:outputText
 				value="#{preferencesView.viewFontMaxsizeProjector}" />;
 		</h:outputScript>
-
 		<!-- 
 			richfaces 4.0/4.1 don't integrate layout component, but based on this
 			site: http://community.jboss.org/message/598687
@@ -56,13 +55,12 @@
 				});
 			});
 		</h:outputScript>
-
 		<!-- 	
 			used to fit text size to box
 			see: http://plugins.jquery.com/project/TextFill
 			the call is used also for the all oncomplete for ajax events where necessary 
 		-->
-		<h:outputScript library="js" target="head"
+ 		 <h:outputScript library="js" target="head"
 			name="jquery-textfill-0.1.js" />
 		<h:outputScript target="head">
 		jQuery(document).ready(function() {
@@ -74,9 +72,8 @@
 
 		<!-- need to render dialogSongEditPanel prio to showing the dialogSongEdit dialog -->
 		<a4j:jsFunction name="addSong" render="dialogSongEditPanel"
+			action="#{songTableView.resetEditedSong}"
 			oncomplete="#{rich:component('dialogSongEdit')}.show();" >
-			<!-- this is a workaround to make sure that for new song edited song data are cleared -->
-			<a4j:param value="null" assignTo="#{songTableView.resetEditedSong}" />
 		</a4j:jsFunction>
 		<!-- 
 			hotkeys:
@@ -91,7 +88,7 @@
 		<!-- <rich:notifyStack id="notifyStack" position="topRight" direction="vertical" method="last" /> -->
 
 		<div class="ui-layout-north">
-			<a4j:jsFunction name="upload" render="dialogUpload"
+		<a4j:jsFunction name="upload" render="dialogUploadPanel"
 				oncomplete="#{rich:component('dialogUpload')}.show();" />
 
 			<h:panelGrid columns="3" cellspacing="0">
@@ -142,10 +139,10 @@
 
 				<a4j:status>
 					<f:facet name="start">
-						<h:graphicImage value="/images/ajax/ai.gif" alt="ai" />
+						<h:graphicImage value="/images/ajax/ai.gif"  height="26px" alt="in progress..." />
 					</f:facet>
 				</a4j:status>
-			</h:panelGrid>
+			</h:panelGrid> 
 
 			<ui:include src="dialogSongEdit.xhtml" />
 		</div>
@@ -177,26 +174,26 @@
 										<a4j:outputPanel layout="block" styleClass="panel-draggable">
 											<rich:dragSource type="song" dragIndicator="songDragInd"
 												dragValue="#{song}" />
-											<h:outputText value="#{song.name}" />
+											<h:outputText id="songTableSongName" value="#{song.name}" />
 										</a4j:outputPanel>
 									</rich:column>
 								</rich:extendedDataTable>
 
-								<rich:contextMenu target="songTable" mode="ajax">
-									<rich:menuItem label="Edit" render="dialogSongEditPanel"
+								<rich:contextMenu id="songTableMenu" target="songTable" mode="ajax">
+									<rich:menuItem id="songEdit" label="Edit" render="dialogSongEditPanel"
 										oncomplete="#{rich:component('dialogSongEdit')}.show();"
 										mode="ajax" icon="/images/action/edit.gif" />
-									<rich:menuItem label="Delete" render="dialogSongDelete"
+									<rich:menuItem id="songDelete" label="Delete" render="dialogSongDelete"
 										oncomplete="#{rich:component('dialogSongDelete')}.show();"
 										mode="ajax" icon="/images/action/delete.gif" />
 								</rich:contextMenu>
 							</h:panelGrid>
 						</h:form>
 
-						<rich:jQuery selector=".songTable tr:odd"
+						<!-- <rich:jQuery selector=".songTable tr:odd"
 							query="addClass('songTable-odd-row')" />
 						<rich:jQuery selector=".songTable tr:even"
-							query="addClass('songTable-even-row')" />
+							query="addClass('songTable-even-row')" /> -->
 						<rich:jQuery selector=".songTable tr" event="mouseover"
 							query="jQuery(this).addClass('songTable-active-row')" />
 						<rich:jQuery selector=".songTable tr" event="mouseout"
@@ -223,7 +220,7 @@
 						<f:facet name="header">
 							<rich:panel id="scheduleName" styleClass="header-panel">
 								<rich:dropTarget
-									acceptedTypes="bgImage, song, presentation, mediaMisc"
+									acceptedTypes="bgImage, song, presentation, media"
 									dropValue="schedule_#{schedule.name}"
 									dropListener="#{scheduleView.dropped}" render="schedule"
 									oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:preferences['view.font.maxsize.presenter']});" />
@@ -244,7 +241,7 @@
 												dragIndicator="presentationDragInd"
 												dragValue="#{presentation}" />
 											<rich:dropTarget
-												acceptedTypes="bgImage, song, presentation, mediaMisc"
+												acceptedTypes="bgImage, song, presentation, media"
 												dropValue="presentation_#{presentation.id}"
 												dropListener="#{scheduleView.dropped}" render="schedule"
 												oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:preferences['view.font.maxsize.presenter']})" />
@@ -253,18 +250,17 @@
 										</rich:panel>
 									</f:facet>
 
-									<!--  elements="9" -->
 									<rich:dataGrid value="#{presentation.slides}" var="slide"
 										columns="4" border="0">
-
+									
+										<rich:dropTarget acceptedTypes="bgImage"
+											dropValue="slide_#{slide.id}"
+											dropListener="#{scheduleView.dropped}" render="schedule"
+											oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:preferences['view.font.maxsize.presenter']})" />
+											
 										<a4j:commandLink action="#{scheduleView.activateSlide}"
 											render="none" styleClass="slidebox-link">
 											<f:param name="id" value="#{slide.id}" />
-
-											<rich:dropTarget acceptedTypes="bgImage"
-												dropValue="slide_#{slide.id}"
-												dropListener="#{scheduleView.dropped}" render="schedule"
-												oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:preferences['view.font.maxsize.presenter']})" />
 
 											<rich:panel styleClass="slidebox slidebox-#{slide.cssSuffix}"
 												style="background-image:url('/yourpresenter/mvc/thumbnail/#{slide.bgImage.id}');">
@@ -286,7 +282,7 @@
 					</rich:panel>
 				</h:form>
 			</a4j:outputPanel>
-		</div>
+		</div> 
 
 		<div class="ui-layout-south">
 			<rich:tabPanel switchType="client">
@@ -295,10 +291,10 @@
 						<h:form>
 							<rich:dragIndicator id="imageDragInd" acceptClass="accept"
 								rejectClass="reject" draggingClass="default">
-       							Drag image to scheduled song ...
+       							Drag image to scheduled song or to schedule ...
    							</rich:dragIndicator>
 
-							<rich:dataGrid value="#{imageView.bgImage}" var="bgImage"
+							<rich:dataGrid value="#{imageView.image}" var="bgImage"
 								columns="6" border="0">
 								<rich:panel styleClass="media-image"
 									style="background-image:url('/yourpresenter/mvc/thumbnail/#{bgImage.id}');">
@@ -311,6 +307,24 @@
 					</a4j:outputPanel>
 				</rich:tab>
 				<rich:tab header="Video">
+					<a4j:outputPanel id="videos">
+						<h:form>
+							<rich:dragIndicator id="videoDragInd" acceptClass="accept"
+								rejectClass="reject" draggingClass="default">
+       							Drag video to scheduled song or to schedule ...
+   							</rich:dragIndicator>
+
+							<rich:dataGrid value="#{imageView.video}" var="bgImage"
+								columns="6" border="0">
+								<rich:panel styleClass="media-video"
+									style="background-image:url('/yourpresenter/mvc/thumbnail/#{bgImage.id}');">
+
+									<rich:dragSource type="bgImage" dragIndicator="videoDragInd"
+										dragValue="#{bgImage}" />
+								</rich:panel>
+							</rich:dataGrid>
+						</h:form>
+					</a4j:outputPanel>
 				</rich:tab>
 
 				<rich:tab id="tabMisc" header="Misc">
@@ -319,13 +333,13 @@
        						Drag media to presentation ...
 					</rich:dragIndicator>
 
-					<rich:dataGrid value="#{miscView.mediaMisc}" var="mediaMisc"
+					<rich:dataGrid value="#{imageView.misc}" var="bgImage"
 						columns="6" border="0">
 						<rich:panel styleClass="media-misc"
-							style="background-image:url('/yourpresenter/mvc/thumbnail/#{mediaMisc.coverArt.bgImage.id}');">
+							style="background-image:url('/yourpresenter/mvc/thumbnail/#{bgImage.id}');">
 
-							<rich:dragSource type="mediaMisc" dragIndicator="miscDragInd"
-								dragValue="#{mediaMisc}" />
+							<rich:dragSource type="media" dragIndicator="miscDragInd"
+								dragValue="#{bgImage.media}" />
 						</rich:panel>
 					</rich:dataGrid>
 				</rich:tab>
@@ -333,7 +347,7 @@
 
 			<ui:include src="dialogUpload.xhtml" />
 		</div>
-
+ 
 	</h:body>
 </f:view>
 </html>

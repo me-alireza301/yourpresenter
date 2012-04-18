@@ -16,7 +16,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.BgImage;
-import com.google.code.yourpresenter.entity.MediaMisc;
+import com.google.code.yourpresenter.entity.Media;
 import com.google.code.yourpresenter.entity.Presentation;
 import com.google.code.yourpresenter.entity.Schedule;
 import com.google.code.yourpresenter.entity.Song;
@@ -30,7 +30,7 @@ import com.google.code.yourpresenter.util.LoggerFactory;
 @Component("scheduleView")
 @Scope(WebApplicationContext.SCOPE_SESSION)
 @SuppressWarnings("serial")
-public class ScheduleView implements Serializable/*, IHasSchedule*/ {
+public class ScheduleView implements Serializable {
 
 	private static Logger logger = LoggerFactory.getLogger(ScheduleView.class);
 	
@@ -46,7 +46,9 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 	private IStateService stateService;
 	
 	public Schedule getSchedule() throws IOException {
+		// TODO
 		return scheduleService.loadAllSlidesEager(getSchedule(this.scheduleName));
+//		return null;
 	}
 	
 	private Schedule getSchedule(String scheduleName) {
@@ -93,13 +95,13 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 				// add song after presentation (position id)
 				dropped((Song) dragValue, id);
 			}
-		} else if (dragValue instanceof MediaMisc) {
+		} else if (dragValue instanceof Media) {
 			if (level.equals("schedule")) {
 				// add MediaMisc at start (position 0)
-				dropped((MediaMisc) dragValue, -1);
+				dropped((Media) dragValue, -1);
 			} else if (level.equals("presentation")) {
 				// add MediaMisc after presentation (position id)
-				dropped((MediaMisc) dragValue, id);
+				dropped((Media) dragValue, id);
 			}
 		} else if (dragValue instanceof Presentation) {
 				if (level.equals("schedule")) {
@@ -125,7 +127,7 @@ public class ScheduleView implements Serializable/*, IHasSchedule*/ {
 		this.stateService.stateChanged(scheduleName);
 	}
 	
-	private void dropped(MediaMisc mediaMisc, long presentationId) throws IOException {
+	private void dropped(Media mediaMisc, long presentationId) throws IOException {
 		logger.debug("Added MediaMisc (mediaMisc.id=", mediaMisc.getId(), ") to schedule (schedule=", this.scheduleName, 
 				") after presentation (presentation.id=", presentationId, ")");
 		this.scheduleService.addPresentation(this.getSchedule(), presentationId, null, mediaMisc);

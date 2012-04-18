@@ -36,6 +36,10 @@
                 	</h:outputLink>
 				</f:facet> -->
 
+				<!-- make sure we rerender the song table only after edit song dialog disappeared, 
+				otherwise we're facing issues with drag and drop -->
+				<a4j:jsFunction name="fireSongTableChanged" render="songTable songTableMenu"/>
+		
 				<h:panelGrid columns="1" cellspacing="3">
 					<rich:messages id="newSongErrors" ajaxRendered="true"/>
 					<h:outputLabel for="dialogSongEditName" value="Name: " />
@@ -50,13 +54,11 @@
 							make sure error is displayed and in case no error => hide the popup
 							see: http://mkblog.exadel.com/2009/12/richfaces-built-in-client-functions/
 							and: http://docs.jboss.org/richfaces/latest_4_0_X/Component_Reference/en-US/html/chap-Component_Reference-Functions.html
-							
-							as render="songs" doesn't help for setting updated value in table - for example for DnD source 
 						-->
-						<!-- oncomplete="if (jQuery(#{rich:element('dialogSongEditForm:newSongErrors')}).is(':empty')) { #{rich:component('dialogSongEdit')}.hide(); location.reload() }; return true;" -->
 						<a4j:commandButton id="buttonOK" value="OK" action="#{songTableView.update}"
-							oncomplete="if (jQuery(#{rich:element('dialogSongEditForm:newSongErrors')}).is(':empty')) { #{rich:component('dialogSongEdit')}.hide(); }; return true;"		
-							 type="submit" render="songs"/>
+							oncomplete="if (jQuery(#{rich:element('dialogSongEditForm:newSongErrors')}).is(':empty')) { #{rich:component('dialogSongEdit')}.hide(); fireSongTableChanged(); return true;}"		
+							 type="submit" />
+							 <!-- render="songTable" -->
 							<!-- render="songs notifySongSaved" -->
 						<a4j:commandButton id="buttonCancel" value="Cancel"
 							oncomplete="#{rich:component('dialogSongEdit')}.hide(); return false;" />

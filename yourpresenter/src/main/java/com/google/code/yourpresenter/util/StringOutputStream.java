@@ -2,6 +2,7 @@ package com.google.code.yourpresenter.util;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 /**
  * String backed-up OutputStream. To get the output string value call toString()
@@ -41,8 +42,7 @@ public class StringOutputStream extends OutputStream {
 	 */
 	@Override
 	public void write(byte[] abyte0) throws IOException {
-		// TODO implemnent if needed
-		throw new UnsupportedOperationException();
+		this.string.append(new String(abyte0));
 	}
 
 	/*
@@ -52,7 +52,6 @@ public class StringOutputStream extends OutputStream {
 	 */
 	@Override
 	public void write(byte[] abyte0, int i, int j) throws IOException {
-		// TODO implemnent if needed
-		throw new UnsupportedOperationException();
+		this.string.append(new String(Arrays.copyOfRange(abyte0, i, j)));
 	}
 }

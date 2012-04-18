@@ -24,9 +24,9 @@
 			Are you sure you want to delete the song: "<h:outputText
 				value="#{songTableView.selectedSong.name}" />"?
 			<a4j:commandButton id="buttonDelete" value="Delete"
-				onclick="remove(); #{rich:component('dialogSongDelete')}.hide(); return false;"/>
+				onclick="remove(); #{rich:component('dialogSongDelete')}.hide(); return true;"/>
 			<a4j:commandButton value="Cancel"
-				onclick="#{rich:component('dialogSongDelete')}.hide(); return false;" />
+				onclick="#{rich:component('dialogSongDelete')}.hide(); return true;" />
 		</rich:popupPanel>
 
 	</h:form>
