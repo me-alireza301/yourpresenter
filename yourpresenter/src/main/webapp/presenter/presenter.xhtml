@@ -45,22 +45,30 @@
 			name="jquery.layout-1.3.0-rc-29.15.js" />
 		<h:outputScript target="head">
 			jQuery(document).ready(function() {
-				jQuery('body').layout({
+				ypLayout = jQuery('body').layout({
 					defaults : {
 						applyDefaultStyles : true,
 						/* sample jquery layout setup:
 						http://stackoverflow.com/questions/4935516/jquery-ui-layout-sizepane-is-resetting-my-options */
 						enableCursorHotkey : false,
+					},
+					north: {
+						resizable : false,
+						closable : false,
 					}
 				});
+				/* make sure menu overflows */
+				ypLayout.allowOverflow("north");
 			});
+			
+			 
 		</h:outputScript>
 		<!-- 	
 			used to fit text size to box
 			see: http://plugins.jquery.com/project/TextFill
 			the call is used also for the all oncomplete for ajax events where necessary 
 		-->
- 		 <h:outputScript library="js" target="head"
+		<h:outputScript library="js" target="head"
 			name="jquery-textfill-0.1.js" />
 		<h:outputScript target="head">
 		jQuery(document).ready(function() {
@@ -73,7 +81,7 @@
 		<!-- need to render dialogSongEditPanel prio to showing the dialogSongEdit dialog -->
 		<a4j:jsFunction name="addSong" render="dialogSongEditPanel"
 			action="#{songTableView.resetEditedSong}"
-			oncomplete="#{rich:component('dialogSongEdit')}.show();" >
+			oncomplete="#{rich:component('dialogSongEdit')}.show();">
 		</a4j:jsFunction>
 		<!-- 
 			hotkeys:
@@ -88,7 +96,7 @@
 		<!-- <rich:notifyStack id="notifyStack" position="topRight" direction="vertical" method="last" /> -->
 
 		<div class="ui-layout-north">
-		<a4j:jsFunction name="upload" render="dialogUploadPanel"
+			<a4j:jsFunction name="upload" render="dialogUploadPanel"
 				oncomplete="#{rich:component('dialogUpload')}.show();" />
 
 			<h:panelGrid columns="3" cellspacing="0">
@@ -139,10 +147,11 @@
 
 				<a4j:status>
 					<f:facet name="start">
-						<h:graphicImage value="/images/ajax/ai.gif"  height="26px" alt="in progress..." />
+						<h:graphicImage value="/images/ajax/ai.gif" height="26px"
+							alt="in progress..." />
 					</f:facet>
 				</a4j:status>
-			</h:panelGrid> 
+			</h:panelGrid>
 
 			<ui:include src="dialogSongEdit.xhtml" />
 		</div>
@@ -179,11 +188,14 @@
 									</rich:column>
 								</rich:extendedDataTable>
 
-								<rich:contextMenu id="songTableMenu" target="songTable" mode="ajax">
-									<rich:menuItem id="songEdit" label="Edit" render="dialogSongEditPanel"
+								<rich:contextMenu id="songTableMenu" target="songTable"
+									mode="ajax">
+									<rich:menuItem id="songEdit" label="Edit"
+										render="dialogSongEditPanel"
 										oncomplete="#{rich:component('dialogSongEdit')}.show();"
 										mode="ajax" icon="/images/action/edit.gif" />
-									<rich:menuItem id="songDelete" label="Delete" render="dialogSongDelete"
+									<rich:menuItem id="songDelete" label="Delete"
+										render="dialogSongDelete"
 										oncomplete="#{rich:component('dialogSongDelete')}.show();"
 										mode="ajax" icon="/images/action/delete.gif" />
 								</rich:contextMenu>
@@ -252,19 +264,16 @@
 
 									<rich:dataGrid value="#{presentation.slides}" var="slide"
 										columns="4" border="0">
-									
 										<rich:dropTarget acceptedTypes="bgImage"
 											dropValue="slide_#{slide.id}"
 											dropListener="#{scheduleView.dropped}" render="schedule"
 											oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:preferences['view.font.maxsize.presenter']})" />
-											
+
 										<a4j:commandLink action="#{scheduleView.activateSlide}"
 											render="none" styleClass="slidebox-link">
 											<f:param name="id" value="#{slide.id}" />
-
 											<rich:panel styleClass="slidebox slidebox-#{slide.cssSuffix}"
 												style="background-image:url('/yourpresenter/mvc/thumbnail/#{slide.bgImage.id}');">
-
 												<div class="jtextfill">
 													<h:outputText styleClass="jtextfill-inner"
 														value="#{slide.text}" escape="false" />
@@ -282,7 +291,7 @@
 					</rich:panel>
 				</h:form>
 			</a4j:outputPanel>
-		</div> 
+		</div>
 
 		<div class="ui-layout-south">
 			<rich:tabPanel switchType="client">
@@ -333,8 +342,8 @@
        						Drag media to presentation ...
 					</rich:dragIndicator>
 
-					<rich:dataGrid value="#{imageView.misc}" var="bgImage"
-						columns="6" border="0">
+					<rich:dataGrid value="#{imageView.misc}" var="bgImage" columns="6"
+						border="0">
 						<rich:panel styleClass="media-misc"
 							style="background-image:url('/yourpresenter/mvc/thumbnail/#{bgImage.id}');">
 
@@ -347,7 +356,7 @@
 
 			<ui:include src="dialogUpload.xhtml" />
 		</div>
- 
+
 	</h:body>
 </f:view>
 </html>
