@@ -38,6 +38,8 @@ import com.google.code.yourpresenter.service.IPreferenceService;
 @SuppressWarnings("serial")
 public class PreferencesView implements Serializable {
 
+	private int width;
+
 	@Autowired
 	private IPreferenceService preferenceService;
 
@@ -97,22 +99,22 @@ public class PreferencesView implements Serializable {
 		return this.preferenceService
 				.findStringById(IConstants.VIEW_NOTIFY_NONBLOCKING);
 	}
-	
+
 	public String getViewNotifyNonblockingOpacity() throws YpException {
 		return this.preferenceService
 				.findStringById(IConstants.VIEW_NOTIFY_NONBLOCKINGOPACITY);
 	}
-	
+
 	public String getViewNotifyShowShadow() throws YpException {
 		return this.preferenceService
 				.findStringById(IConstants.VIEW_NOTIFY_SHOWSHADOW);
 	}
-	
+
 	public String getViewNotifyShowCloseButton() throws YpException {
 		return this.preferenceService
 				.findStringById(IConstants.VIEW_NOTIFY_SHOWCLOSEBUTTON);
 	}
-	
+
 	public String getViewNotifyStayTime() throws YpException {
 		return this.preferenceService
 				.findStringById(IConstants.VIEW_NOTIFY_STAYTIME);
@@ -121,5 +123,42 @@ public class PreferencesView implements Serializable {
 	public String getViewNotifySticky() throws YpException {
 		return this.preferenceService
 				.findStringById(IConstants.VIEW_NOTIFY_STICKY);
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public String getViewSlideHeight() throws YpException {
+		return this.preferenceService
+				.findStringById(IConstants.VIEW_SLIDE_HEIGHT);
+	}
+
+	public String getViewSlideWidth() throws YpException {
+		return this.preferenceService
+				.findStringById(IConstants.VIEW_SLIDE_WIDTH);
+	}
+
+	public String getViewMediaHeight() throws YpException {
+		return this.preferenceService
+				.findStringById(IConstants.VIEW_MEDIA_HEIGHT);
+	}
+
+	public String getViewMediaWidth() throws YpException {
+		return this.preferenceService
+				.findStringById(IConstants.VIEW_MEDIA_WIDTH);
+	}
+
+	public int getSlideColumnCnt() throws YpException {
+		return (this.width - 230)
+				/ (Integer.parseInt(getViewSlideWidth()) + 10);
+	}
+
+	public int getMediaColumnCnt() throws YpException {
+		return (this.width - 20) / (Integer.parseInt(getViewMediaWidth()) + 10);
 	}
 }

@@ -21,6 +21,10 @@ public interface IConstants {
 	public static final String MEDIA_UPLOAD_DIR_VIDEO = "media.upload.dir.video";
 	public static final String VIEW_FONT_MAXSIZE_PRESENTER = "view.font.maxsize.presenter";
 	public static final String VIEW_FONT_MAXSIZE_PROJECTOR = "view.font.maxsize.projector";
+	public static final String VIEW_MEDIA_HEIGHT = "view.media.height";
+	public static final String VIEW_MEDIA_WIDTH = "view.media.width";
+	public static final String VIEW_SLIDE_HEIGHT = "view.slide.height";
+	public static final String VIEW_SLIDE_WIDTH = "view.slide.width";
 	
 	// notifications
 	public static final String VIEW_NOTIFY_NONBLOCKING = "view.notify.nonblocking";

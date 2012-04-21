@@ -78,11 +78,45 @@
 			});
 		</h:outputScript>
 
+		<!-- 
+		make sure we have correct counts set for columns of:
+			- slides
+			- bg images
+			- bg videos
+			- media
+		every time either of cases happens:
+		- window size is changed or 
+		- page load/reload
+		these should be addapted 
+		 -->
+		<h:outputScript target="head">
+			jQuery(document).ready(function() {
+				checkSize();
+			});
+			jQuery(window).resize(function() {
+				checkSize();
+			});
+			
+			function checkSize() {
+				var newWidth = jQuery(window).width();
+				var oldWidth = <h:outputText value="#{preferencesView.width}" />;
+				
+				if (oldWidth != newWidth) {
+					updateWidth(newWidth);
+				}
+			}
+		</h:outputScript>
+
+		<a4j:jsFunction name="updateWidth" render="schedule media">
+			<a4j:param name="cnt" assignTo="#{preferencesView.width}" />
+		</a4j:jsFunction>
+
 		<!-- need to render dialogSongEditPanel prio to showing the dialogSongEdit dialog -->
 		<a4j:jsFunction name="addSong" render="dialogSongEditPanel"
 			action="#{songTableView.resetEditedSong}"
 			oncomplete="#{rich:component('dialogSongEdit')}.show();">
 		</a4j:jsFunction>
+
 		<!-- 
 			hotkeys:
 			- alt+ctrl+n => add new song dialog pops up  
@@ -202,10 +236,6 @@
 							</h:panelGrid>
 						</h:form>
 
-						<!-- <rich:jQuery selector=".songTable tr:odd"
-							query="addClass('songTable-odd-row')" />
-						<rich:jQuery selector=".songTable tr:even"
-							query="addClass('songTable-even-row')" /> -->
 						<rich:jQuery selector=".songTable tr" event="mouseover"
 							query="jQuery(this).addClass('songTable-active-row')" />
 						<rich:jQuery selector=".songTable tr" event="mouseout"
@@ -263,7 +293,7 @@
 									</f:facet>
 
 									<rich:dataGrid value="#{presentation.slides}" var="slide"
-										columns="4" border="0">
+										columns="#{preferencesView.slideColumnCnt}" border="0">
 										<rich:dropTarget acceptedTypes="bgImage"
 											dropValue="slide_#{slide.id}"
 											dropListener="#{scheduleView.dropped}" render="schedule"
@@ -274,7 +304,8 @@
 											<f:param name="id" value="#{slide.id}" />
 											<rich:panel styleClass="slidebox slidebox-#{slide.cssSuffix}"
 												style="background-image:url('/yourpresenter/mvc/thumbnail/#{slide.bgImage.id}');">
-												<div class="jtextfill">
+												<div class="jtextfill"
+													style="width: #{preferencesView.viewSlideWidth">
 													<h:outputText styleClass="jtextfill-inner"
 														value="#{slide.text}" escape="false" />
 												</div>
@@ -294,7 +325,7 @@
 		</div>
 
 		<div class="ui-layout-south">
-			<rich:tabPanel switchType="client">
+			<rich:tabPanel switchType="client" id="media">
 				<rich:tab header="Images">
 					<a4j:outputPanel id="images">
 						<h:form>
@@ -304,9 +335,9 @@
    							</rich:dragIndicator>
 
 							<rich:dataGrid value="#{imageView.image}" var="bgImage"
-								columns="6" border="0">
+								columns="#{preferencesView.mediaColumnCnt}" border="0">
 								<rich:panel styleClass="media-image"
-									style="background-image:url('/yourpresenter/mvc/thumbnail/#{bgImage.id}');">
+									style="background-image:url('/yourpresenter/mvc/thumbnail/#{bgImage.id}');width:#{preferencesView.viewMediaWidth}px;height:#{preferencesView.viewMediaHeight}px;">
 
 									<rich:dragSource type="bgImage" dragIndicator="imageDragInd"
 										dragValue="#{bgImage}" />
@@ -324,9 +355,9 @@
    							</rich:dragIndicator>
 
 							<rich:dataGrid value="#{imageView.video}" var="bgImage"
-								columns="6" border="0">
+								columns="#{preferencesView.mediaColumnCnt}" border="0">
 								<rich:panel styleClass="media-video"
-									style="background-image:url('/yourpresenter/mvc/thumbnail/#{bgImage.id}');">
+									style="background-image:url('/yourpresenter/mvc/thumbnail/#{bgImage.id}');width:#{preferencesView.viewMediaWidth}px;height:#{preferencesView.viewMediaHeight}px;">
 
 									<rich:dragSource type="bgImage" dragIndicator="videoDragInd"
 										dragValue="#{bgImage}" />
@@ -342,10 +373,10 @@
        						Drag media to presentation ...
 					</rich:dragIndicator>
 
-					<rich:dataGrid value="#{imageView.misc}" var="bgImage" columns="6"
-						border="0">
+					<rich:dataGrid value="#{imageView.misc}" var="bgImage"
+						columns="#{preferencesView.mediaColumnCnt}" border="0">
 						<rich:panel styleClass="media-misc"
-							style="background-image:url('/yourpresenter/mvc/thumbnail/#{bgImage.id}');">
+							style="background-image:url('/yourpresenter/mvc/thumbnail/#{bgImage.id}');width:#{preferencesView.viewMediaWidth}px;height:#{preferencesView.viewMediaHeight}px;">
 
 							<rich:dragSource type="media" dragIndicator="miscDragInd"
 								dragValue="#{bgImage.media}" />

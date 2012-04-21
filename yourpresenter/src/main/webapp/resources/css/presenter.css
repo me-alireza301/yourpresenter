@@ -57,7 +57,6 @@
 	background-color: #FFEBDA !important;
 	cursor: pointer;
 }
-
 /* [END] songTable styles */
 
 /* [BEGIN] misc default styles */
@@ -121,8 +120,8 @@
 }
 
 .jtextfill {
-	width: 200px;
-	height: 150px;
+	/* width: 200px;
+	height: 150px; */
 
 	padding: 5%;
 
@@ -164,8 +163,8 @@
 
 /* [BEGIN] media for background styles */
 .media-image, .media-video, .media-misc {
-	width: 160px;
-	height: 120px;
+	/* width: 160px;
+	height: 120px; */
 	padding: 0px;
 	/* background-size: 100%; */
 	background-size: cover;
@@ -211,3 +210,14 @@
     border-right: solid 1px #eaeaea;
 }
 /* [END] toggle button */
+
+
+/* TODO [BEGIN] get rid of any padding */
+html, body, .ui-layout-north {
+    height:   100%;
+    width:    100%;
+    margin:   0px;
+    overflow: hidden;
+    padding: 0px; /* ANYTHING you want */
+}
+/* [END] get rid of any padding */

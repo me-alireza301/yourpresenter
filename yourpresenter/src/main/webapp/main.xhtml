@@ -7,8 +7,7 @@
 	xmlns:a4j="http://richfaces.org/a4j">
 <f:view contentType="text/html">
 	<h:head>
-		<title><ui:insert name="title">Yourpresenter</ui:insert>
-		</title>
+		<title><ui:insert name="title">Yourpresenter</ui:insert></title>
 		<meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
 		<rich:jQuery />
 	</h:head>
@@ -22,12 +21,49 @@
 				jQuery(':text:visible:enabled:first').focus();
 			});
 		</h:outputScript>
+		
+		<!-- [BEGIN] width setter in backing bean, 
+		TODO remove duplicate, it's present in main.xhtml as well as in presenter.xhtml -->
+		<!-- 
+		make sure we have correct counts set for columns of:
+			- slides
+			- bg images
+			- bg videos
+			- media
+		every time either of cases happens:
+		- window size is changed or 
+		- page load/reload
+		these should be addapted 
+		 -->
+		<h:outputScript target="head">
+			jQuery(document).ready(function() {
+				checkSize();
+			});
+			jQuery(window).resize(function() {
+				checkSize();
+			});
+			
+			function checkSize() {
+				var newWidth = jQuery(window).width();
+				var oldWidth = <h:outputText value="#{preferencesView.width}" />;
+				
+				if (oldWidth != newWidth) {
+					updateWidth(newWidth);
+				}
+			}
+		</h:outputScript>
+		
+		<a4j:jsFunction name="updateWidth" render="schedule media">
+            <a4j:param name="cnt" assignTo="#{preferencesView.width}"/>
+        </a4j:jsFunction>
+        <!-- [END] width setter in backing bean, 
+		TODO remove duplicate, it's present in main.xhtml as well as in presenter.xhtml -->
 
 		<h:form>
 			<h:panelGrid columns="3">
 				<h:outputText value="Role:" />
 				<h:selectOneRadio value="#{mainView.role}" layout="pageDirection">
-					<a4j:ajax event="change" listener="#{mainView.roleChanged}" 
+					<a4j:ajax event="change" listener="#{mainView.roleChanged}"
 						render="schedulePanel okButton" />
 					<f:selectItems value="#{mainView.roles}" />
 				</h:selectOneRadio>
@@ -46,7 +82,6 @@
 						</h:panelGrid>
 					</h:panelGroup>
 
-					<!-- <rich:validator event="submit" /> -->
 					<h:panelGroup rendered="#{mainView.scheduleChoose}">
 						<h:panelGrid columns="3">
 							<h:outputText value="Choose Schedule:" />
@@ -60,12 +95,9 @@
 					</h:panelGroup>
 				</h:panelGroup>
 
-				<!-- <rich:messages ajaxRendered="true" /> -->
-
 				<h:commandButton value="OK" id="okButton"
 					disabled="#{mainView.roleNotChosen}"
 					action="#{mainView.submitSchedule}">
-					<!-- binding="#{mainView.submitButton}" -->
 				</h:commandButton>
 
 			</h:panelGrid>
