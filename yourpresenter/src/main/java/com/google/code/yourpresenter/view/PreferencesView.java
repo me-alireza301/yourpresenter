@@ -16,8 +16,6 @@
 package com.google.code.yourpresenter.view;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -78,10 +76,7 @@ public class PreferencesView implements Serializable {
 
 	public void save(ActionEvent event) throws YpException {
 		saveDisabled = true;
-
-		Collection<Preference> preferences = new ArrayList<Preference>();
-		preferences.add(new Preference(IConstants.MEDIA_DIRS, mediaDirs));
-		this.preferenceService.update(preferences);
+		this.preferenceService.update(new Preference[] {new Preference(IConstants.MEDIA_DIRS, mediaDirs)});
 	}
 
 	public boolean isSaveDisabled() {

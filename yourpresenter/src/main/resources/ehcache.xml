@@ -27,9 +27,14 @@
         timeToIdleSeconds="0" timeToLiveSeconds="600"
         memoryStoreEvictionPolicy="LRU" />
         
-<!-- 
-    <cache name="locationSearchCache" eternal="false"
-        maxElementsInMemory="100" overflowToDisk="false" diskPersistent="false"
-        timeToIdleSeconds="0" timeToLiveSeconds="300"
-        memoryStoreEvictionPolicy="LRU" /> -->
+    <cache name="allSongsCache" eternal="false"
+        maxElementsInMemory="10" overflowToDisk="false" diskPersistent="false"
+        timeToIdleSeconds="0" timeToLiveSeconds="600"
+        memoryStoreEvictionPolicy="LRU" />
+    
+    <cache name="bgImageFirstPositionCache" eternal="false"
+        maxElementsInMemory="10" overflowToDisk="false" diskPersistent="false"
+        timeToIdleSeconds="0" timeToLiveSeconds="600"
+        memoryStoreEvictionPolicy="LRU" />    
+
 </ehcache>

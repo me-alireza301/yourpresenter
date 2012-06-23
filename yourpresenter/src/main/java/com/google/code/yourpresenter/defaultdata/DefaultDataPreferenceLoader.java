@@ -35,7 +35,7 @@ public class DefaultDataPreferenceLoader extends AbstractDefaultDataLoader imple
 	}
 
 	@Override
-	public void persist(String key, String value) {
+	public void persist(String key, String value) throws YpException {
 		preferenceService.persist(new Preference((String) key, value));
 	}
 

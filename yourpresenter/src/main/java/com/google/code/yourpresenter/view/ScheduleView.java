@@ -36,6 +36,8 @@ public class ScheduleView implements Serializable {
 	
 	private String scheduleName;
 	
+	private Long presentationIdToDelete = null;
+	
 	@Autowired
 	private IScheduleService scheduleService;
 	@Autowired
@@ -45,7 +47,7 @@ public class ScheduleView implements Serializable {
 	@Autowired
 	private IStateService stateService;
 	
-	public Schedule getSchedule() throws IOException {
+	public Schedule getSchedule() {
 		// TODO
 		return scheduleService.loadAllSlidesEager(getSchedule(this.scheduleName));
 //		return null;
@@ -221,5 +223,46 @@ public class ScheduleView implements Serializable {
 	
 	public String getToggleLiveCssSuffix() {
 		return (this.getSchedule(scheduleName).isLive() ? "down" : "up" );
+	}
+	
+	public void delete() throws YpException {
+		Schedule schedule = getSchedule();
+		if (null == schedule) {
+			throw new YpException(YpError.SCHEDULE_DELETE_FAILED, "Schedule to be deleted is null!");
+		}
+		scheduleService.delete(schedule);
+		
+		// make sure state change is propagated
+		this.stateService.stateChanged(scheduleName);
+	}
+	
+	public void deletePresentation() throws YpException {
+		Presentation p = this.getPresentationToDelete();
+		if (null == p) {
+			throw new YpException(YpError.PRESENTATION_DELETE_FAILED, "Presentation to be deleted is null!");
+		}
+		
+		this.scheduleService.deletePresentation(this.getSchedule(), getPresentationIdToDelete());
+		
+		// make sure we clear the internal var holding to be deleted presentation
+		this.presentationIdToDelete = null;
+		
+		// make sure state change is propagated
+		this.stateService.stateChanged(scheduleName);
+	}
+
+	public Presentation getPresentationToDelete() {
+		if (null != presentationIdToDelete) {
+			return this.presentationService.findById(this.presentationIdToDelete); 
+		}
+		return null;
+	}
+
+	public Long getPresentationIdToDelete() {
+		return presentationIdToDelete;
+	}
+
+	public void setPresentationIdToDelete(Long presentationIdToDelete) {
+		this.presentationIdToDelete = presentationIdToDelete;
 	}
 }

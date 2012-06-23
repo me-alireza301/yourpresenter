@@ -14,7 +14,7 @@ public interface IPreferenceService {
 
 	public Collection<Preference> findAll() throws YpException;
 
-	public void update(Collection<Preference> preferences) throws YpException;
+	public void update(Preference ... preferences) throws YpException;
 
 	public void registerPreferenceChangedListener(
 			IPreferenceChangedListener listener, String... preferences)
@@ -23,5 +23,5 @@ public interface IPreferenceService {
 	public void unregisterPreferenceChangedListener(
 			IPreferenceChangedListener listener) throws YpException;
 	
-	public void persist(Preference preference);
+	public void persist(Preference preference) throws YpException;
 }

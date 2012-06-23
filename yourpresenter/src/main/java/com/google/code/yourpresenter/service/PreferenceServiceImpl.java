@@ -8,6 +8,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +20,6 @@ import com.google.code.yourpresenter.entity.Preference;
 import com.google.code.yourpresenter.util.IPreferenceChangedListener;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.googlecode.ehcache.annotations.Cacheable;
-import com.googlecode.ehcache.annotations.KeyGenerator;
-import com.googlecode.ehcache.annotations.Property;
-import com.googlecode.ehcache.annotations.TriggersRemove;
 
 @SuppressWarnings("serial")
 @Service
@@ -42,7 +40,7 @@ public class PreferenceServiceImpl implements IPreferenceService, Serializable {
 	}
 
 	@Transactional(readOnly = true)
-	@Cacheable(cacheName = "preferenceCache", keyGenerator = @KeyGenerator(name = "HashCodeCacheKeyGenerator", properties = @Property(name = "includeMethod", value = "false")))
+	@Cacheable("preferenceCache")
 	@Override
 	public String findStringById(String name) throws YpException {
 		Query query = em
@@ -58,27 +56,29 @@ public class PreferenceServiceImpl implements IPreferenceService, Serializable {
 	}
 
 	@Transactional(readOnly = true)
-	@Cacheable(cacheName = "preferenceCache", keyGenerator = @KeyGenerator(name = "HashCodeCacheKeyGenerator", properties = @Property(name = "includeMethod", value = "false")))
+	@Cacheable("preferenceCache")
 	@Override
 	public String[] findStringArrayById(String name) throws YpException {
 		return findStringById(name).split(",");
 	}
 
 	// make sure that cache is updated (old element removed)
-	// for details, see:
-	// http://code.google.com/p/ehcache-spring-annotations/wiki/UsingTriggersRemove
-	@TriggersRemove(cacheName = "preferenceCache", keyGenerator = @KeyGenerator(name = "HashCodeCacheKeyGenerator", properties = @Property(name = "includeMethod", value = "false")))
-	public void persist(Preference preference) {
-		em.persist(preference);
+	@Transactional
+	@CacheEvict (value = "preferenceCache", key = "#root.args[0].name")
+	// following threw exception:
+	// org.springframework.expression.spel.SpelEvaluationException: EL1008E:(pos 0): Field or property 'preference' cannot be found on object of type 'org.springframework.cache.interceptor.CacheExpressionRootObject'
+	// solution found: http://stackoverflow.com/questions/10085783/grails-using-spring-el-expressions-in-spring-3-1s-cacheable
+//	@CacheEvict (value = "preferenceCache", key = "preference.name")
+	public void persist(Preference preference) throws YpException {
+		em.merge(preference);
+		firePreferenceChangedListeners(preference);
 	}
 
 	@Transactional
 	@Override
-	@TriggersRemove(cacheName = "preferenceCache", removeAll = true)
-	public void update(Collection<Preference> preferences) throws YpException {
+	public void update(Preference ... preferences) throws YpException {
 		for (Preference preference : preferences) {
-			em.merge(preference);
-			firePreferenceChangedListeners(preference);
+			this.persist(preference);
 		}
 	}
 

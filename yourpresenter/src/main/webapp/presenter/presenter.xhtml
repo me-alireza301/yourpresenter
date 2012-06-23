@@ -71,10 +71,15 @@
 		<h:outputScript library="js" target="head"
 			name="jquery-textfill-0.1.js" />
 		<h:outputScript target="head">
-		jQuery(document).ready(function() {
+		// method used for setting up fitting text on slides (should be called every time schedule is beeing rendered) 
+		function setTextFillSize() {
 				jQuery('.jtextfill').textfill({
 					maxFontPixels : preferences['view.font.maxsize.presenter']
 				})
+			};
+			
+		jQuery(document).ready(function() {
+				setTextFillSize();
 			});
 		</h:outputScript>
 
@@ -125,9 +130,23 @@
 		<rich:hotKey key="alt+ctrl+n" onkeyup="addSong();" />
 		<rich:hotKey key="alt+ctrl+u" onkeyup="upload();" />
 
-		<!-- notifications not usable till problem fix available of: https://community.jboss.org/message/723043 -->
-		<!-- notification stack -->
-		<!-- <rich:notifyStack id="notifyStack" position="topRight" direction="vertical" method="last" /> -->
+		<!-- notifications seem to be too complex for the simple problem we need to solve here: https://community.jboss.org/message/723043 -->
+	<!-- 	<a4j:push id="notificationPush" address="pushTopicsContext" ondataavailable="processData(jQuery.parseJSON(event.rf.data));" /> 
+		<a4j:outputPanel ajaxRendered="true" id="notification">
+			<rich:notifyStack id="notifyStack" position="topRight" direction="vertical" method="last" />
+
+			<rich:notify id="notifySongSaved" stack="notifyStack"
+				rendered="#{not empty message}"
+				summary="#{message}"
+				stayTime="#{preferencesView.viewNotifyStayTime}"
+				sticky="#{preferencesView.viewNotifySticky}"
+				nonblocking="#{preferencesView.viewNotifyNonblocking}"
+				nonblockingOpacity="#{preferencesView.viewNotifyNonblockingOpacity}"
+				showShadow="#{preferencesView.viewNotifyShowShadow}"
+				showCloseButton="#{preferencesView.viewNotifyShowCloseButton}">
+			</rich:notify>
+		</a4j:outputPanel>
+-->
 
 		<div class="ui-layout-north">
 			<a4j:jsFunction name="upload" render="dialogUploadPanel"
@@ -224,11 +243,11 @@
 
 								<rich:contextMenu id="songTableMenu" target="songTable"
 									mode="ajax">
-									<rich:menuItem id="songEdit" label="Edit"
+									<rich:menuItem id="songEdit" label="Edit song"
 										render="dialogSongEditPanel"
 										oncomplete="#{rich:component('dialogSongEdit')}.show();"
 										mode="ajax" icon="/images/action/edit.gif" />
-									<rich:menuItem id="songDelete" label="Delete"
+									<rich:menuItem id="songDelete" label="Delete song"
 										render="dialogSongDelete"
 										oncomplete="#{rich:component('dialogSongDelete')}.show();"
 										mode="ajax" icon="/images/action/delete.gif" />
@@ -250,6 +269,17 @@
 		</div>
 
 		<div class="ui-layout-center">
+			
+			<!-- delete presentation related call -->
+			<a4j:jsFunction name="deletePresentation" render="dialogPresentationDelete"
+				oncomplete="#{rich:component('dialogPresentationDelete')}.show();">
+				<a4j:param name="id" assignTo="#{scheduleView.presentationIdToDelete}" />
+			</a4j:jsFunction>
+			<!-- <a4j:jsFunction name="deletePresentation" render="dialogPresentationDelete"
+				oncomplete="alert('hello');">
+			</a4j:jsFunction> -->
+			<ui:include src="dialogPresentationDelete.xhtml" />
+
 			<a4j:outputPanel id="schedule">
 
 				<h:form>
@@ -265,11 +295,21 @@
 									acceptedTypes="bgImage, song, presentation, media"
 									dropValue="schedule_#{schedule.name}"
 									dropListener="#{scheduleView.dropped}" render="schedule"
-									oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:preferences['view.font.maxsize.presenter']});" />
+									oncomplete="setTextFillSize();" />
 
 								<h:outputText value="Schedule: ${scheduleView.schedule.name}" />
 							</rich:panel>
+							
+							<rich:contextMenu id="scheduleMenu" target="scheduleName" mode="ajax">
+								<rich:menuItem id="scheduleDelete" label="Delete schedule"
+									render="dialogScheduleDelete"
+									oncomplete="#{rich:component('dialogScheduleDelete')}.show();"
+									mode="ajax" icon="/images/action/delete.gif" />
+							</rich:contextMenu>
+							
 						</f:facet>
+						
+						<ui:include src="dialogScheduleDelete.xhtml" />
 
 						<rich:dataTable value="#{scheduleView.schedule.presentations}"
 							var="presentation">
@@ -286,31 +326,41 @@
 												acceptedTypes="bgImage, song, presentation, media"
 												dropValue="presentation_#{presentation.id}"
 												dropListener="#{scheduleView.dropped}" render="schedule"
-												oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:preferences['view.font.maxsize.presenter']})" />
+												oncomplete="setTextFillSize();" />
 
 											<h:outputText value="${presentation.name}" />
 										</rich:panel>
 									</f:facet>
+									
+									<rich:contextMenu id="presentationMenu" target="panelHeaderPresentation" mode="ajax">
+										<rich:menuItem id="presentationDelete" label="Delete presentation"
+											oncomplete="deletePresentation(#{presentation.id});"
+											mode="ajax" icon="/images/action/delete.gif" />
+									</rich:contextMenu>
 
 									<rich:dataGrid value="#{presentation.slides}" var="slide"
 										columns="#{preferencesView.slideColumnCnt}" border="0">
-										<rich:dropTarget acceptedTypes="bgImage"
-											dropValue="slide_#{slide.id}"
-											dropListener="#{scheduleView.dropped}" render="schedule"
-											oncomplete="jQuery('.jtextfill').textfill({maxFontPixels:preferences['view.font.maxsize.presenter']})" />
-
-										<a4j:commandLink action="#{scheduleView.activateSlide}"
-											render="none" styleClass="slidebox-link">
-											<f:param name="id" value="#{slide.id}" />
-											<rich:panel styleClass="slidebox slidebox-#{slide.cssSuffix}"
-												style="background-image:url('/yourpresenter/mvc/thumbnail/#{slide.bgImage.id}');">
-												<div class="jtextfill"
-													style="width: #{preferencesView.viewSlideWidth">
-													<h:outputText styleClass="jtextfill-inner"
-														value="#{slide.text}" escape="false" />
-												</div>
-											</rich:panel>
-										</a4j:commandLink>
+										
+										<!-- need to have panel, otherwise dropTarget doesn't work correctly -->
+										<rich:panel>
+											<rich:dropTarget acceptedTypes="bgImage"
+												dropValue="slide_#{slide.id}"
+												dropListener="#{scheduleView.dropped}" render="schedule"
+												oncomplete="setTextFillSize();" />
+	
+											<a4j:commandLink action="#{scheduleView.activateSlide}"
+												render="none" styleClass="slidebox-link">
+												<f:param name="id" value="#{slide.id}" />
+												<rich:panel styleClass="slidebox slidebox-#{slide.cssSuffix}"
+													style="background-image:url('/yourpresenter/mvc/thumbnail/#{slide.bgImage.id}');">
+													<div class="jtextfill"
+														style="width: #{preferencesView.viewSlideWidth}px;height: #{preferencesView.viewSlideHeight}px;">
+														<h:outputText styleClass="jtextfill-inner"
+															value="#{slide.text}" escape="false" />
+													</div>
+												</rich:panel>
+											</a4j:commandLink>
+										</rich:panel>
 
 										<rich:jQuery selector=".slidebox" event="click"
 											query="jQuery('.slidebox-active').not(this).addClass('slidebox-inactive').removeClass('slidebox-active');jQuery(this).removeClass('slidebox-inactive').addClass('slidebox-active');" />

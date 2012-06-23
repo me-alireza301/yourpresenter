@@ -10,5 +10,5 @@ public interface IDefaultDataLoader {
 	
 	public String getPropertiesFile();
 	
-	public void persist(String key, String value);
+	public void persist(String key, String value) throws YpException;
 }

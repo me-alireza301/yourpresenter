@@ -5,13 +5,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.VFS;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +42,7 @@ public class MediaCrawlerImpl implements IMediaCrawler,
 	@Autowired
 	private IMediaFileSelector mediaFileSelectorImpl;
 	@Autowired
-	private IMediaService mediaMiscService;
+	private IMediaService mediaService;
 
 	public MediaCrawlerImpl() {
 	}
@@ -80,7 +78,7 @@ public class MediaCrawlerImpl implements IMediaCrawler,
 						files.add(new File(FileObjectUtil.getAbsolutePath(fileObject)));
 					}
 
-					mediaMiscService.startImport(files/*, this*/);
+					mediaService.startImport(files/*, this*/);
 				}
 			}
 		} catch (FileSystemException e) {
@@ -95,7 +93,7 @@ public class MediaCrawlerImpl implements IMediaCrawler,
 	}
 
 	@PostInitialize(order = IConstants.POST_INIT_IDX_MEDIA_CRAWLER)
-	@Async
+//	@Async
 	@Override
 	public void crawl() throws YpException {
 		crawl((String[]) null);

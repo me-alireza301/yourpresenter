@@ -9,13 +9,13 @@ import com.google.code.yourpresenter.entity.Song;
  */
 public interface ISongService {
 
-    /**
-     * Find songs.
-     * 
-     * @param pattern the pattern
-     * @return the list
-     */
-    public List<Song> findByPattern(String pattern);
+//    /**
+//     * Find songs.
+//     * 
+//     * @param pattern the pattern
+//     * @return the list
+//     */
+//    public List<Song> findByPattern(String pattern);
 
     /**
      * Find song by id.
@@ -38,7 +38,7 @@ public interface ISongService {
      * @param song the song
      * @return 
      */
-    public int delete(Song song);
+    public void delete(Song song);
 
 	public int deleteAll();
 
@@ -48,7 +48,7 @@ public interface ISongService {
 	 * @param songId id of the song to delete.
 	 * @return 
 	 */
-	public int deleteById(long songId);
+	public void deleteById(long songId);
 
 	
 	/**
@@ -65,4 +65,6 @@ public interface ISongService {
 	 * @param song
 	 */
 	public void update(Song song);
+
+	public List<Song> findAll();
 }

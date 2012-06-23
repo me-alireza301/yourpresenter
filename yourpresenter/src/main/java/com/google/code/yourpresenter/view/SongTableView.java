@@ -27,17 +27,11 @@ public class SongTableView implements Serializable {
 	private ISongService songService;
 
 	private Song editedSong;
-	private List<Song> songs;
 	private Collection<Object> selection;
 	private List<Song> selectedSongs = new ArrayList<Song>();
 
 	public List<Song> getSongs() {
-		songs = this.songService.findByPattern("*");
-		return songs;
-	}
-
-	public void setSongs(List<Song> songs) {
-		this.songs = songs;
+		return this.songService.findAll();
 	}
 
 	public void delete() throws YpException {
@@ -75,6 +69,8 @@ public class SongTableView implements Serializable {
 	
 	public void update() {
 		songService.update(editedSong);
+//		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Song saved : " + editedSong.getName()));
+		
 		// make sure we get rid of state
 		clearState();
 	}

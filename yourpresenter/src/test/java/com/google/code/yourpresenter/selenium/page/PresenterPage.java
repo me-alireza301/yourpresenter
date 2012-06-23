@@ -35,12 +35,9 @@ public class PresenterPage {
 	@FindBy(xpath = "//div[contains(@id, ':songDelete')]")
 	private List<WebElement> songDeletes;
 	
-//	@FindBy(xpath = "//a[contains(@id, ':editSongLink')]")
-//	private List<WebElement> editSongLinks;
-//
-//	@FindBy(xpath = "//a[contains(@id, ':deleteSongLink')]")
-//	private List<WebElement> deleteSongLinks;
-
+	@FindBy(xpath = "//div[contains(@id, 'presentationDelete')]")
+	private List<WebElement> presentationDeletes;
+	
 	@FindBy(xpath = "//div[contains(@id, ':panelHeaderPresentation_body')]")
 	private List<WebElement> presentationNames;
 
@@ -262,5 +259,25 @@ public class PresenterPage {
 		validateMediaMiscIdx(mediaMiscIdx);
 		dragAndDrop(mediaMiscs.get(mediaMiscIdx), scheduleName);
 	}
+
+	public void clickDeletePresentation(int presentationIdx) throws YpException {
+		rightClickPresentation(presentationIdx);
+		presentationDeletes.get(presentationIdx).click();
+	}
+	
+	private void rightClickPresentation(int presentationIdx) throws YpException {
+		validatePresentationIdx(presentationIdx);
+		// right click, see: http://code.google.com/p/selenium/issues/detail?id=161
+		Actions builder = new Actions(driver);
+		Action rClick = builder.contextClick(presentationNames.get(presentationIdx)).build();
+		rClick.perform();
+
+		Sleeper.sleepTightInSeconds(1);
+	}
+
+	public int getPresentationCount() {
+		return presentationNames.size();
+	}
+
 
 }

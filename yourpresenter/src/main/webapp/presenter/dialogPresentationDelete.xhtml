@@ -1,0 +1,30 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+	<h:form id="dialogPresentationDeleteForm">
+		<a4j:jsFunction name="removePresentation" action="#{scheduleView.deletePresentation}"
+			oncomplete="setTextFillSize();"
+			render="schedule" />
+			
+		<rich:popupPanel id="dialogPresentationDelete" autosized="true">
+			Are you sure you want to delete the presentation: "<h:outputText
+				value="#{scheduleView.presentationToDelete.name}" />"?
+				
+				<!-- action in command a4j:commandButton didn't get fired up to point, when added this region in case was in facet
+				solution found on: http://stackoverflow.com/questions/6903488/richfaces-4-a4jcommandlink-action-not-firing-in-richpopuppanel -->
+			<a4j:region id="panel-region"> 
+				
+				<a4j:commandButton id="buttonDelete" value="Delete" 
+					onclick="removePresentation(); #{rich:component('dialogPresentationDelete')}.hide(); return true;"/>
+					
+					<a4j:commandButton value="Cancel" 
+					onclick="#{rich:component('dialogPresentationDelete')}.hide(); return true;"/>		
+			</a4j:region>
+		</rich:popupPanel>
+	</h:form>
+</ui:composition>

@@ -23,6 +23,8 @@ import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.Song;
 import com.google.code.yourpresenter.media.PptJodConvImporterTest;
 import com.google.code.yourpresenter.selenium.page.AddChangeSongDialog;
+import com.google.code.yourpresenter.selenium.page.DeletePresentationDialog;
+import com.google.code.yourpresenter.selenium.page.DeleteScheduleDialog;
 import com.google.code.yourpresenter.selenium.page.DeleteSongDialog;
 import com.google.code.yourpresenter.selenium.page.MainPage;
 import com.google.code.yourpresenter.selenium.page.PresenterPage;
@@ -38,11 +40,13 @@ import com.google.code.yourpresenter.selenium.restclient.VerseRestTemplate;
 public class PresenterPageIT {
 
 	private static WebDriver driver;
-	private static PresenterPage presenterPage;
-	private static MainPage mainPage;
-	private static AddChangeSongDialog addChangeSongDialog;
+	private PresenterPage presenterPage;
+	private MainPage mainPage;
+	private AddChangeSongDialog addChangeSongDialog;
 	private DeleteSongDialog deleteSongDialog;
 	private UploadDialog uploadDialog;
+	private DeleteScheduleDialog deleteScheduleDialog;
+	private DeletePresentationDialog deletePresentationDialog;
 
 	public static final String SCHEDULE_NAME = "New schedule";
 	public static final String MAIN_URL = "http://localhost:8081/yourpresenter/";
@@ -65,19 +69,12 @@ public class PresenterPageIT {
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
-		// DesiredCapabilities caps = DesiredCapabilities.firefox();
-		// LoggingPreferences logs = new LoggingPreferences();
-		// logs.enable(LogType.DRIVER, Level.ALL);
-		// caps.setCapability(CapabilityType.LOGGING_PREFS, logs);
-		// driver = new FirefoxDriver(caps);
-
 		// for drag and drop to be working on linux:
 		// Enabling features that are disabled by default in Firefox
 		// see: http://code.google.com/p/selenium/wiki/TipsAndTricks
 		FirefoxProfile profile = new FirefoxProfile();
 		profile.setEnableNativeEvents(true);
 		driver = new FirefoxDriver(profile);
-
 		driver.manage().timeouts()
 				.implicitlyWait(ITConstant.DRIVER_WAIT, TimeUnit.SECONDS);
 	}
@@ -93,6 +90,8 @@ public class PresenterPageIT {
 		presenterPage = new PresenterPage(driver);
 		addChangeSongDialog = new AddChangeSongDialog(driver);
 		deleteSongDialog = new DeleteSongDialog(driver);
+		deleteScheduleDialog = new DeleteScheduleDialog(driver);
+		deletePresentationDialog = new DeletePresentationDialog(driver);
 		uploadDialog = new UploadDialog(driver);
 	}
 
@@ -152,12 +151,12 @@ public class PresenterPageIT {
 	// @Test
 	public void testAddSongs() throws IOException, YpException {
 		createSchedule(getScheduleName());
-		Song song = createSong("song1_cp1250.txt", "cp1250");
+		Song song = createSong("song1.txt", "cp1250");
 		addChangeSongDialog.waitDialogNotDisplayed();
 		presenterPage.waitAjaxDone();
 		Assert.assertEquals(song.getName(), presenterPage.getSongName(0));
 
-		song = createSong("song2_cp1250.txt", "cp1250");
+		song = createSong("song2.txt", "cp1250");
 		addChangeSongDialog.waitDialogNotDisplayed();
 		presenterPage.waitAjaxDone();
 		Assert.assertEquals(song.getName(), presenterPage.getSongName(1));
@@ -345,7 +344,7 @@ public class PresenterPageIT {
 		// delete song
 		presenterPage.clickDeleteSong(0);
 		deleteSongDialog.waitDialogDisplayed();
-		deleteSongDialog.clickDeleteButton();
+		deleteSongDialog.clickActionButton();
 		deleteSongDialog.waitDialogNotDisplayed();
 		presenterPage.waitAjaxDone();
 
@@ -397,6 +396,59 @@ public class PresenterPageIT {
 
 		Assert.assertEquals(presenterPage.getMediaMiscUrl(0),
 				presenterPage.getSlideBg(6));
+	}
+	
+	@Test
+	public void testPresentationDelete() throws IOException, YpException {
+		testAddSongsToSchedule();
+
+		checkPresentationCount(3);
+		
+		// delete presentation 1
+		presenterPage.clickDeletePresentation(1);
+		deletePresentationDialog.waitDialogDisplayed();
+		deletePresentationDialog.clickActionButton();
+		deletePresentationDialog.waitDialogNotDisplayed();
+		presenterPage.waitAjaxDone();
+		
+		checkPresentationCount(2);
+		Assert.assertEquals(presenterPage.getSongName(0),
+				presenterPage.getPresentationName(0));
+		Assert.assertEquals(presenterPage.getSongName(1),
+				presenterPage.getPresentationName(1));
+		
+		// delete presentation 0
+		presenterPage.clickDeletePresentation(0);
+		deletePresentationDialog.waitDialogDisplayed();
+		deletePresentationDialog.clickActionButton();
+		deletePresentationDialog.waitDialogNotDisplayed();
+		presenterPage.waitAjaxDone();
+		
+		checkPresentationCount(1);
+		Assert.assertEquals(presenterPage.getSongName(1),
+				presenterPage.getPresentationName(0));
+		
+		// delete presentation 0
+		presenterPage.clickDeletePresentation(0);
+		deletePresentationDialog.waitDialogDisplayed();
+		deletePresentationDialog.clickActionButton();
+		deletePresentationDialog.waitDialogNotDisplayed();
+		presenterPage.waitAjaxDone();
+		
+		checkPresentationCount(0);
+	}
+	
+	public void checkPresentationCount(int count) {
+		// don't wait too long for non-existing element
+		driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+		Assert.assertEquals(count, presenterPage.getPresentationCount());
+		driver.manage().timeouts()
+				.implicitlyWait(ITConstant.DRIVER_WAIT, TimeUnit.SECONDS);
+	}
+	
+	@Test
+	public void testScheduleDelete() throws IOException, YpException {
+
 	}
 
 }

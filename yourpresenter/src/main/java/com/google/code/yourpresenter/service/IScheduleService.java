@@ -35,4 +35,6 @@ public interface IScheduleService {
 
 	public int deleteAll();
 
+	public void deletePresentation(Schedule schedule, long presentationId);
+
 }

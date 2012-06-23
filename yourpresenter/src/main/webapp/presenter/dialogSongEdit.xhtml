@@ -6,24 +6,13 @@
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:a4j="http://richfaces.org/a4j">
 
-	<!-- <rich:notify id="notifySongSaved" stack="notifyStack"
-		summary="Song saved"
-		detail="Song: '#{songTableView.editedSong.name}' has been saved."
-		stayTime="#{preferencesView.viewNotifyStayTime}" sticky="#{preferencesView.viewNotifySticky}"
-		nonblocking="#{preferencesView.viewNotifyNonblocking}"
-		nonblockingOpacity="#{preferencesView.viewNotifyNonblockingOpacity}"
-		showShadow="#{preferencesView.viewNotifyShowShadow}"
-		showCloseButton="#{preferencesView.viewNotifyShowCloseButton}">
-	</rich:notify> -->
-	
-	<rich:popupPanel id="dialogSongEdit" modal="true" autosized="true"
-		resizeable="false"
-		onmaskclick="#{rich:component('dialogSongEdit')}.hide();"
-		domElementAttachment="form"
-		onshow="#{rich:element('dialogSongEditForm:dialogSongEditName')}.focus();" >
-		
-		<h:form id="dialogSongEditForm">
-			
+	<h:form id="dialogSongEditForm">
+		<rich:popupPanel id="dialogSongEdit" modal="true" autosized="true"
+			resizeable="false"
+			onmaskclick="#{rich:component('dialogSongEdit')}.hide();"
+			domElementAttachment="form"
+			onshow="#{rich:element('dialogSongEditForm:dialogSongEditName')}.focus();">
+
 			<a4j:outputPanel id="dialogSongEditPanel">
 				<!--
 				<f:facet name="header">
@@ -38,10 +27,11 @@
 
 				<!-- make sure we rerender the song table only after edit song dialog disappeared, 
 				otherwise we're facing issues with drag and drop -->
-				<a4j:jsFunction name="fireSongTableChanged" render="songTable songTableMenu"/>
-		
+				<a4j:jsFunction name="fireSongTableChanged"
+					render="songTable songTableMenu" />
+
 				<h:panelGrid columns="1" cellspacing="3">
-					<rich:messages id="newSongErrors" ajaxRendered="true"/>
+					<rich:messages id="newSongErrors" ajaxRendered="true" />
 					<h:outputLabel for="dialogSongEditName" value="Name: " />
 					<h:inputText id="dialogSongEditName"
 						value="#{songTableView.editedSong.name}" required="true" />
@@ -55,19 +45,15 @@
 							see: http://mkblog.exadel.com/2009/12/richfaces-built-in-client-functions/
 							and: http://docs.jboss.org/richfaces/latest_4_0_X/Component_Reference/en-US/html/chap-Component_Reference-Functions.html
 						-->
-						<a4j:commandButton id="buttonOK" value="OK" action="#{songTableView.update}"
-							oncomplete="if (jQuery(#{rich:element('dialogSongEditForm:newSongErrors')}).is(':empty')) { #{rich:component('dialogSongEdit')}.hide(); fireSongTableChanged(); return true;}"		
-							 type="submit" />
-							 <!-- render="songTable" -->
-							<!-- render="songs notifySongSaved" -->
+						<a4j:commandButton id="buttonOK" value="OK"
+							action="#{songTableView.update}"
+							oncomplete="if (jQuery(#{rich:element('dialogSongEditForm:newSongErrors')}).is(':empty')) { #{rich:component('dialogSongEdit')}.hide(); fireSongTableChanged(); return true;}"
+							type="submit" render="notification"/>
 						<a4j:commandButton id="buttonCancel" value="Cancel"
 							oncomplete="#{rich:component('dialogSongEdit')}.hide(); return false;" />
 					</h:panelGrid>
 				</h:panelGrid>
-
 			</a4j:outputPanel>
-		</h:form>
-
-	</rich:popupPanel>
-
+		</rich:popupPanel>
+	</h:form>
 </ui:composition>

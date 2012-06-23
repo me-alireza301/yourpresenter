@@ -4,8 +4,8 @@ import java.io.File;
 import java.util.Set;
 
 import com.google.code.yourpresenter.YpException;
-import com.google.code.yourpresenter.entity.MediaType;
 import com.google.code.yourpresenter.entity.Media;
+import com.google.code.yourpresenter.entity.MediaType;
 
 public interface IMediaImporter {
 

@@ -9,6 +9,8 @@ import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +21,6 @@ import com.google.code.yourpresenter.entity.Media;
 import com.google.code.yourpresenter.entity.Presentation;
 import com.google.code.yourpresenter.entity.Schedule;
 import com.google.code.yourpresenter.entity.Song;
-import com.googlecode.ehcache.annotations.Cacheable;
-import com.googlecode.ehcache.annotations.KeyGenerator;
-import com.googlecode.ehcache.annotations.Property;
 
 @SuppressWarnings("serial")
 @Service
@@ -54,7 +53,7 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		return query.getResultList();
 	}
 
-	@Cacheable(cacheName = "scheduleCache", keyGenerator = @KeyGenerator(name = "HashCodeCacheKeyGenerator", properties = @Property(name = "includeMethod", value = "false")))
+	@Cacheable(value = { "scheduleCache" }) 
 	@Transactional(readOnly = true)
 	public Schedule findByName(String name) {
 		if (null == name) {
@@ -75,7 +74,9 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		}
 	}
 
+	@CacheEvict(value = "scheduleCache", allEntries=true )
 	@Transactional
+	@Override
 	public void delete(Schedule schedule) {
 		schedule = em.find(Schedule.class, schedule.getName());
 		if (schedule != null) {
@@ -166,6 +167,8 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		return position;
 	}
 
+//	@CacheEvict(value = { "scheduleCache" }, key = "#root.args[0].name")
+//	@Cacheable(value = { "scheduleCache" }, key = "#root.args[0].name")
 	@Transactional(readOnly = true)
 	public Schedule loadAllSlidesEager(Schedule scheduleTr) {
 		Schedule schedule = null;
@@ -267,6 +270,19 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		presentation.setPossition(newPosition);
 		this.presentationService.persist(presentation);
 	}
+	
+	@Transactional
+	@Override
+	public void deletePresentation(Schedule schedule, long presentationId) {
+		// removing of presentation from schedule does the job of it's deletion from DB
+		schedule.getPresentations().remove(presentationService.findById(presentationId).getPossition());
+		
+		// make sure indexes get fixed for all the other presentations within schedule
+		shiftPresentation(presentationId, schedule, false);
+		
+		this.persist(schedule);
+	}
+
 
 	@Transactional
 	@Override

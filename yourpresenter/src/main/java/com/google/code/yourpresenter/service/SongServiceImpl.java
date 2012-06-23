@@ -8,11 +8,11 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.google.code.yourpresenter.entity.Song;
 
@@ -21,9 +21,6 @@ import com.google.code.yourpresenter.entity.Song;
 @Repository
 public class SongServiceImpl implements ISongService, Serializable {
 
-	@Autowired
-	private IVerseService verseService;
-	
 	private transient EntityManager em;
 
 	public SongServiceImpl() {
@@ -34,21 +31,30 @@ public class SongServiceImpl implements ISongService, Serializable {
 		this.em = em;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
-	public List<Song> findByPattern(String pattern) {
-		pattern = getSearchPattern(pattern);
-		if (pattern != null) {
-			return em.createQuery("select s from Song s ").getResultList();
-
-			// return em
-			// .createQuery(
-			// "select s from Song s where s.noPunctuationText = :pattern order by s.name")
-			// .setParameter("pattern", pattern).getResultList();
-		} else {
-			return null;
-		}
+	@Cacheable("allSongsCache")
+	public List<Song> findAll() {
+		Query query = em.createQuery("SELECT s FROM Song s");
+		return query.getResultList();
 	}
+	
+//	@SuppressWarnings("unchecked")
+//	@Transactional(readOnly = true)
+//	public List<Song> findByPattern(String pattern) {
+//		pattern = getSearchPattern(pattern);
+//		if (pattern != null) {
+//			return em.createQuery("select s from Song s ").getResultList();
+//
+//			// return em
+//			// .createQuery(
+//			// "select s from Song s where s.noPunctuationText = :pattern order by s.name")
+//			// .setParameter("pattern", pattern).getResultList();
+//		} else {
+//			return null;
+//		}
+//	}
 
 	@Transactional(readOnly = true)
 	public Song findById(Long id) {
@@ -56,6 +62,7 @@ public class SongServiceImpl implements ISongService, Serializable {
 	}
 
 	@Transactional
+	@CacheEvict(value = "allSongsCache", allEntries=true )
 	public void persist(Song song) {
 		if (null != song.getId()) {
 			em.merge(song);
@@ -66,30 +73,32 @@ public class SongServiceImpl implements ISongService, Serializable {
 
 	@Transactional
 	@Override
-	public int delete(Song song) {
-		return deleteById(song.getId());
+	@CacheEvict(value = "allSongsCache", allEntries=true )
+	public void delete(Song song) {
+		deleteById(song.getId());
 	}
 
 	@Transactional
 	@Override
-	public int deleteById(long songId) {
-		verseService.deleteBySongId(songId);
-
-		Query  query = em.createQuery("delete from Song s where s.id like :id");
-		query.setParameter("id", songId);
-		return query.executeUpdate();
-	}
-
-	private String getSearchPattern(String pattern) {
-		if (StringUtils.hasText(pattern)) {
-			return "%" + pattern.toLowerCase().replace('*', '%') + "%";
-		} else {
-			return "%";
+	@CacheEvict(value = "allSongsCache", allEntries=true )
+	public void deleteById(long songId) {
+		Song song = em.find(Song.class, songId);
+		if (song != null) {
+			em.remove(song);
 		}
 	}
 
+//	private String getSearchPattern(String pattern) {
+//		if (StringUtils.hasText(pattern)) {
+//			return "%" + pattern.toLowerCase().replace('*', '%') + "%";
+//		} else {
+//			return "%";
+//		}
+//	}
+
 	@Transactional
 	@Override
+	@CacheEvict(value = "allSongsCache", allEntries=true )
 	public int deleteAll() {
 		Query query = em.createQuery("DELETE FROM Song s");
 		return query.executeUpdate();
@@ -117,6 +126,7 @@ public class SongServiceImpl implements ISongService, Serializable {
 	
 	@Override
 	@Transactional
+	@CacheEvict(value = "allSongsCache", allEntries=true )
 	public void update(Song song) {
 		this.persist(song);
 	}

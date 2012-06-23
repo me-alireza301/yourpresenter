@@ -4,12 +4,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-public class DeleteSongDialog extends AbstractActionDialog {
+public class DeleteScheduleDialog extends AbstractActionDialog {
 
-	@FindBy(id = "dialogSongDeleteForm:buttonDelete")
+	@FindBy(id = "dialogScheduleDeleteForm:buttonDelete")
 	private WebElement deleteButton;
 
-	public DeleteSongDialog(WebDriver driver) {
+	public DeleteScheduleDialog(WebDriver driver) {
 		super(driver);
 	}
 

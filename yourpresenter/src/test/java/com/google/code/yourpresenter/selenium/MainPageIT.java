@@ -38,7 +38,9 @@ public class MainPageIT {
 		FirefoxProfile profile = new FirefoxProfile();
 		profile.setEnableNativeEvents(true);
 		driver = new FirefoxDriver(profile);
-
+//		System.setProperty("webdriver.chrome.driver", "./target/test-classes/chromedriver.exe");
+//		driver = new ChromeDriver();
+//		driver = new OperaDriver();
 		driver.manage().timeouts()
 				.implicitlyWait(ITConstant.DRIVER_WAIT, TimeUnit.SECONDS);
 	}
@@ -63,6 +65,7 @@ public class MainPageIT {
 		driver.get("http://localhost:8081/yourpresenter");
 
 		page.choosePresenterRole();
+		page.waitOkButtonReady();
 		page.clickOkButton();
 		// check error message displayed
 		Assert.assertEquals("size must be between 2 and 30",
