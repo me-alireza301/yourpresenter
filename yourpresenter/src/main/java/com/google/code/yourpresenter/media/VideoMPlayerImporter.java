@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -19,18 +21,14 @@ import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.MediaType;
 import com.google.code.yourpresenter.util.FileUtil;
-import com.google.code.yourpresenter.util.Logger;
-import com.google.code.yourpresenter.util.LoggerFactory;
 import com.google.code.yourpresenter.util.StringOutputStream;
 import com.google.code.yourpresenter.util.SystemUtil;
 
 @SuppressWarnings("serial")
 @Service
 @Qualifier("videoImporter")
+@Slf4j
 public class VideoMPlayerImporter extends AbstractMediaImporter {
-
-	private static Logger logger = LoggerFactory
-			.getLogger(VideoMPlayerImporter.class);
 
 	private static final Pattern lengthPattern = Pattern
 			.compile("ID[_]LENGTH=([\\d[.]]+)");
@@ -103,15 +101,15 @@ public class VideoMPlayerImporter extends AbstractMediaImporter {
 				err, true, true);
 
 		if (!err.toString().isEmpty()) {
-			logger.error(err.toString());
+			log.error(err.toString());
 		}
 
 		if (out.toString().isEmpty()) {
-			logger.error("Output of command empty => error importing file!");
+			log.error("Output of command empty => error importing file!");
 			return -1;
 		}
 
-		logger.debug(out.toString());
+		log.debug(out.toString());
 
 		float fps = -1;
 		float length = -1;
@@ -131,7 +129,7 @@ public class VideoMPlayerImporter extends AbstractMediaImporter {
 			}
 		}
 
-		logger.error("Output of command unexpected => framestep not detected => error importing file!");
+		log.error("Output of command unexpected => framestep not detected => error importing file!");
 		return -1;
 	}
 
@@ -176,7 +174,7 @@ public class VideoMPlayerImporter extends AbstractMediaImporter {
 				err, false, false);
 
 		if (!err.toString().isEmpty()) {
-			logger.error(err.toString());
+			log.error(err.toString());
 		}
 	}
 

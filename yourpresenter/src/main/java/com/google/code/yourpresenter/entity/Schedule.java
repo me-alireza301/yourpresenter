@@ -13,6 +13,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.validation.constraints.NotNull;
 
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Index;
 
@@ -21,6 +25,9 @@ import org.hibernate.annotations.Index;
  */
 @SuppressWarnings("serial")
 @Entity
+@ToString (exclude="presentations")
+@EqualsAndHashCode
+@NoArgsConstructor
 public class Schedule implements Serializable {
 
 	/** The presentations. */
@@ -32,23 +39,18 @@ public class Schedule implements Serializable {
 	private BgImage bgImage;
 
 	/** The name. */
-	private String name;
-	
-	private boolean blank;
-	private boolean clear;
-	private boolean live;
+	private String name = null;
 
-	public Schedule() {
-		this(null);
-	}
-	
+	private boolean blank = false;
+	private boolean clear = false;
+	private boolean live = false;
+
 	public Schedule(String name) {
 		super();
 		this.blank = false;
 		this.clear = false;
 		this.live = false;
-		
-		this.name = name;	
+		this.name = name;
 	}
 
 	/**
@@ -58,7 +60,7 @@ public class Schedule implements Serializable {
 	 */
 	@Id
 	@NotNull
-	@Index(name="ScheduleNameIdx")
+	@Index(name = "ScheduleNameIdx")
 	public String getName() {
 		return name;
 	}
@@ -78,8 +80,9 @@ public class Schedule implements Serializable {
 	 * 
 	 * @return the presentations
 	 */
-	// if having FetchType.EAGER => got exception: 
-	// Caused by: org.hibernate.loader.MultipleBagFetchException: cannot simultaneously fetch multiple bags 
+	// if having FetchType.EAGER => got exception:
+	// Caused by: org.hibernate.loader.MultipleBagFetchException: cannot
+	// simultaneously fetch multiple bags
 	@OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	@OrderColumn(name = "possition")
 	public List<Presentation> getPresentations() {
@@ -102,7 +105,7 @@ public class Schedule implements Serializable {
 	 * @return the background
 	 */
 	@OneToOne
-	@Index(name="ScheduleBgImageIdx")
+	@Index(name = "ScheduleBgImageIdx")
 	public BgImage getBgImage() {
 		return bgImage;
 	}
@@ -116,16 +119,16 @@ public class Schedule implements Serializable {
 	public void setBgImage(BgImage background) {
 		this.bgImage = background;
 	}
-	
+
 	public Presentation addPresentation(Presentation presentation) {
 		if (null == this.presentations) {
 			this.presentations = new ArrayList<Presentation>();
 		}
-		
+
 		this.presentations.add(presentation);
 		return presentation;
 	}
-	
+
 	public boolean isBlank() {
 		return blank;
 	}
@@ -149,4 +152,5 @@ public class Schedule implements Serializable {
 	public void setLive(boolean live) {
 		this.live = live;
 	}
+
 }

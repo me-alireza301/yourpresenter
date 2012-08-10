@@ -10,7 +10,10 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Index;
 
@@ -19,6 +22,12 @@ import org.hibernate.annotations.Index;
  */
 @SuppressWarnings("serial")
 @Entity
+@ToString(exclude = "song")
+@EqualsAndHashCode(exclude = { "id", "song" })
+// default constructor needed to prevent Exception:
+// org.springframework.orm.hibernate3.HibernateSystemException: No default
+// constructor for entity: com.google.code.yourpresenter.entity.Verse
+@NoArgsConstructor
 public class Verse implements Serializable {
 
 	/** The id. */
@@ -36,11 +45,6 @@ public class Verse implements Serializable {
 		this.text = text;
 		this.song = song;
 	}
-	
-	// default constructor needed to prevent Exception:
-	// org.springframework.orm.hibernate3.HibernateSystemException: No default constructor for entity: com.google.code.yourpresenter.entity.Verse
-	public Verse() {
-	}
 
 	/**
 	 * Gets the id.
@@ -48,7 +52,7 @@ public class Verse implements Serializable {
 	 * @return the id
 	 */
 	@Id
-	@Index(name="VerseIdIdx")
+	@Index(name = "VerseIdIdx")
 	@GeneratedValue
 	public Long getId() {
 		return id;
@@ -93,7 +97,7 @@ public class Verse implements Serializable {
 	 * @return the song
 	 */
 	@ManyToOne(optional = false)
-	@Index(name="VerseSongIdx")
+	@Index(name = "VerseSongIdx")
 	public Song getSong() {
 		return song;
 	}
@@ -108,8 +112,4 @@ public class Verse implements Serializable {
 		this.song = song;
 	}
 
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
 }

@@ -15,9 +15,12 @@ import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.validation.constraints.NotNull;
 
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Index;
-
 
 // TODO: Auto-generated Javadoc
 /**
@@ -25,6 +28,9 @@ import org.hibernate.annotations.Index;
  */
 @SuppressWarnings("serial")
 @Entity
+@ToString(exclude = "schedule")
+@EqualsAndHashCode(exclude = { "id", "schedule" })
+@NoArgsConstructor
 public class Presentation implements Serializable {
 
 	/** The id. */
@@ -49,13 +55,15 @@ public class Presentation implements Serializable {
 	private BgImage bgImage;
 
 	@JsonIgnore
-	// in case of correct one: position => java.sql.SQLException: Table not found in statement [select schedule0_.name ...
+	// in case of correct one: position => java.sql.SQLException: Table not
+	// found in statement [select schedule0_.name ...
 	// seems like position is reserved word => can't be used
-	// see: http://stackoverflow.com/questions/1442127/table-not-found-with-hibernate-and-hsqldb
+	// see:
+	// http://stackoverflow.com/questions/1442127/table-not-found-with-hibernate-and-hsqldb
 	private int possition;
-	
+
 	private String name;
-	
+
 	/**
 	 * Gets the id.
 	 * 
@@ -63,7 +71,7 @@ public class Presentation implements Serializable {
 	 */
 	@Id
 	@GeneratedValue
-	@Index(name="PresentationIdIdx")
+	@Index(name = "PresentationIdIdx")
 	public Long getId() {
 		return id;
 	}
@@ -84,7 +92,7 @@ public class Presentation implements Serializable {
 	 * @return the song
 	 */
 	@OneToOne(optional = true)
-	@Index(name="PresentationSongIdx")
+	@Index(name = "PresentationSongIdx")
 	public Song getSong() {
 		return song;
 	}
@@ -105,7 +113,7 @@ public class Presentation implements Serializable {
 	 * @return the schedule
 	 */
 	@ManyToOne(optional = false)
-	@Index(name="PresentationScheduleIdx")
+	@Index(name = "PresentationScheduleIdx")
 	public Schedule getSchedule() {
 		return schedule;
 	}
@@ -147,7 +155,7 @@ public class Presentation implements Serializable {
 	 * @return the background
 	 */
 	@OneToOne(optional = true)
-	@Index(name="PresentationBgImageIdx")
+	@Index(name = "PresentationBgImageIdx")
 	public BgImage getBgImage() {
 		return bgImage;
 	}
@@ -169,20 +177,20 @@ public class Presentation implements Serializable {
 	public void setPossition(int position) {
 		this.possition = position;
 	}
-	
+
 	public void incrementPossition() {
 		this.possition++;
 	}
-	
+
 	public void decrementPossition() {
 		this.possition--;
 	}
 
 	public void addSlide(Slide slide) {
 		if (null == this.slides) {
-			this.slides = new ArrayList<Slide>();	
+			this.slides = new ArrayList<Slide>();
 		}
-		
+
 		this.slides.add(slide);
 	}
 
@@ -190,13 +198,14 @@ public class Presentation implements Serializable {
 	 * @return the media
 	 */
 	@OneToOne(optional = true)
-	@Index(name="PresentationMediaIdx")
+	@Index(name = "PresentationMediaIdx")
 	public Media getMedia() {
 		return media;
 	}
 
 	/**
-	 * @param media the mediaMisc to set
+	 * @param media
+	 *            the mediaMisc to set
 	 */
 	public void setMedia(Media media) {
 		this.media = media;

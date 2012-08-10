@@ -5,10 +5,17 @@ import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import org.hibernate.annotations.Index;
 
 @SuppressWarnings("serial")
 @Entity
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
 public class Preference implements Serializable {
 	
 	/** The name. */
@@ -26,9 +33,6 @@ public class Preference implements Serializable {
 		this.setValue(value);
 	}
 	
-	public Preference() {
-	}
-
 	@Id
 	@Index(name="PreferenceNameIdx")
 	public String getName() {

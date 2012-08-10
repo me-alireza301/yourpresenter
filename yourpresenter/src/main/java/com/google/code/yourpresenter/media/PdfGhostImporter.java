@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -17,18 +19,14 @@ import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.MediaType;
 import com.google.code.yourpresenter.util.FileUtil;
-import com.google.code.yourpresenter.util.Logger;
-import com.google.code.yourpresenter.util.LoggerFactory;
 import com.google.code.yourpresenter.util.StringOutputStream;
 import com.google.code.yourpresenter.util.SystemUtil;
 
 @SuppressWarnings("serial")
 @Service
 @Qualifier("pdfImporter")
+@Slf4j
 public class PdfGhostImporter extends AbstractMediaImporter {
-
-	private static Logger logger = LoggerFactory
-			.getLogger(PdfGhostImporter.class);
 
 	private final Set<String> supportedExts = new HashSet<String>(
 			Arrays.asList("pdf"));
@@ -98,7 +96,7 @@ public class PdfGhostImporter extends AbstractMediaImporter {
 				false);
 
 		if (!err.toString().isEmpty()) {
-			logger.error(err.toString());
+			log.error(err.toString());
 		}
 
 		// add the extracted pages to result

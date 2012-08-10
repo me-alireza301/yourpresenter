@@ -1,5 +1,7 @@
 package com.google.code.yourpresenter.controller;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,22 +11,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.code.yourpresenter.dto.StateDTO;
 import com.google.code.yourpresenter.service.IStateService;
-import com.google.code.yourpresenter.util.Logger;
-import com.google.code.yourpresenter.util.LoggerFactory;
 
 // for json spring integration info see:
 // http://blog.springsource.com/2010/01/25/ajax-simplifications-in-spring-3-0/
 @Controller
+@Slf4j
 public class ProjectorDataJSONController {
 
-	private static Logger logger = LoggerFactory.getLogger(ProjectorDataJSONController.class);
-	
 	@Autowired
 	private IStateService stateService;
 
 	@RequestMapping(value="/state/{name}", method = { RequestMethod.GET, RequestMethod.POST }/*, consumes="application/json", produces="application/json"*/)
 	public @ResponseBody StateDTO getState(@PathVariable("name") String scheduleName) {
-		logger.debug("called getState for: ", scheduleName);
+		log.debug("called getState for: {}", scheduleName);
 		return stateService.getState(scheduleName);
 	}
 }

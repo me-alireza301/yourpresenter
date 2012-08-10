@@ -19,6 +19,10 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Index;
 
@@ -27,6 +31,9 @@ import org.hibernate.annotations.Index;
  */
 @SuppressWarnings("serial")
 @Entity
+@ToString
+@EqualsAndHashCode (exclude={"id"})
+@NoArgsConstructor
 public class Song implements Serializable {
 
 	@JsonIgnore
@@ -49,9 +56,6 @@ public class Song implements Serializable {
 	private String noPunctuationText;
 
 	private/* transient */String text;
-
-	public Song() {
-	}
 
 	public Song(String name, String text) {
 		this.setName(name);

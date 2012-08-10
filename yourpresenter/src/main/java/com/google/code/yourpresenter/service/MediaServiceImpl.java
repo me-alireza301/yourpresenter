@@ -8,6 +8,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -17,16 +19,12 @@ import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.BgImage;
 import com.google.code.yourpresenter.entity.Media;
 import com.google.code.yourpresenter.media.IMediaImporter;
-import com.google.code.yourpresenter.util.Logger;
-import com.google.code.yourpresenter.util.LoggerFactory;
 
 @SuppressWarnings("serial")
 @Service
 @Repository
+@Slf4j
 public class MediaServiceImpl implements IMediaService, Serializable {
-
-	private static Logger logger = LoggerFactory
-			.getLogger(MediaServiceImpl.class);
 
 	@Autowired
 	private List<IMediaImporter> mediaImporters;
@@ -75,7 +73,7 @@ public class MediaServiceImpl implements IMediaService, Serializable {
 
 					// TODO will it kill performance/DB?
 					if (this.existsByLastModifiedTimeAndOriginal(media)) {
-						logger.debug("skipping already imported media: ", file.getAbsolutePath());
+						log.debug("skipping already imported media: {}", file.getAbsolutePath());
 						continue;
 					}
 

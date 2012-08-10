@@ -55,6 +55,15 @@ public class PresenterPage {
 
 	@FindBy(xpath = "//div[contains(@class, 'slidebox')]")
 	private List<WebElement> slides;
+	
+	@FindBy(xpath = "//a[contains(@id, ':liveButton')]")
+	private WebElement liveButton;
+	
+	@FindBy(xpath = "//a[contains(@id, ':clearButton')]")
+	private WebElement clearButton;
+	
+	@FindBy(xpath = "//a[contains(@id, ':blankButton')]")
+	private WebElement blankButton;
 
 //	@FindBy(xpath = "//td[contains(@style, 'table-cell')]")
 //	@FindBy(xpath = "//td[contains(@id, 'tabMisc:header:') AND @style = 'display: table-cell;']")
@@ -280,4 +289,42 @@ public class PresenterPage {
 	}
 
 
+	public boolean isBlankClicked() {
+		return isToggleButtonClicked(blankButton);
+	}
+	
+	public boolean isClearClicked() {
+		return isToggleButtonClicked(clearButton);
+	}
+	
+	public boolean isLiveClicked() {
+		return isToggleButtonClicked(liveButton);
+	}
+	
+	protected boolean isToggleButtonClicked(WebElement webElement) {
+		return webElement.getAttribute("class").equals("toggleButton toggleButton-down");
+	}
+	
+	public void clickBlankButton() {
+		this.blankButton.click();
+	}
+	
+	public void clickClearButton() {
+		this.clearButton.click();
+	}
+	
+	public void clickLiveButton() {
+		this.liveButton.click();
+	}
+	
+	public void clickSlide(int slideIdx) throws YpException {
+		validateSlideIdx(slideIdx);
+
+		// single click doesn't work reliably here => use doubleclick
+//		slides.get(slideIdx).click();
+		
+		Actions builder = new Actions(driver);
+		Action action = builder.doubleClick(slides.get(slideIdx)).build();
+		action.perform();
+	}
 }

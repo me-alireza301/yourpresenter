@@ -14,21 +14,26 @@ public class SongPlainTxtUnmarshaller {
 	public Song unmarshall(File file, String encoding) throws IOException {
 		Song song = new Song();
 		StringBuilder txt = new StringBuilder();
-		LineIterator it = FileUtils.lineIterator(file, encoding);
-		 try {
-			 
-		   while (it.hasNext()) {
-			   String line = it.nextLine();
-			   if (StringUtils.isEmpty(song.getName())) {
-				   song.setName(line);   
-			   } else {
-				   txt.append(line).append("\n");
-			   }
-		   }
-		 } finally {
-		   it.close();
-		 }
-		 song.setText(txt.toString());
-		 return song;
+		LineIterator it = null;
+		if (StringUtils.isEmpty(encoding)) {
+			it = FileUtils.lineIterator(file);
+		} else {
+			it = FileUtils.lineIterator(file, encoding);
+		}
+
+		try {
+			while (it.hasNext()) {
+				String line = it.nextLine();
+				if (StringUtils.isEmpty(song.getName())) {
+					song.setName(line);
+				} else {
+					txt.append(line).append("\n");
+				}
+			}
+		} finally {
+			it.close();
+		}
+		song.setText(txt.toString());
+		return song;
 	}
 }

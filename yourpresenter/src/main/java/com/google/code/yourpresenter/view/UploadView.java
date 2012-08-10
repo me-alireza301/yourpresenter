@@ -6,8 +6,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.richfaces.event.FileUploadEvent;
 import org.richfaces.exception.FileUploadException;
 import org.richfaces.model.UploadedFile;
@@ -21,15 +24,12 @@ import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.media.IMediaImporter;
 import com.google.code.yourpresenter.service.IMediaService;
 import com.google.code.yourpresenter.util.IMediaImportProgressListener;
-import com.google.code.yourpresenter.util.Logger;
-import com.google.code.yourpresenter.util.LoggerFactory;
 
 @Component("uploadView")
 @Scope(WebApplicationContext.SCOPE_SESSION)
 @SuppressWarnings("serial")
+@Slf4j
 public class UploadView implements IMediaImportProgressListener, Serializable {
-
-	private static Logger logger = LoggerFactory.getLogger(UploadView.class);
 
 	@Autowired
 	private List<IMediaImporter> mediaImporters;
@@ -47,12 +47,12 @@ public class UploadView implements IMediaImportProgressListener, Serializable {
 //	}
 	
 	public void discart() {
-		logger.debug("Import discarted, deleting files: ", files);
+		log.debug("Import discarted, deleting files: {}", files);
 		for (File file : files) {
 			try {
 				FileUtils.deleteDirectory(file.getParentFile());
 			} catch (IOException e) {
-				logger.error(e);
+				log.error(ExceptionUtils.getStackTrace(e));
 			}	
 		}
 		files.clear();
@@ -61,7 +61,7 @@ public class UploadView implements IMediaImportProgressListener, Serializable {
 	public void upload(FileUploadEvent event) throws Exception {
 		UploadedFile upFile = event.getUploadedFile();
 
-		logger.debug("uploading file: ", upFile.getName());
+		log.debug("uploading file: {}", upFile.getName());
 		String dirName = getUploadDir(upFile.getName());
 		long subSubDir = System.currentTimeMillis();
 		long subDir = subSubDir % 100;
@@ -87,7 +87,7 @@ public class UploadView implements IMediaImportProgressListener, Serializable {
 				return importer.getMediaUploadDir();
 			}
 		}
-		logger.error("No corresponding importer found for file: ", file);
+		log.error("No corresponding importer found for file: {}", file);
 		throw new YpException(YpError.FILE_IMPORT_FAILED);
 	}
 

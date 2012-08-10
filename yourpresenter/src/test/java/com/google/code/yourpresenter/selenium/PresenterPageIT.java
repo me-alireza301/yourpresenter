@@ -4,115 +4,19 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.browserlaunchers.Sleeper;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxProfile;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.Song;
 import com.google.code.yourpresenter.media.PptJodConvImporterTest;
-import com.google.code.yourpresenter.selenium.page.AddChangeSongDialog;
-import com.google.code.yourpresenter.selenium.page.DeletePresentationDialog;
-import com.google.code.yourpresenter.selenium.page.DeleteScheduleDialog;
-import com.google.code.yourpresenter.selenium.page.DeleteSongDialog;
-import com.google.code.yourpresenter.selenium.page.MainPage;
-import com.google.code.yourpresenter.selenium.page.PresenterPage;
-import com.google.code.yourpresenter.selenium.page.UploadDialog;
-import com.google.code.yourpresenter.selenium.restclient.PresentationRestTemplate;
-import com.google.code.yourpresenter.selenium.restclient.ScheduleRestTemplate;
-import com.google.code.yourpresenter.selenium.restclient.SlideRestTemplate;
-import com.google.code.yourpresenter.selenium.restclient.SongRestTemplate;
-import com.google.code.yourpresenter.selenium.restclient.VerseRestTemplate;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("./../test-application-config.xml")
-public class PresenterPageIT {
-
-	private static WebDriver driver;
-	private PresenterPage presenterPage;
-	private MainPage mainPage;
-	private AddChangeSongDialog addChangeSongDialog;
-	private DeleteSongDialog deleteSongDialog;
-	private UploadDialog uploadDialog;
-	private DeleteScheduleDialog deleteScheduleDialog;
-	private DeletePresentationDialog deletePresentationDialog;
-
-	public static final String SCHEDULE_NAME = "New schedule";
-	public static final String MAIN_URL = "http://localhost:8081/yourpresenter/";
-	public static final String PRESENTER_URL = MAIN_URL
-			+ "presenter/presenter.jsf";
-	public static final String ADMIN_URL = MAIN_URL + "admin/admin.jsf";
-
-	public static final String RESOURCE_PATH = "target/test-classes/com/google/code/yourpresenter/selenium/";
-
-	@Autowired
-	private ScheduleRestTemplate scheduleRestTemplate;
-	@Autowired
-	private SlideRestTemplate slideRestTemplate;
-	@Autowired
-	private PresentationRestTemplate presenationRestTemplate;
-	@Autowired
-	private VerseRestTemplate verseRestTemplate;
-	@Autowired
-	private SongRestTemplate songRestTemplate;
-
-	@BeforeClass
-	public static void beforeClass() throws Exception {
-		// for drag and drop to be working on linux:
-		// Enabling features that are disabled by default in Firefox
-		// see: http://code.google.com/p/selenium/wiki/TipsAndTricks
-		FirefoxProfile profile = new FirefoxProfile();
-		profile.setEnableNativeEvents(true);
-		driver = new FirefoxDriver(profile);
-		driver.manage().timeouts()
-				.implicitlyWait(ITConstant.DRIVER_WAIT, TimeUnit.SECONDS);
-	}
-
-	@Before
-	public void before() throws Exception {
-		// make sure that in case there is something left from the last failed
-		// tests,
-		// it'll be cleaned up
-		cleanUp();
-
-		mainPage = new MainPage(driver);
-		presenterPage = new PresenterPage(driver);
-		addChangeSongDialog = new AddChangeSongDialog(driver);
-		deleteSongDialog = new DeleteSongDialog(driver);
-		deleteScheduleDialog = new DeleteScheduleDialog(driver);
-		deletePresentationDialog = new DeletePresentationDialog(driver);
-		uploadDialog = new UploadDialog(driver);
-	}
-
-	@AfterClass
-	public static void afterAll() {
-		driver.quit();
-	}
-
-	@After
-	public void after() {
-		presenterPage.waitAjaxDone();
-		cleanUp();
-	}
-
-	public void cleanUp() {
-		slideRestTemplate.deleteAll();
-		verseRestTemplate.deleteAll();
-		presenationRestTemplate.deleteAll();
-		songRestTemplate.deleteAll();
-		scheduleRestTemplate.deleteAll();
-	}
+public class PresenterPageIT extends AbstractIT {
 
 	@Test
 	public void testAddChangeSongDialogCancel() {
@@ -148,23 +52,9 @@ public class PresenterPageIT {
 				addChangeSongDialog.getErrorsSumText());
 	}
 
-	// @Test
-	public void testAddSongs() throws IOException, YpException {
-		createSchedule(getScheduleName());
-		Song song = createSong("song1.txt", "cp1250");
-		addChangeSongDialog.waitDialogNotDisplayed();
-		presenterPage.waitAjaxDone();
-		Assert.assertEquals(song.getName(), presenterPage.getSongName(0));
-
-		song = createSong("song2.txt", "cp1250");
-		addChangeSongDialog.waitDialogNotDisplayed();
-		presenterPage.waitAjaxDone();
-		Assert.assertEquals(song.getName(), presenterPage.getSongName(1));
-	}
-
 	@Test
 	public void testAddSongsToSchedule() throws IOException, YpException {
-		testAddSongs();
+		createSongs();
 
 		presenterPage.addSongToScheduleBeginning(0);
 		presenterPage.waitAjaxDone();
@@ -284,41 +174,7 @@ public class PresenterPageIT {
 	// Assert.assertEquals(ADMIN_URL, driver.getCurrentUrl());
 	// }
 
-	private Song createSong(String fileName, String fileEncoding)
-			throws IOException {
-		presenterPage.openAddSongDialog();
-		Song song = new SongPlainTxtUnmarshaller().unmarshall(new File(
-				RESOURCE_PATH + fileName), fileEncoding);
-		addChangeSongDialog.waitDialogDisplayed();
-		addChangeSongDialog.setSongName(song.getName());
-		addChangeSongDialog.setSongText(song.getText());
-		addChangeSongDialog.clickOkButton();
-		return song;
-	}
 
-	private void createSchedule(String scheduleName) {
-		driver.get(MAIN_URL);
-
-		mainPage.choosePresenterRole();
-		mainPage.setScheduleName(scheduleName);
-		mainPage.clickOkButton();
-
-		// retry
-		Sleeper.sleepTightInSeconds(1);
-		if (!driver.getCurrentUrl().equals(PRESENTER_URL)) {
-			mainPage.clickOkButton();
-		}
-
-		// check schedule created
-		Assert.assertEquals("Schedule: " + scheduleName,
-				presenterPage.getScheduleNameText());
-		// check redirect
-		Assert.assertEquals(PRESENTER_URL, driver.getCurrentUrl());
-	}
-
-	protected String getScheduleName() {
-		return SCHEDULE_NAME;
-	}
 
 	@Test
 	public void testUpdateDeleteSong() throws IOException, YpException {
@@ -373,7 +229,7 @@ public class PresenterPageIT {
 		presenterPage.waitAjaxDone();
 
 		// TODO workaround no rerendering on import complete yet
-		driver.get(PRESENTER_URL);
+		driver.get(ITConstant.PRESENTER_URL);
 
 		//
 		// add media misc to schedule

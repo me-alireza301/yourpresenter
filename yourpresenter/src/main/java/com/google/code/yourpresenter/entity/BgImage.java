@@ -8,6 +8,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Index;
 
@@ -16,6 +20,9 @@ import org.hibernate.annotations.Index;
  */
 @SuppressWarnings("serial")
 @Entity
+@ToString (exclude={"media"})
+@EqualsAndHashCode (exclude={"id", "media"})
+@NoArgsConstructor
 public class BgImage implements Serializable {
 
 	/** The id. */
@@ -29,6 +36,7 @@ public class BgImage implements Serializable {
 	@JsonIgnore
 	private String thumbnail;
 
+	@JsonIgnore
 	private Media media;
 	
 	@JsonIgnore
@@ -37,9 +45,6 @@ public class BgImage implements Serializable {
 	// see: http://stackoverflow.com/questions/1442127/table-not-found-with-hibernate-and-hsqldb
 	private int possition;
 	
-	public BgImage() {
-	}
-
 	public BgImage(String image, Media media, int position) {
 		this.setImage(image);
 		this.setMedia(media);

@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
@@ -20,10 +22,9 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.code.yourpresenter.YpError;
 import com.google.code.yourpresenter.YpException;
 
+@Slf4j
 public class SystemUtil {
 
-	private static Logger logger = LoggerFactory.getLogger(SystemUtil.class);
-	
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	public static int exec(String cmd, List<String> arguments,
@@ -91,7 +92,7 @@ public class SystemUtil {
 		}
 
 		if (null != envVars) {
-			logger.debug("Execution environment: ", envVars.toString());
+			log.debug("Execution environment: {}", envVars.toString());
 
 			for (Entry<String, Object> e : envVars.entrySet()) {
 				EnvironmentUtils.addVariableToEnvironment(
@@ -101,38 +102,38 @@ public class SystemUtil {
 			}
 		}
 
-		logger.debug("Executing command: ", cmdLine.toString());
+		log.debug("Executing command: {}", cmdLine.toString());
 
 		int exitValue = 0;
 		try {
 			exitValue = executor.execute(cmdLine, env);
 		} catch (ExecuteException e) {
-			logger.error("Executed command errors: \n", error);
+			log.error("Executed command errors: \n{} ", error);
 			throw new YpException(YpError.EXEC_FAILED, e);
 		} catch (IOException e) {
-			logger.error("Executed command errors: \n", error);
+			log.error("Executed command errors: \n{}", error);
 			throw new YpException(YpError.EXEC_FAILED, e);
 		} finally {
 			try {
 				output.flush();
 			} catch (IOException e) {
-				logger.error("Executed command errors: \n", error);
+				log.error("Executed command errors: \n{}", error);
 				throw new YpException(YpError.EXEC_FAILED, e);
 			}
 		}
 
 		// in case of errrors => log them
 		if (0 != exitValue) {
-			logger.error("Executed command return value: \n", exitValue);
+			log.error("Executed command return value: \n{}", exitValue);
 			if (null != error && !StringUtils.isEmpty(error.toString())) {
-				logger.error("Executed command errors: " + error.toString());
+				log.error("Executed command errors: {}" + error.toString());
 			}
 		} else {
-			logger.debug("Executed command return value: " + exitValue);
+			log.debug("Executed command return value: {}" + exitValue);
 			// quiet flag introduced to prevent too much stuff in logs
 			if (!quiet && null != error
 					&& !StringUtils.isEmpty(error.toString())) {
-				logger.debug("Executed command errors: ", error.toString());
+				log.debug("Executed command errors: {}", error.toString());
 			}
 		}
 

@@ -12,16 +12,21 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Index;
 
-
-// TODO: Auto-generated Javadoc
 /**
  * The Class Slide.
  */
 @SuppressWarnings("serial")
 @Entity
+@ToString(exclude = "presentation")
+@EqualsAndHashCode(exclude = { "id", "presentation" })
+@NoArgsConstructor
 public class Slide implements Serializable {
 
 	/** The id. */
@@ -29,28 +34,27 @@ public class Slide implements Serializable {
 
 	/** The background. */
 	private BgImage bgImage;
-	
+
 	private String text;
 
 	/** The presentation. */
 	@JsonIgnore
 	private Presentation presentation;
-	
+
 	@JsonIgnore
-	// in case of correct one: position => java.sql.SQLException: Table not found in statement [select schedule0_.name ...
+	// in case of correct one: position => java.sql.SQLException: Table not
+	// found in statement [select schedule0_.name ...
 	// seems like position is reserved word => can't be used
-	// see: http://stackoverflow.com/questions/1442127/table-not-found-with-hibernate-and-hsqldb
+	// see:
+	// http://stackoverflow.com/questions/1442127/table-not-found-with-hibernate-and-hsqldb
 	private int possition;
-	
+
 	/**
 	 * Whether slide is the active one.
 	 */
 	@JsonIgnore
 	private boolean active;
 
-	public Slide() {
-	}
-	
 	public Slide(String text, Presentation presentation, int possition) {
 		this.setText(text);
 		this.setPresentation(presentation);
@@ -63,7 +67,7 @@ public class Slide implements Serializable {
 	 * @return the id
 	 */
 	@Id
-	@Index(name="SlideIdIdx")
+	@Index(name = "SlideIdIdx")
 	@GeneratedValue
 	public Long getId() {
 		return id;
@@ -85,7 +89,7 @@ public class Slide implements Serializable {
 	 * @return the background
 	 */
 	@OneToOne
-	@Index(name="SlideBgImageIdx")
+	@Index(name = "SlideBgImageIdx")
 	public BgImage getBgImage() {
 		return bgImage;
 	}
@@ -106,7 +110,7 @@ public class Slide implements Serializable {
 	 * @return the presentation
 	 */
 	@ManyToOne(optional = false)
-	@Index(name="SlidePresentationIdx")
+	@Index(name = "SlidePresentationIdx")
 	public Presentation getPresentation() {
 		return presentation;
 	}
@@ -128,15 +132,15 @@ public class Slide implements Serializable {
 	public void setActive(boolean isActive) {
 		this.active = isActive;
 	}
-	
+
 	public void activate() {
 		this.setActive(true);
 	}
-	
+
 	@Transient
 	@JsonIgnore
 	public String getCssSuffix() {
-		return (active ? "active" : "inactive" );
+		return (active ? "active" : "inactive");
 	}
 
 	/**
@@ -147,7 +151,8 @@ public class Slide implements Serializable {
 	}
 
 	/**
-	 * @param possition the possition to set
+	 * @param possition
+	 *            the possition to set
 	 */
 	public void setPossition(int possition) {
 		this.possition = possition;

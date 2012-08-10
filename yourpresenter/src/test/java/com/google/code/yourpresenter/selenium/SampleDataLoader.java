@@ -54,13 +54,13 @@ public class SampleDataLoader {
 	public void load() throws InitializationError, IOException, YpException {
 		createSchedule(new PresenterPageIT()
 				.getScheduleName());
-		Song song = createSong("song1_cp1250.txt", "cp1250");
+		Song song = createSong("song1.txt", "cp1250");
 		addChangeSongDialog.waitDialogNotDisplayed();
 		presenterPage.waitAjaxDone();
 		Assert.assertEquals(song.getName(), presenterPage.getSongName(1));
 
-		driver.get(PresenterPageIT.PRESENTER_URL);
-		song = createSong("song2_cp1250.txt", "cp1250");
+		driver.get(ITConstant.PRESENTER_URL);
+		song = createSong("song2.txt", "cp1250");
 		addChangeSongDialog.waitDialogNotDisplayed();
 		presenterPage.waitAjaxDone();
 		Assert.assertEquals(song.getName(), presenterPage.getSongName(2));
@@ -75,7 +75,7 @@ public class SampleDataLoader {
 
 		// retry
 		Sleeper.sleepTightInSeconds(1);
-		if(!driver.getCurrentUrl().equals(PresenterPageIT.PRESENTER_URL)) {
+		if(!driver.getCurrentUrl().equals(ITConstant.PRESENTER_URL)) {
 			mainPage.clickOkButton();
 		}
 
@@ -83,12 +83,12 @@ public class SampleDataLoader {
 		Assert.assertEquals("Schedule: " + scheduleName,
 				presenterPage.getScheduleNameText());
 		// check redirect
-		Assert.assertEquals(PresenterPageIT.PRESENTER_URL, driver.getCurrentUrl());
+		Assert.assertEquals(ITConstant.PRESENTER_URL, driver.getCurrentUrl());
 	}
 
 	private Song createSong(String fileName, String fileEncoding) throws IOException {
 		presenterPage.openAddSongDialog();
-		Song song = new SongPlainTxtUnmarshaller().unmarshall(new File(PresenterPageIT.RESOURCE_PATH + fileName), fileEncoding);
+		Song song = new SongPlainTxtUnmarshaller().unmarshall(new File(ITConstant.RESOURCE_PATH + fileName), fileEncoding);
 		addChangeSongDialog.waitDialogDisplayed();
 		addChangeSongDialog.setSongName(song.getName());
 		addChangeSongDialog.setSongText(song.getText());

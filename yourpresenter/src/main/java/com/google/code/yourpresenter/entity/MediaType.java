@@ -11,6 +11,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Index;
 
@@ -18,6 +22,9 @@ import com.google.code.yourpresenter.IConstants;
 
 @SuppressWarnings("serial")
 @Entity
+@ToString (exclude={"medias"})
+@EqualsAndHashCode (exclude={"id", "medias"})
+@NoArgsConstructor
 public class MediaType implements Serializable {
 
 	/** The id. */
@@ -36,9 +43,6 @@ public class MediaType implements Serializable {
 		super();
 		this.id = id;
 		this.name = name;
-	}
-
-	public MediaType() {
 	}
 
 	@Id

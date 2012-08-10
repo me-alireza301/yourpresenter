@@ -7,6 +7,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -15,16 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.BgImage;
 import com.google.code.yourpresenter.entity.Slide;
-import com.google.code.yourpresenter.util.Logger;
-import com.google.code.yourpresenter.util.LoggerFactory;
 
 @SuppressWarnings("serial")
 @Service
 @Repository
+@Slf4j
 public class SlideServiceImpl implements ISlideService, Serializable {
-
-	private static Logger logger = LoggerFactory
-			.getLogger(SlideServiceImpl.class);
 
 	private transient EntityManager em;
 
@@ -64,6 +62,7 @@ public class SlideServiceImpl implements ISlideService, Serializable {
 	}
 
 	@Transactional
+	@Override
 	public void activateSlide(Long id) throws YpException {
 		// for examples see:
 		// http://en.wikibooks.org/wiki/Java_Persistence/Querying
@@ -92,8 +91,8 @@ public class SlideServiceImpl implements ISlideService, Serializable {
 		if (null != slide.getBgImage()) {
 			// in case bgImage is fixed and can't be replaced
 			if (!slide.getBgImage().getMedia().getType().isBgImageReplacible()) {
-				logger.debug(
-						"Slide bgImage is not replacable => keeping untouched: ",
+				log.debug(
+						"Slide bgImage is not replacable => keeping untouched: {}",
 						slide);
 				return;
 				// persist in DB only in case of changed bgImage

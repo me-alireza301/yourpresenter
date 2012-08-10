@@ -7,6 +7,9 @@ public class StateDTO {
 	private Slide actualSlide;
 	private Schedule schedule;
 	
+	public StateDTO() {
+	}
+	
 	public StateDTO(Slide actualSlide, Schedule schedule) {
 		super();
 		this.actualSlide = actualSlide;

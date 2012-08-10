@@ -14,11 +14,18 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.validation.constraints.NotNull;
 
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Index;
 
 @SuppressWarnings("serial")
 @Entity
+@ToString (exclude="bgImages")
+@EqualsAndHashCode (exclude={"id", "bgImages"})
+@NoArgsConstructor
 public class Media implements Serializable {
 
 	/** The id. */
@@ -36,9 +43,6 @@ public class Media implements Serializable {
 	/** last modified time in miliseconds */
 	@JsonIgnore
 	private long lastModifiedTime;
-
-	public Media() {
-	}
 
 	/**
 	 * @param name

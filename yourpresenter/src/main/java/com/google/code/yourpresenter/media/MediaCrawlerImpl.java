@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
@@ -22,17 +24,13 @@ import com.google.code.yourpresenter.service.IPreferenceService;
 import com.google.code.yourpresenter.util.FileObjectUtil;
 import com.google.code.yourpresenter.util.FileUtil;
 import com.google.code.yourpresenter.util.IPreferenceChangedListener;
-import com.google.code.yourpresenter.util.Logger;
-import com.google.code.yourpresenter.util.LoggerFactory;
 import com.google.code.yourpresenter.util.PostInitialize;
 
 @SuppressWarnings("serial")
 @Service
+@Slf4j
 public class MediaCrawlerImpl implements IMediaCrawler,
 		IPreferenceChangedListener, Serializable {
-
-	private static Logger logger = LoggerFactory
-			.getLogger(MediaCrawlerImpl.class);
 
 	@Autowired
 	private List<IMediaImporter> mediaImporters;
@@ -74,7 +72,7 @@ public class MediaCrawlerImpl implements IMediaCrawler,
 						.findFiles(this.mediaFileSelectorImpl);
 				if (null != found) {
 					for (FileObject fileObject : found) {
-						logger.debug("Found media file: ", fileObject);
+						log.debug("Found media file: {}", fileObject);
 						files.add(new File(FileObjectUtil.getAbsolutePath(fileObject)));
 					}
 
