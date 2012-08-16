@@ -12,10 +12,12 @@ function setUp() {
 	}
 
 	// set fg/bg visibility
-	jQuery(fgClass).show();
-	jQuery(alterClass(fgClass)).hide();
-	jQuery(bgClass).show();
-	jQuery(alterClass(bgClass)).hide();
+	jQuery(".active-fg").show();
+	fgClassDisplay = jQuery(".active-fg").css('display');
+	jQuery(".inactive-fg").hide();
+	jQuery(".active-bg").show();
+	bgClassDisplay = jQuery(".active-bg").css('display');
+	jQuery(".inactive-bg").hide();
 
 	// handle clear
 	if (isClear) {
@@ -53,8 +55,7 @@ function processData(newData) {
 
 	handleBlankAndLive(newIsBlank, newIsLive);
 	handleClear(newIsClear);
-	handleBg(newBgId);
-	handleFg(newTxt, isClear);
+	handleBgAndFg(newBgId, newTxt, isClear);
 
 	/*data = newData;*/
 }
@@ -90,68 +91,13 @@ function handleClear(newIsClear) {
 	isClear = newIsClear;
 }
 
-function handleFg(newTxt, isClear) {
-	// txt not changed => do nothing
-	if (newTxt == txt) {
+function handleBgAndFg(newBgId, newTxt, isClear) {
+	// neither txt nor bg changed => do nothing
+	if ((newTxt == txt) && (newBgId == bgId)) {
 		return;
 	}
-
-	var newFgClass = alterClass(fgClass);
-
-	// set new txt
-	jQuery(newFgClass).css("z-index", zIdxBehindAll);
-	jQuery(newFgClass).children(".jtextfill").children(
-			".jtextfill-inner").html(newTxt);
-
-	// align size only for non-empty txt
-	if (newTxt != "") {
-		jQuery(newFgClass).show();
-		jQuery(newFgClass)
-				.children(".jtextfill")
-				.textfill({maxFontPixels : preferences['view.font.maxsize.projector']});
-	}
-
-	// hide new and move it in front
-	jQuery(newFgClass)
-		.hide()
-		.css("z-index", zIdxFg);
-
-	// old fade out + move back
-	jQuery(fgClass)
-		.fadeOut(transitionDuration)
-		.css("z-index", zIdxBehindAll);
-
-	// if to be displayed do the effect
-	if (!isClear && newTxt != "") {
-		jQuery(newFgClass).fadeIn(transitionDuration);
-	}
-
-	txt = newTxt;
-	fgClass = newFgClass;
-}
-
-function handleBg(newBgId) {
-	// bg not changed => do nothing
-	if (newBgId == bgId) {
-		return;
-	}
-
-	var newBgClass = alterClass(bgClass);
-
-	// if new bg is empty
-	if (newBgId == -1) {
-		jQuery(newBgClass)
-			.css({"background-image" : "none"})
-			.css("z-index", zIdxBg)
-			.show(
-				function() {
-					// hide old and show new
-					jQuery(bgClass).fadeOut(transitionDuration);
-					
-					bgId = newBgId;
-					bgClass = newBgClass;
-			});
-	} else {
+	
+	if (newBgId != bgId && newBgId != -1) {
 		var imgPath = "/yourpresenter/mvc/image/" + newBgId;
 
 		/*
@@ -160,36 +106,219 @@ function handleBg(newBgId) {
 		 */
 		var img = new Image();
 		img.onload = function() {
-			
-			//
-			// hide old and show new
-			//
-			jQuery(newBgClass)
-				.css({"background-image" : "url('" + imgPath + "')"})
-				.css("z-index", zIdxBg + 1)
-				.fadeIn(transitionDuration, 
-					function() {
-						jQuery(bgClass)
-							.css("z-index", zIdxBehindAll)
-							.hide(
-								function() {
-									jQuery(newBgClass).css("z-index", zIdxBg);
-									
-									bgId = newBgId;
-									bgClass = newBgClass;	
-							});
-				});
+			animate(newBgId, newTxt, isClear, imgPath);
 		};
 		img.src = imgPath;
+	} else {
+		animate(newBgId, newTxt, isClear, "");
 	}
 }
 
-function alterClass(oldClass) {
-	var newClass = "";
-	if (oldClass.substring(0, ".one".length) === ".one") {
-		newClass = oldClass.replace("one", "two");
-	} else {
-		newClass = oldClass.replace("two", "one");
+//////////////////////////////////////////////////
+// [BEGIN] functions called in animation's step //
+//////////////////////////////////////////////////
+var fadeOutOldFgF = function fadeOutOldFg(inOpacity) {
+	// handle old txt fadeOut()
+	jQuery(".active-fg").css("opacity", 1 - inOpacity);
+};
+
+var fadeInFgF = function fadeInFg(inOpacity) {
+	// handle new bg fadeIn()
+	jQuery(".inactive-fg").css("opacity", inOpacity);
+};
+
+var fadeOutOldBgF = function fadeOutOldBg(inOpacity) {
+	// handle old bg fadeOut()
+	jQuery(".active-bg").css("opacity", 1 - inOpacity);
+};
+
+var fadeInBgF = function fadeInBg(inOpacity) {
+	// handle new bg fadeIn()
+	jQuery(".inactive-bg").css("opacity", inOpacity);
+};
+
+var emptyF = function empty(inOpacity) {
+	// nothing to be done here
+};
+
+///////////////////////////////////////////////
+//[END] functions called in animation's step //
+///////////////////////////////////////////////
+
+function animate(newBgId, newTxt, isClear, imgPath) {
+	if (newBgId != bgId) {
+		prepareBg(newBgId, imgPath);
 	}
-	return newClass;
+	
+	if (newTxt != txt) {
+		prepareFg(newTxt);
+	}
+	
+	var fadeInFgFunction, fadeInBgFunction, fadeOutFgFunction, fadeOutBgFunction;
+	
+	if (newTxt != txt && !isClear) {
+		if (newTxt != "") {
+			fadeInFgFunction = fadeInFgF;
+		} else {
+			fadeInFgFunction = emptyF
+		}
+		
+		if (txt != "") {
+			fadeOutFgFunction = fadeOutOldFgF;
+		} else {
+			fadeOutFgFunction = emptyF
+		}
+	} else {
+		fadeInFgFunction = emptyF;
+		fadeOutFgFunction = emptyF;
+	}
+	
+	if (newBgId != bgId) {
+		if (bgId == -1) {
+			fadeOutBgFunction = emptyF;
+		} else {
+			fadeOutBgFunction = fadeOutOldBgF;
+		}
+		
+		if (newBgId == -1) {
+			fadeInBgFunction = emptyF;
+		} else {
+			fadeInBgFunction = fadeInBgF;
+			// make sure we don't run 2 image transitions in parallel
+			// just cover the old one with the new one
+			fadeOutBgFunction = emptyF;
+		}
+	} else {
+		fadeOutBgFunction = emptyF;
+		fadeInBgFunction = emptyF;				
+	}
+	
+	animateTemplate(fadeInFgFunction, fadeInBgFunction, fadeOutFgFunction, fadeOutBgFunction, newBgId, newTxt, isClear);
+}
+
+function animateTemplate(fadeInFgFunction, fadeInBgFunction, fadeOutFgFunction, fadeOutBgFunction, newBgId, newTxt, isClear) {
+jQuery(".placebo")
+	.css('opacity', 0.0)
+	.animate(
+	{
+		opacity: 1.0,
+	},
+	{
+		duration: transitionDuration, 
+		step: function(now, fx) {
+			fadeInFgFunction(now);
+			fadeInBgFunction(now);
+			fadeOutFgFunction(now);
+			fadeOutBgFunction(now);
+		},
+		complete: function() {
+			finish(newBgId, newTxt, isClear);
+	    }
+	});
+}
+
+/*
+ * once the opacity == 0.0 => move back and hide()
+ */
+function finish(newBgId, newTxt, isClear) {
+	if (newTxt != txt) {
+		jQuery(".active-fg")
+			.css("z-index", zIdxBehindAll)
+			.hide();
+	}
+	
+	if (newBgId != bgId) {
+		jQuery(".active-bg")
+			.css("z-index", zIdxBehindAll)
+			.hide(
+				function() {
+					jQuery(".inactive-bg").css("z-index", zIdxBg);
+					
+					keepHistory(newTxt, newBgId);
+			});
+	} else {
+		keepHistory(newTxt, newBgId);
+	}
+}
+
+function prepareBg(newBgId, imgPath) {
+	// bg not changed => do nothing
+	if (newBgId == bgId) {
+		return;
+	}
+	
+	if (newBgId == -1) {
+		jQuery(".inactive-bg")
+			.css({"background-image" : "none"});
+	} else {
+		jQuery(".inactive-bg")
+			.css({"background-image" : "url('" + imgPath + "')"})
+	}
+	
+	jQuery(".inactive-bg")
+		.hide()
+		.css("z-index", zIdxBg + 1)
+		.css('opacity', 0.0)
+		// as hide() is roughly equivalent to calling .css('display', 'none')
+		// , except that the value of the display property is saved in jQuery's 
+		// data cache so that display can later be restored to its initial value.
+		// => caching is done programically here
+		.css('display', bgClassDisplay);
+}
+
+function prepareFg(newTxt) {
+	// txt not changed => do nothing
+	if (newTxt == txt) {
+		return;
+	}
+	
+	// set new txt
+	jQuery(".inactive-fg")
+		.css("z-index", zIdxBehindAll)
+		// keep all in queue
+		.queue(function() {
+			jQuery(".inactive-fg").children(".jtextfill").children(
+				".jtextfill-inner").html(newTxt);
+			jQuery(this).dequeue();
+		});
+
+	// align size only for non-empty txt
+	if (newTxt != "") {
+		jQuery(".inactive-fg")
+			.show()
+			// keep all in queue
+			.queue(function() {
+				jQuery(".inactive-fg")
+					.children(".jtextfill")
+					.textfill({maxFontPixels : preferences['view.font.maxsize.projector']});
+				jQuery(this).dequeue();
+			});
+	}
+
+	// hide new and move it in front
+	jQuery(".inactive-fg")
+		.hide()
+		.css("z-index", zIdxFg)
+		.css('opacity', 0.0)
+		// as hide() is roughly equivalent to calling .css('display', 'none')
+		// , except that the value of the display property is saved in jQuery's 
+		// data cache so that display can later be restored to its initial value.
+		// => caching is done programically here
+		.css('display', fgClassDisplay);
+}
+
+function keepHistory(newTxt, newBgId) {
+	if (newTxt != txt) {
+		txt = newTxt;
+		jQuery(".inactive-fg").addClass("active-fg");
+		jQuery(".active-fg").not(".inactive-fg").removeClass("active-fg").addClass("inactive-fg");
+		jQuery(".active-fg").removeClass("inactive-fg");
+	}
+	
+	if (newBgId != bgId) {
+		bgId = newBgId;
+		jQuery(".inactive-bg").addClass("active-bg");
+		jQuery(".active-bg").not(".inactive-bg").removeClass("active-bg").addClass("inactive-bg");
+		jQuery(".active-bg").removeClass("inactive-bg");
+	}
 }

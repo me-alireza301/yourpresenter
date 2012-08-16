@@ -98,11 +98,6 @@
 	cursor: pointer;
 }
 
-.slidebox-link {
-	text-decoration: none;
-	cursor: default;
-}
-
 .rf-p {
 	/* uncomment for UI layout debugging purposes */
 	/* border: 2px;

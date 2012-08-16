@@ -24,6 +24,12 @@
 		<h:outputScript library="js" target="head"
 			name="jquery-textfill-0.1.js" />
 			
+		<!--
+			state retrieval + setup functions
+		-->
+		<h:outputScript library="js" target="head"
+			name="projector.js" />
+			
 		<h:outputScript target="head">
 			// init text size
 			jQuery(document).ready(function() {
@@ -47,8 +53,8 @@
 			
 			// state related vars 
 			/* var data;*/
-			var fgClass = ".one-fg";
-			var bgClass = ".one-bg";
+			var fgClassDisplay = "";
+			var bgClassDisplay = "";
 			var isBlank = <h:outputText value="#{scheduleView.blank}" />;
 			var isClear = <h:outputText value="#{scheduleView.clear}" />;
 			var isLive = <h:outputText value="#{scheduleView.live}" />;
@@ -65,12 +71,6 @@
 			});
 		</h:outputScript>
 		
-		<!--
-			state retrieval + setup functions
-		-->
-		<h:outputScript library="js" target="head"
-			name="projector.js" />
-
 		<h:form>
 			<a4j:push id="statePush" address="pushTopicsContext" ondataavailable="processData(jQuery.parseJSON(event.rf.data));" />
 		</h:form>
@@ -79,17 +79,17 @@
 		<div class="board"></div>
 
 		<!-- backgrounds -->
-		<div class="template-bg one-bg"></div>
-		<div class="template-bg two-bg"></div>
+		<div class="template-bg active active-bg"></div>
+		<div class="template-bg inactive inactive-bg"></div>
 
 		<!-- foregrounds -->
-		<div class="template-fg one-fg">
+		<div class="template-fg active active-fg">
 			<div class="jtextfill">
 				<span class="jtextfill-inner"></span>
 			</div>
 		</div>
 
-		<div class="template-fg two-fg">
+		<div class="template-fg inactive inactive-fg">
 			<div class="jtextfill">
 				<span class="jtextfill-inner"></span>
 			</div>
@@ -97,6 +97,8 @@
 
 		<!-- curtain - for the canses of (blank || !live) -->
 		<div class="blank"></div>
+		
+		<div class="placebo"></div>
 	</h:body>
 </f:view>
 </html>

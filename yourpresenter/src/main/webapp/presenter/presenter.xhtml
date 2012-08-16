@@ -148,6 +148,10 @@
 		</a4j:outputPanel>
 -->
 
+		<a4j:jsFunction name="activateSlide" render="none" action="#{scheduleView.activateSlide}">
+			<a4j:param name="slideId" assignTo="#{scheduleView.activeSlideId}" />
+		</a4j:jsFunction>
+
 		<div class="ui-layout-north">
 			<a4j:jsFunction name="upload" render="dialogUploadPanel"
 				oncomplete="#{rich:component('dialogUpload')}.show();" />
@@ -306,7 +310,6 @@
 									oncomplete="#{rich:component('dialogScheduleDelete')}.show();"
 									mode="ajax" icon="/images/action/delete.gif" />
 							</rich:contextMenu>
-							
 						</f:facet>
 						
 						<ui:include src="dialogScheduleDelete.xhtml" />
@@ -348,22 +351,15 @@
 												dropListener="#{scheduleView.dropped}" render="schedule"
 												oncomplete="setTextFillSize();" />
 	
-											<a4j:commandLink action="#{scheduleView.activateSlide}"
-												render="none" styleClass="slidebox-link">
-												<f:param name="id" value="#{slide.id}" />
-												<rich:panel styleClass="slidebox slidebox-#{slide.cssSuffix}"
-													style="background-image:url('/yourpresenter/mvc/thumbnail/#{slide.bgImage.id}');">
+												<rich:panel style="background-image:url('/yourpresenter/mvc/thumbnail/#{slide.bgImage.id}');" 
+													onclick="activateSlide(#{slide.id});jQuery('.slidebox-active').not(this).addClass('slidebox-inactive').removeClass('slidebox-active');jQuery(this).removeClass('slidebox-inactive').addClass('slidebox-active');" styleClass="slidebox slidebox-#{slide.cssSuffix}">
 													<div class="jtextfill"
 														style="width: #{preferencesView.viewSlideWidth}px;height: #{preferencesView.viewSlideHeight}px;">
 														<h:outputText styleClass="jtextfill-inner"
 															value="#{slide.text}" escape="false" />
 													</div>
 												</rich:panel>
-											</a4j:commandLink>
 										</rich:panel>
-
-										<rich:jQuery selector=".slidebox" event="click"
-											query="jQuery('.slidebox-active').not(this).addClass('slidebox-inactive').removeClass('slidebox-active');jQuery(this).removeClass('slidebox-inactive').addClass('slidebox-active');" />
 									</rich:dataGrid>
 
 								</rich:panel>

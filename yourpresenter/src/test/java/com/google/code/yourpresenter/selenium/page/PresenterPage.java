@@ -288,7 +288,6 @@ public class PresenterPage {
 		return presentationNames.size();
 	}
 
-
 	public boolean isBlankClicked() {
 		return isToggleButtonClicked(blankButton);
 	}
@@ -319,12 +318,6 @@ public class PresenterPage {
 	
 	public void clickSlide(int slideIdx) throws YpException {
 		validateSlideIdx(slideIdx);
-
-		// single click doesn't work reliably here => use doubleclick
-//		slides.get(slideIdx).click();
-		
-		Actions builder = new Actions(driver);
-		Action action = builder.doubleClick(slides.get(slideIdx)).build();
-		action.perform();
+		slides.get(slideIdx).click();
 	}
 }

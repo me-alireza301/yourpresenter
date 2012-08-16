@@ -2,9 +2,6 @@ package com.google.code.yourpresenter.view;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Map;
-
-import javax.faces.context.FacesContext;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,8 +31,8 @@ import com.google.code.yourpresenter.service.IStateService;
 public class ScheduleView implements Serializable {
 
 	private String scheduleName;
-
 	private Long presentationIdToDelete = null;
+	private Long activeSlideId = null;
 
 	@Autowired
 	private IScheduleService scheduleService;
@@ -177,24 +174,24 @@ public class ScheduleView implements Serializable {
 		this.scheduleService.setBgImage(this.getSchedule(), bgImage);
 	}
 
+	/**
+	 * Called whenever slide is being activated.
+	 * 
+	 * @throws NumberFormatException
+	 * @throws YpException
+	 */
 	public void activateSlide() throws NumberFormatException, YpException {
-		@SuppressWarnings("rawtypes")
-		Map map = FacesContext.getCurrentInstance().getExternalContext()
-				.getRequestParameterMap();
-		String songId = (String) map.get("id");
-		if (null != songId && !songId.isEmpty()) {
-			slideService.activateSlide(Long.valueOf(songId));
+	if (null == getActiveSlideId()) {
+		throw new YpException(YpError.SLIDE_ID_NOT_SET);
+	}
+	log.debug(
+			"Slide has been activated (slide.id={} in scheduleName.id={}).",
+			new Object[] { getActiveSlideId(), this.scheduleName });
+	
+	slideService.activateSlide(Long.valueOf(getActiveSlideId()));
 
-			// make sure state change is propagated
-			this.stateService.stateChanged(scheduleName);
-		} else {
-			// for the case of drop of background on slide link is called as
-			// well
-			// (seems like activation, but no id is sent)
-			// => for such a case do nothing
-
-			// throw new YpException(YpError.SLIDE_ID_NOT_SET);
-		}
+	// make sure state change is propagated
+	this.stateService.stateChanged(scheduleName);
 	}
 
 	public boolean getBlank() {
@@ -286,5 +283,19 @@ public class ScheduleView implements Serializable {
 
 	public void setPresentationIdToDelete(Long presentationIdToDelete) {
 		this.presentationIdToDelete = presentationIdToDelete;
+	}
+
+	/**
+	 * @return the activeSlideId
+	 */
+	public Long getActiveSlideId() {
+		return activeSlideId;
+	}
+
+	/**
+	 * @param activeSlideId the activeSlideId to set
+	 */
+	public void setActiveSlideId(Long activeSlideId) {
+		this.activeSlideId = activeSlideId;
 	}
 }
