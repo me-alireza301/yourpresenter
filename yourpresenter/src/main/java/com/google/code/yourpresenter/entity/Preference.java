@@ -19,6 +19,8 @@ import org.hibernate.annotations.Index;
 public class Preference implements Serializable {
 	
 	/** The name. */
+	@Id
+	@Index(name="PreferenceNameIdx")
 	private String name;
 
 	/**
@@ -33,8 +35,6 @@ public class Preference implements Serializable {
 		this.setValue(value);
 	}
 	
-	@Id
-	@Index(name="PreferenceNameIdx")
 	public String getName() {
 		return name;
 	}

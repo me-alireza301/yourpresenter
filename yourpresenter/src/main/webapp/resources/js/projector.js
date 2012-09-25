@@ -28,7 +28,7 @@ function setUp() {
 }
 
 function queryData() {
-	jQuery.getJSON("../mvc/state/" + scheduleName,
+	jQuery.getJSON("../mvc/state/" + scheduleId,
 		function(newData) {
 			processData(newData);
 		});

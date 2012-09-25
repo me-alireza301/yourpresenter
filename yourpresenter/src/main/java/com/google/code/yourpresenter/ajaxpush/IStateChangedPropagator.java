@@ -5,5 +5,5 @@ import com.google.code.yourpresenter.dto.StateDTO;
 
 public interface IStateChangedPropagator {
 
-	public void stateChanged(String scheduleName, StateDTO stateDTO) throws YpException;
+	public void stateChanged(Long scheduleId, StateDTO stateDTO) throws YpException;
 }

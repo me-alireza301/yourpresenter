@@ -9,9 +9,9 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
 import javax.validation.constraints.NotNull;
 
 import lombok.EqualsAndHashCode;
@@ -20,6 +20,7 @@ import lombok.ToString;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.IndexColumn;
 
 @SuppressWarnings("serial")
 @Entity
@@ -29,15 +30,29 @@ import org.hibernate.annotations.Index;
 public class Media implements Serializable {
 
 	/** The id. */
+	@Id
+	@GeneratedValue
+	@Index(name = "MediaIdIdx")
 	private Long id;
 
 	/** The name. */
+	@NotNull
 	private String name;
 
 	private String original;
 
+	// keep in mind to delete prphans:
+	// http://javablog.co.uk/2009/12/27/onetomany-fixes-in-jpa-2/
+//	@OneToMany(mappedBy = "media", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+//	@OrderColumn(name = "possition")
+	
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true) 
+    @IndexColumn(name="bgimage_position", base=0)
+    @JoinColumn(name="media_id", nullable=false)
 	private List<BgImage> bgImages;
 	
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
+	@Index(name = "MediaMediaTypeIdx")
 	private MediaType type;
 	
 	/** last modified time in miliseconds */
@@ -59,9 +74,6 @@ public class Media implements Serializable {
 	/**
 	 * @return the id
 	 */
-	@Id
-	@GeneratedValue
-	@Index(name = "MediaIdIdx")
 	public Long getId() {
 		return id;
 	}
@@ -77,7 +89,6 @@ public class Media implements Serializable {
 	/**
 	 * @return the name
 	 */
-	@NotNull
 	public String getName() {
 		return name;
 	}
@@ -93,10 +104,6 @@ public class Media implements Serializable {
 	/**
 	 * @return the bgImages
 	 */
-	// keep in mind to delete prphans:
-	// http://javablog.co.uk/2009/12/27/onetomany-fixes-in-jpa-2/
-	@OneToMany(mappedBy = "media", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-	@OrderColumn(name = "possition")
 	public List<BgImage> getBgImages() {
 		return bgImages;
 	}
@@ -131,8 +138,6 @@ public class Media implements Serializable {
 		this.original = original;
 	}
 
-	@ManyToOne(optional = false, fetch = FetchType.EAGER)
-	@Index(name = "MediaMediaTypeIdx")
 	public MediaType getType() {
 		return type;
 	}

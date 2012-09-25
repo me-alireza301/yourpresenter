@@ -6,33 +6,33 @@
      | detailed information on how to configurigure caches in this file
      +-->
     <!-- Location of persistent caches on disk -->
-    <diskStore path="java.io.tmpdir/EhCacheSpringAnnotationsExampleApp" />
+    <diskStore path="java.io.tmpdir/EhCacheYourPresenter" />
 
     <defaultCache eternal="false" maxElementsInMemory="1000"
         overflowToDisk="false" diskPersistent="false" timeToIdleSeconds="0"
         timeToLiveSeconds="600" memoryStoreEvictionPolicy="LRU"/>
 
-    <cache name="preferenceCache" eternal="false"
+    <cache name="preferenceValueByName" eternal="false"
         maxElementsInMemory="300" overflowToDisk="false" diskPersistent="false"
         timeToIdleSeconds="0" timeToLiveSeconds="600"
         memoryStoreEvictionPolicy="LRU" />
         
-    <cache name="stateCache" eternal="false"
+    <cache name="stateDTOByScheduleId" eternal="false"
       	maxElementsInMemory="10" overflowToDisk="false" diskPersistent="false"
         timeToIdleSeconds="0" timeToLiveSeconds="600"
         memoryStoreEvictionPolicy="LRU" />
         
-    <cache name="scheduleCache" eternal="false"
+    <cache name="scheduleById" eternal="false"
         maxElementsInMemory="10" overflowToDisk="false" diskPersistent="false"
         timeToIdleSeconds="0" timeToLiveSeconds="600"
         memoryStoreEvictionPolicy="LRU" />
         
-    <cache name="allSongsCache" eternal="false"
+    <cache name="allSongs" eternal="false"
         maxElementsInMemory="10" overflowToDisk="false" diskPersistent="false"
         timeToIdleSeconds="0" timeToLiveSeconds="600"
         memoryStoreEvictionPolicy="LRU" />
     
-    <cache name="bgImageFirstPositionCache" eternal="false"
+    <cache name="bgImageFirstPositionByTypeName" eternal="false"
         maxElementsInMemory="10" overflowToDisk="false" diskPersistent="false"
         timeToIdleSeconds="0" timeToLiveSeconds="600"
         memoryStoreEvictionPolicy="LRU" />    

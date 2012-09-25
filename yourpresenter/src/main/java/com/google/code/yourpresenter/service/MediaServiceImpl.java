@@ -11,6 +11,7 @@ import javax.persistence.Query;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,7 @@ public class MediaServiceImpl implements IMediaService, Serializable {
 		this.em = em;
 	}
 
+	@CacheEvict (value = "bgImageFirstPositionByTypeName", key = "#root.args[0].type.name")
 	@Transactional
 	@Override
 	public void persist(Media media) {
@@ -51,6 +53,7 @@ public class MediaServiceImpl implements IMediaService, Serializable {
 		}
 	}
 
+	@CacheEvict (value = "bgImageFirstPositionByTypeName", allEntries = true, beforeInvocation = false)
 	@Override
 	@Transactional
 	public void startImport(List<File> files/*
@@ -65,32 +68,38 @@ public class MediaServiceImpl implements IMediaService, Serializable {
 			// listener.fireImportProgress(file, 0L, 0);
 
 			for (IMediaImporter mediaImporter : mediaImporters) {
-				if (mediaImporter.supportsMediaType(file.getAbsolutePath())) {
-
-					Media media = new Media(file.getName(),
-							file.getAbsolutePath(),
-							mediaImporter.getMediaType(), file.lastModified());
-
-					// TODO will it kill performance/DB?
-					if (this.existsByLastModifiedTimeAndOriginal(media)) {
-						log.debug("skipping already imported media: {}", file.getAbsolutePath());
-						continue;
-					}
-
-					// store media in DB
-					this.persist(media);
-					
-					File[] bgFiles = mediaImporter.importMedia(media);
-
-					int position = 0;
-					for (File f : bgFiles) {
-						BgImage bgImage = new BgImage(f.getAbsolutePath(), media, position++);
-
-						bgImageService.persist(bgImage);
-						// generate and store the thumbnail
-						bgImageService.handleThumbnail(bgImage);
-					}
+				if (!mediaImporter.supportsMediaType(file.getAbsolutePath())) {
+					continue;
 				}
+
+				Media media = new Media(file.getName(),
+						file.getAbsolutePath(),
+						mediaImporter.getMediaType(), file.lastModified());
+
+				// TODO will it kill performance/DB?
+				if (this.existsByLastModifiedTimeAndOriginal(media)) {
+					log.debug("skipping already imported media: {}", file.getAbsolutePath());
+					continue;
+				}
+
+				// store media in DB
+//				this.persist(media);
+				
+				File[] bgFiles = mediaImporter.importMedia(media);
+				for (File f : bgFiles) {
+					media.addBgImage(new BgImage(f.getAbsolutePath(), media));
+//					bgImageService.persist(bgImage);
+//					// generate and store the thumbnail
+//					bgImageService.handleThumbnail(bgImage);
+				}
+				
+				this.persist(media);
+				
+				for (BgImage bgImage : media.getBgImages()) {
+					// generate and store the thumbnail
+					bgImage = bgImageService.generateThumbnail(bgImage);
+				}
+				this.persist(media);
 			}
 			// overallProgress += increment;
 

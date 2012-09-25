@@ -297,7 +297,7 @@
 							<rich:panel id="scheduleName" styleClass="header-panel">
 								<rich:dropTarget
 									acceptedTypes="bgImage, song, presentation, media"
-									dropValue="schedule_#{schedule.name}"
+									dropValue="schedule_#{schedule.id}"
 									dropListener="#{scheduleView.dropped}" render="schedule"
 									oncomplete="setTextFillSize();" />
 

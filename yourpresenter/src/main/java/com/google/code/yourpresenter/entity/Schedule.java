@@ -7,10 +7,11 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.OrderColumn;
 import javax.validation.constraints.NotNull;
 
 import lombok.EqualsAndHashCode;
@@ -19,6 +20,7 @@ import lombok.ToString;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * The Class Schedule.
@@ -30,15 +32,27 @@ import org.hibernate.annotations.Index;
 @NoArgsConstructor
 public class Schedule implements Serializable {
 
+	@Id
+	@GeneratedValue
+	@Index(name = "ScheduleIdIdx")
+	private Long id; 
+	
 	/** The presentations. */
 	@JsonIgnore
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true) 
+    @IndexColumn(name="presentation_position", base=0)
+    @JoinColumn(name="schedule_id", nullable=false)
 	private List<Presentation> presentations;
 
 	/** The background. */
 	@JsonIgnore
+	@OneToOne
+	@Index(name = "ScheduleBgImageIdx")
 	private BgImage bgImage;
 
 	/** The name. */
+	@Index(name = "ScheduleNameIdx")
+	@NotNull
 	private String name = null;
 
 	private boolean blank = false;
@@ -53,14 +67,26 @@ public class Schedule implements Serializable {
 		this.name = name;
 	}
 
+	public Long getId() {
+		return id;
+	}
+	
+	/**
+	 * Sets the id.
+	 * 
+	 * @param id
+	 *            the new id
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	
 	/**
 	 * Gets the name.
 	 * 
 	 * @return the name
 	 */
-	@Id
-	@NotNull
-	@Index(name = "ScheduleNameIdx")
 	public String getName() {
 		return name;
 	}
@@ -80,11 +106,6 @@ public class Schedule implements Serializable {
 	 * 
 	 * @return the presentations
 	 */
-	// if having FetchType.EAGER => got exception:
-	// Caused by: org.hibernate.loader.MultipleBagFetchException: cannot
-	// simultaneously fetch multiple bags
-	@OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-	@OrderColumn(name = "possition")
 	public List<Presentation> getPresentations() {
 		return presentations;
 	}
@@ -104,8 +125,6 @@ public class Schedule implements Serializable {
 	 * 
 	 * @return the background
 	 */
-	@OneToOne
-	@Index(name = "ScheduleBgImageIdx")
 	public BgImage getBgImage() {
 		return bgImage;
 	}
@@ -152,5 +171,4 @@ public class Schedule implements Serializable {
 	public void setLive(boolean live) {
 		this.live = live;
 	}
-
 }

@@ -28,11 +28,15 @@ import com.google.code.yourpresenter.IConstants;
 public class MediaType implements Serializable {
 
 	/** The id. */
+	@Id
+	@Index(name = "BgImageTypeIdIdx")
 	private Long id;
 
+	@NotNull
 	private String name;
 	
 	@JsonIgnore
+	@OneToMany(mappedBy = "type", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	private List<Media> medias;
 
 	/**
@@ -45,8 +49,6 @@ public class MediaType implements Serializable {
 		this.name = name;
 	}
 
-	@Id
-	@Index(name = "BgImageTypeIdIdx")
 	public Long getId() {
 		return id;
 	}
@@ -55,7 +57,6 @@ public class MediaType implements Serializable {
 		this.id = id;
 	}
 
-	@NotNull
 	public String getName() {
 		return name;
 	}
@@ -64,7 +65,6 @@ public class MediaType implements Serializable {
 		this.name = name;
 	}
 
-	@OneToMany(mappedBy = "type", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	public List<Media> getMedias() {
 		return medias;
 	}

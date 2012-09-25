@@ -22,7 +22,8 @@ public class StateDTONonExistingScheduleIT {
 
 	@Test
 	public void testNonExistingSchedule() throws IOException, YpException {
-		StateDTO stateDTO = jSONRestTemplate.getState("non_existing_schedule");
+		// OK let's assume we have one schedule only => 1
+		StateDTO stateDTO = jSONRestTemplate.getState(1L);
 		Assert.assertNotNull(stateDTO);
 		Assert.assertNull(stateDTO.getActualSlide());
 		Assert.assertNull(stateDTO.getSchedule());

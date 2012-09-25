@@ -14,6 +14,9 @@
 	<!-- make sure that values are logged in SQL statements as well, see: http://www.coderanch.com/t/415290/ORM/java/show-hibernate-sql-parameter-values -->
 	<logger name="org.hibernate.type" level="TRACE" />
 
+	<!-- cache -->
+	<logger name="net.sf.ehcache" level="DEBUG" />
+
 	<root level="debug">
 		<appender-ref ref="STDOUT" />
 	</root>

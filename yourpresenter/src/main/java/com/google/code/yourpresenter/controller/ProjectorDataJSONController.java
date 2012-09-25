@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.code.yourpresenter.dto.StateDTO;
-import com.google.code.yourpresenter.service.IStateService;
+import com.google.code.yourpresenter.service.IStateDTOService;
 
 // for json spring integration info see:
 // http://blog.springsource.com/2010/01/25/ajax-simplifications-in-spring-3-0/
@@ -19,11 +19,11 @@ import com.google.code.yourpresenter.service.IStateService;
 public class ProjectorDataJSONController {
 
 	@Autowired
-	private IStateService stateService;
+	private IStateDTOService stateService;
 
 	@RequestMapping(value="/state/{name}", method = { RequestMethod.GET, RequestMethod.POST }/*, consumes="application/json", produces="application/json"*/)
-	public @ResponseBody StateDTO getState(@PathVariable("name") String scheduleName) {
-		log.debug("called getState for: {}", scheduleName);
-		return stateService.getState(scheduleName);
+	public @ResponseBody StateDTO getState(@PathVariable("id") Long scheduleId) {
+		log.debug("called getState for: {}", scheduleId);
+		return stateService.findByScheduleId(scheduleId);
 	}
 }

@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -38,6 +39,8 @@ public class MainView implements Serializable {
 	private boolean scheduleChoose = false;
 	private boolean scheduleCreate = false;
 
+//	private String comboboxClientId = null;
+	
 	private static Map<String, Role> roles;
 
 	static {
@@ -61,6 +64,7 @@ public class MainView implements Serializable {
 		case SPEAKER:
 		case MUSICIAN:
 		case ADMIN:
+			chooseSchedule();
 			break;
 		case PRESENTER:
 			createOrChooseSchedule();
@@ -72,17 +76,33 @@ public class MainView implements Serializable {
 		return getRole().getUrl();
 	}
 
-	public void createOrChooseSchedule() throws YpException {
+	protected void createOrChooseSchedule() throws YpException {
 		Schedule schedule = scheduleService.findByName(this.scheduleName);
 
 		// if new schedule to be created
 		if (null == schedule) {
-			schedule = new Schedule(this.scheduleName);
-			scheduleService.persist(schedule);
+			schedule = scheduleService.persist(new Schedule(this.scheduleName));
 		}
 		this.scheduleView.setSchedule(schedule);
 	}
-
+	
+	protected void chooseSchedule() throws YpException {
+		if (StringUtils.isEmpty(this.scheduleName)) {
+//			FacesContext.getCurrentInstance().addMessage(getComboboxClientId(),
+//	                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Schedule name empty!", "Schedule name empty!"));
+//			return;
+			throw new YpException(YpError.SCHEDULE_NAME_EMPTY);
+		}
+		Schedule schedule = scheduleService.findByName(this.scheduleName);
+		if (null == schedule) {
+			throw new YpException(YpError.SCHEDULE_NOT_EXISTING);
+//			FacesContext.getCurrentInstance().addMessage(null,
+//	                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Schedule doesn't exists!", "Schedule doesn't exists!"));
+//			return;
+		}
+		this.scheduleView.setSchedule(schedule);
+	}
+	
 	// parameter is mandatory for listener,
 	// see:
 	// https://issues.jboss.org/browse/RF-11125?page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel&focusedCommentId=12620545#comment-12620545
@@ -162,4 +182,18 @@ public class MainView implements Serializable {
 	public boolean isRoleNotChosen() {
 		return null == role;
 	}
+
+//	/**
+//	 * @return the comboboxClientId
+//	 */
+//	public String getComboboxClientId() {
+//		return comboboxClientId;
+//	}
+//
+//	/**
+//	 * @param comboboxClientId the comboboxClientId to set
+//	 */
+//	public void setComboboxClientId(String comboboxClientId) {
+//		this.comboboxClientId = comboboxClientId;
+//	}
 }

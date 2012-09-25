@@ -22,15 +22,15 @@ import com.google.code.yourpresenter.entity.Song;
 import com.google.code.yourpresenter.service.IPresentationService;
 import com.google.code.yourpresenter.service.IScheduleService;
 import com.google.code.yourpresenter.service.ISlideService;
-import com.google.code.yourpresenter.service.IStateService;
+import com.google.code.yourpresenter.service.IStateDTOService;
 
 @Component("scheduleView")
 @Scope(WebApplicationContext.SCOPE_SESSION)
 @SuppressWarnings("serial")
 @Slf4j
-public class ScheduleView implements Serializable {
+public class ScheduleView implements Serializable, IScheduleHolder {
 
-	private String scheduleName;
+	private Schedule schedule;
 	private Long presentationIdToDelete = null;
 	private Long activeSlideId = null;
 
@@ -41,28 +41,22 @@ public class ScheduleView implements Serializable {
 	@Autowired
 	private ISlideService slideService;
 	@Autowired
-	private IStateService stateService;
+	private IStateDTOService stateService;
 
 	public Schedule getSchedule() {
-		// TODO
-		return scheduleService
-				.loadAllSlidesEager(getSchedule(this.scheduleName));
-		// return null;
+		if (null != schedule) {
+			return scheduleService.findById(schedule.getId());	
+		} else {
+			return null;
+		}
 	}
 
-	private Schedule getSchedule(String scheduleName) {
-		return this.scheduleService.findByName(scheduleName);
-	}
-
-	public String getScheduleName() {
-		return getSchedule(this.scheduleName).getName();
+	public Long getScheduleId() {
+		return getSchedule().getId();
 	}
 
 	public void setSchedule(Schedule schedule) throws YpException {
-		this.scheduleName = schedule.getName();
-
-		// make sure state change is propagated
-		this.stateService.stateChanged(scheduleName);
+		this.schedule = schedule;
 	}
 
 	public void dropped(DropEvent dropEvent) throws YpException, IOException {
@@ -124,33 +118,33 @@ public class ScheduleView implements Serializable {
 		}
 
 		// make sure state change is propagated
-		this.stateService.stateChanged(scheduleName);
+		this.stateService.stateChanged(this.getSchedule(), this);
 	}
 
 	private void dropped(Media mediaMisc, long presentationId)
-			throws IOException {
+			throws IOException, YpException {
 		log.debug(
 				"Added MediaMisc (mediaMisc.id={}) to schedule (schedule={}) after presentation (presentation.id={})",
-				new Object[] { mediaMisc.getId(), this.scheduleName,
+				new Object[] { mediaMisc.getId(), this.getSchedule().getId(),
 						presentationId });
 		this.scheduleService.addPresentation(this.getSchedule(),
 				presentationId, null, mediaMisc);
 	}
 
 	private void dropped(Presentation presentation, long presentationId)
-			throws IOException {
+			throws IOException, YpException {
 		log.debug(
 				"Moved presentation (presentation.id={}) in (schedule={}) after presentation (presentation.id=)",
-				new Object[] { presentation.getId(), this.scheduleName,
+				new Object[] { presentation.getId(), this.getSchedule().getId(),
 						presentationId });
 		this.scheduleService.movePresentation(this.getSchedule(),
 				presentationId, presentation);
 	}
 
-	public void dropped(Song song, long presentationId) throws IOException {
+	public void dropped(Song song, long presentationId) throws IOException, YpException {
 		log.debug(
 				"Added Song (song.id={}) to schedule (schedule={}) after presentation (presentation.id={})",
-				new Object[] { song.getId(), this.scheduleName, presentationId });
+				new Object[] { song.getId(), this.getSchedule().getId(), presentationId });
 		this.scheduleService.addPresentation(this.getSchedule(),
 				presentationId, song, null);
 	}
@@ -170,7 +164,7 @@ public class ScheduleView implements Serializable {
 
 	public void droppedToSchedule(BgImage bgImage) throws IOException {
 		log.debug("Assigned bgImage (bgImage.id={}) to schedule (schedule={}",
-				bgImage.getId(), this.scheduleName);
+				bgImage.getId(), this.getSchedule().getId());
 		this.scheduleService.setBgImage(this.getSchedule(), bgImage);
 	}
 
@@ -185,70 +179,69 @@ public class ScheduleView implements Serializable {
 		throw new YpException(YpError.SLIDE_ID_NOT_SET);
 	}
 	log.debug(
-			"Slide has been activated (slide.id={} in scheduleName.id={}).",
-			new Object[] { getActiveSlideId(), this.scheduleName });
+			"Slide has been activated (slide.id={} in schedule.id={}).",
+			new Object[] { getActiveSlideId(), this.getSchedule().getId() });
 	
 	slideService.activateSlide(Long.valueOf(getActiveSlideId()));
 
 	// make sure state change is propagated
-	this.stateService.stateChanged(scheduleName);
+	this.stateService.stateChanged(this.getSchedule(), this);
 	}
 
 	public boolean getBlank() {
-		return this.getSchedule(scheduleName).isBlank();
+		return this.getSchedule().isBlank();
 	}
 
 	public void toggleBlank() throws YpException {
-		scheduleService.toggleBlank(this.getSchedule(scheduleName));
+		scheduleService.toggleBlank(this.getSchedule());
 
 		// make sure state change is propagated
-		this.stateService.stateChanged(scheduleName);
+		this.stateService.stateChanged(this.getSchedule(), this);
 	}
 
 	public String getToggleBlankCssSuffix() {
-		return (this.getSchedule(scheduleName).isBlank() ? "down" : "up");
+		return (this.getSchedule().isBlank() ? "down" : "up");
 	}
 
 	public boolean getClear() {
-		return this.getSchedule(scheduleName).isClear();
+		return this.getSchedule().isClear();
 	}
 
 	public void toggleClear() throws YpException {
-		scheduleService.toggleClear(this.getSchedule(scheduleName));
+		scheduleService.toggleClear(this.getSchedule());
 
 		// make sure state change is propagated
-		this.stateService.stateChanged(scheduleName);
+		this.stateService.stateChanged(this.getSchedule(), this);
 	}
 
 	public String getToggleClearCssSuffix() {
-		return (this.getSchedule(scheduleName).isClear() ? "down" : "up");
+		return (this.getSchedule().isClear() ? "down" : "up");
 	}
 
 	public boolean getLive() {
-		return this.getSchedule(scheduleName).isLive();
+		return this.getSchedule().isLive();
 	}
 
 	public void toggleLive() throws YpException {
-		scheduleService.toggleLive(this.getSchedule(scheduleName));
+		scheduleService.toggleLive(this.getSchedule());
 
 		// make sure state change is propagated
-		this.stateService.stateChanged(scheduleName);
+		this.stateService.stateChanged(this.getSchedule(), this);
 	}
 
 	public String getToggleLiveCssSuffix() {
-		return (this.getSchedule(scheduleName).isLive() ? "down" : "up");
+		return (this.getSchedule().isLive() ? "down" : "up");
 	}
 
 	public void delete() throws YpException {
-		Schedule schedule = getSchedule();
-		if (null == schedule) {
+		if (null == this.getSchedule()) {
 			throw new YpException(YpError.SCHEDULE_DELETE_FAILED,
 					"Schedule to be deleted is null!");
 		}
-		scheduleService.delete(schedule);
+		scheduleService.delete(this.getSchedule());
 
 		// make sure state change is propagated
-		this.stateService.stateChanged(scheduleName);
+		this.stateService.stateChanged(this.getSchedule(), this);
 	}
 
 	public void deletePresentation() throws YpException {
@@ -266,7 +259,7 @@ public class ScheduleView implements Serializable {
 		this.presentationIdToDelete = null;
 
 		// make sure state change is propagated
-		this.stateService.stateChanged(scheduleName);
+		this.stateService.stateChanged(this.getSchedule(), this);
 	}
 
 	public Presentation getPresentationToDelete() {

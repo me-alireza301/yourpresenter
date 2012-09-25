@@ -120,7 +120,8 @@ public class StateDTOIT extends AbstractIT {
 	private void checkNoBgImage(Song song, boolean live, boolean blank,
 			boolean clear) {
 		// check state
-		StateDTO stateDTO = jSONRestTemplate.getState(getScheduleName());
+		// OK let's assume we have one schedule only => 1
+		StateDTO stateDTO = jSONRestTemplate.getState(1L);
 		Assert.assertNotNull(stateDTO);
 		Assert.assertNotNull(stateDTO.getActualSlide());
 		Assert.assertEquals(stateDTO.getActualSlide().getText(), song.getVerses().get(0).getText());
@@ -135,7 +136,8 @@ public class StateDTOIT extends AbstractIT {
 
 	private void checkNoActiveSlide(boolean live, boolean blank, boolean clear) {
 		// check state
-		StateDTO stateDTO = jSONRestTemplate.getState(getScheduleName());
+		// OK let's assume we have one schedule only => 1
+		StateDTO stateDTO = jSONRestTemplate.getState(1L);
 		Assert.assertNotNull(stateDTO);
 		Assert.assertNull(stateDTO.getActualSlide());
 		Assert.assertNotNull(stateDTO.getSchedule());
@@ -148,7 +150,8 @@ public class StateDTOIT extends AbstractIT {
 
 	private void checkWithBgImage(Song song, boolean live, boolean blank, boolean clear) {
 		// check state
-		StateDTO stateDTO = jSONRestTemplate.getState(getScheduleName());
+		// OK let's assume we have one schedule only => 1
+		StateDTO stateDTO = jSONRestTemplate.getState(1L);
 		Assert.assertNotNull(stateDTO);
 		Assert.assertNotNull(stateDTO.getActualSlide());
 		Assert.assertEquals(stateDTO.getActualSlide().getText(), song.getVerses().get(0).getText());

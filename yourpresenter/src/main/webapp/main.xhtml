@@ -58,7 +58,11 @@
         </a4j:jsFunction>
         <!-- [END] width setter in backing bean, 
 		TODO remove duplicate, it's present in main.xhtml as well as in presenter.xhtml -->
-
+		
+		<!-- <a4j:jsFunction name="setComboboxClientId">
+			<a4j:param name="comboboxClientId" assignTo="#{mainView.comboboxClientId}" />
+		</a4j:jsFunction> -->
+		
 		<h:form>
 			<h:panelGrid columns="3">
 				<h:outputText value="Role:" />
@@ -95,11 +99,15 @@
 					</h:panelGroup>
 				</h:panelGroup>
 
+				<!-- TODO more advanded validation of input -->
+				<!-- onclick="setComboboxClientId('#{rich:clientId('scheduleChoose')}');"
+					render="schedulePanel msgs" execute="@form"  
+					
+					<rich:messages id="msgs" ajaxRendered="true" />-->
 				<h:commandButton value="OK" id="okButton"
 					disabled="#{mainView.roleNotChosen}"
-					action="#{mainView.submitSchedule}">
-				</h:commandButton>
-
+					action="#{mainView.submitSchedule}"/>
+				
 			</h:panelGrid>
 		</h:form>
 	</h:body>

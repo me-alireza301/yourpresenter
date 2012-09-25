@@ -2,10 +2,12 @@ package com.google.code.yourpresenter.entity;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import lombok.EqualsAndHashCode;
@@ -26,6 +28,9 @@ import org.hibernate.annotations.Index;
 public class BgImage implements Serializable {
 
 	/** The id. */
+	@Id
+	@GeneratedValue
+	@Index(name = "BgImageIdIdx")
 	private Long id;
 
 	/** The image. */
@@ -37,25 +42,23 @@ public class BgImage implements Serializable {
 	private String thumbnail;
 
 	@JsonIgnore
+//	@ManyToOne(optional = false, fetch = FetchType.EAGER)
+	@Index(name = "BgImageMediaIdx")
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "media_id", insertable = false, updatable = false, nullable = true, unique = false)
 	private Media media;
 	
-	@JsonIgnore
-	// in case of correct one: position => java.sql.SQLException: Table not found in statement [select schedule0_.name ...
-	// seems like position is reserved word => can't be used
-	// see: http://stackoverflow.com/questions/1442127/table-not-found-with-hibernate-and-hsqldb
-	private int possition;
+	@Column(name = "bgimage_position", insertable=false, updatable=false)
+    private int bgImagePosition;
 	
-	public BgImage(String image, Media media, int position) {
+	public BgImage(String image, Media media) {
 		this.setImage(image);
 		this.setMedia(media);
-		this.setPossition(position);
 	}
 
 	/**
 	 * @return the media
 	 */
-	@ManyToOne(optional = false, fetch = FetchType.EAGER)
-	@Index(name = "BgImageMediaIdx")
 	public Media getMedia() {
 		return media;
 	}
@@ -69,9 +72,6 @@ public class BgImage implements Serializable {
 	 * 
 	 * @return the id
 	 */
-	@Id
-	@GeneratedValue
-	@Index(name = "BgImageIdIdx")
 	public Long getId() {
 		return id;
 	}
@@ -124,13 +124,12 @@ public class BgImage implements Serializable {
 		this.thumbnail = thumbnail;
 	}
 
-	
-	public int getPossition() {
-		return possition;
+	public int getBgImagePosition() {
+		return bgImagePosition;
 	}
 
-	public void setPossition(int position) {
-		this.possition = position;
+	public void setBgImagePosition(int bgImagePosition) {
+		this.bgImagePosition = bgImagePosition;
 	}
 
 }

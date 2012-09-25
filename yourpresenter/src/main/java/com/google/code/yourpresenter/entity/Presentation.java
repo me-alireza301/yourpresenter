@@ -9,10 +9,10 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.OrderColumn;
 import javax.validation.constraints.NotNull;
 
 import lombok.EqualsAndHashCode;
@@ -21,8 +21,8 @@ import lombok.ToString;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.IndexColumn;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Presentation.
  */
@@ -34,44 +34,55 @@ import org.hibernate.annotations.Index;
 public class Presentation implements Serializable {
 
 	/** The id. */
+	@Id
+	@GeneratedValue
+	@Index(name = "PresentationIdIdx")
 	private Long id;
 
 	/** The song. */
 	@JsonIgnore
+	@OneToOne(optional = true)
+	@Index(name = "PresentationSongIdx")
 	private Song song;
 
 	@JsonIgnore
+	@OneToOne(optional = true)
+	@Index(name = "PresentationMediaIdx")
 	private Media media;
 
 	/** The schedule. */
 	@JsonIgnore
+//	@ManyToOne(optional = false)
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_id", insertable = false, updatable = false, nullable = true, unique = false)
 	private Schedule schedule;
 
 	/** The slides. */
+//	@OneToMany(mappedBy = "presentation", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+//	@OrderColumn(name = "possition")
+//	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+//	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//	@JoinColumn (name = "PRESENTATION_ID")
+//	@IndexColumn(name = "SLIDE_POSITION")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true) 
+    @IndexColumn(name="slide_position", base=0)
+    @JoinColumn(name="presentation_id", nullable=false)
 	private List<Slide> slides;
 
 	/** The background. */
 	@JsonIgnore
+	@OneToOne(optional = true)
+	@Index(name = "PresentationBgImageIdx")
 	private BgImage bgImage;
 
-	@JsonIgnore
-	// in case of correct one: position => java.sql.SQLException: Table not
-	// found in statement [select schedule0_.name ...
-	// seems like position is reserved word => can't be used
-	// see:
-	// http://stackoverflow.com/questions/1442127/table-not-found-with-hibernate-and-hsqldb
-	private int possition;
-
+	@NotNull
 	private String name;
-
+	
 	/**
 	 * Gets the id.
 	 * 
 	 * @return the id
 	 */
-	@Id
-	@GeneratedValue
-	@Index(name = "PresentationIdIdx")
 	public Long getId() {
 		return id;
 	}
@@ -91,8 +102,6 @@ public class Presentation implements Serializable {
 	 * 
 	 * @return the song
 	 */
-	@OneToOne(optional = true)
-	@Index(name = "PresentationSongIdx")
 	public Song getSong() {
 		return song;
 	}
@@ -112,8 +121,6 @@ public class Presentation implements Serializable {
 	 * 
 	 * @return the schedule
 	 */
-	@ManyToOne(optional = false)
-	@Index(name = "PresentationScheduleIdx")
 	public Schedule getSchedule() {
 		return schedule;
 	}
@@ -133,8 +140,6 @@ public class Presentation implements Serializable {
 	 * 
 	 * @return the slides
 	 */
-	@OneToMany(mappedBy = "presentation", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-	@OrderColumn(name = "possition")
 	public List<Slide> getSlides() {
 		return slides;
 	}
@@ -154,8 +159,6 @@ public class Presentation implements Serializable {
 	 * 
 	 * @return the background
 	 */
-	@OneToOne(optional = true)
-	@Index(name = "PresentationBgImageIdx")
 	public BgImage getBgImage() {
 		return bgImage;
 	}
@@ -170,22 +173,6 @@ public class Presentation implements Serializable {
 		this.bgImage = background;
 	}
 
-	public int getPossition() {
-		return possition;
-	}
-
-	public void setPossition(int position) {
-		this.possition = position;
-	}
-
-	public void incrementPossition() {
-		this.possition++;
-	}
-
-	public void decrementPossition() {
-		this.possition--;
-	}
-
 	public void addSlide(Slide slide) {
 		if (null == this.slides) {
 			this.slides = new ArrayList<Slide>();
@@ -197,8 +184,6 @@ public class Presentation implements Serializable {
 	/**
 	 * @return the media
 	 */
-	@OneToOne(optional = true)
-	@Index(name = "PresentationMediaIdx")
 	public Media getMedia() {
 		return media;
 	}
@@ -211,7 +196,6 @@ public class Presentation implements Serializable {
 		this.media = media;
 	}
 
-	@NotNull
 	public String getName() {
 		return name;
 	}

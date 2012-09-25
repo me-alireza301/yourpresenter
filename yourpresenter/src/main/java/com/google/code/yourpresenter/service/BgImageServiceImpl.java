@@ -10,7 +10,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -41,42 +40,15 @@ public class BgImageServiceImpl implements IBgImageService, Serializable {
 		this.em = em;
 	}
 
-//	@SuppressWarnings("unchecked")
-//	@Transactional(readOnly = true)
-//	public List<BgImage> findAll() {
-//		Query query = em.createQuery("SELECT b FROM BgImage b");
-//		return (List<BgImage>) query.getResultList();
-//	}
-
-	@Transactional
-	@CacheEvict (value = "bgImageFirstPositionCache", key = "#root.args[0].media.type.name")
-	public void persist(BgImage bgImage) {
-		if (null != bgImage.getId()) {
-			em.merge(bgImage);
-		} else {
-			em.persist(bgImage);
-		}
-	}
-
 	@Override
 	@Transactional(readOnly = true)
 	public BgImage findById(Long id) {
 		return em.find(BgImage.class, id);
 	}
 
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	@Transactional(readOnly = true)
-//	public Collection<BgImage> findAllByType(String type) {
-//		Query query = em
-//				.createQuery("SELECT b FROM BgImage b WHERE b.media IN (SELECT m FROM Media m WHERE m.type = (SELECT mt FROM MediaType mt WHERE mt.name = :type))");
-//		query.setParameter("type", type);
-//		return (List<BgImage>) query.getResultList();
-//	}
-	
 	@Transactional
 	@Override
-	public BgImage handleThumbnail(BgImage bgImage) throws YpException {
+	public BgImage generateThumbnail(BgImage bgImage) throws YpException {
 		String thumbDir = this.preferenceService
 				.findStringById(IConstants.MEDIA_THUMBNAIL_DIR);
 		thumbDir = FileUtil.replaceDirs(thumbDir);
@@ -107,7 +79,6 @@ public class BgImageServiceImpl implements IBgImageService, Serializable {
 
 		// TODO change so that it can be served as static content possibly
 		bgImage.setThumbnail(thumbnail.getAbsolutePath());
-		persist(bgImage);
 
 		return bgImage;
 	}
@@ -115,10 +86,10 @@ public class BgImageServiceImpl implements IBgImageService, Serializable {
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional(readOnly = true)
-	@Cacheable( value = "bgImageFirstPositionCache" )
+	@Cacheable( value = "bgImageFirstPositionByTypeName" )
 	public Collection<BgImage> findFirstBgImageByType(String type) {
 		Query query = em
-				.createQuery("SELECT bg FROM BgImage bg WHERE bg.media IN (SELECT m FROM Media m WHERE m.type = (SELECT mt FROM MediaType mt WHERE mt.name = :type)) AND bg.possition = 0");
+				.createQuery("SELECT bg FROM BgImage bg WHERE bg.media IN (SELECT m FROM Media m WHERE m.type = (SELECT mt FROM MediaType mt WHERE mt.name = :type)) AND bg.bgImagePosition = 0");
 		query.setParameter("type", type);
 		return (List<BgImage>) query.getResultList();
 	}

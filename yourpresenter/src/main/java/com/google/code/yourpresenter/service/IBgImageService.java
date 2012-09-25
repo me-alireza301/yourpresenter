@@ -7,15 +7,9 @@ import com.google.code.yourpresenter.entity.BgImage;
 
 public interface IBgImageService {
 
-//	public Collection<BgImage> findAllByType(String type);
-	
-//	public Collection<BgImage> findAll();
-	
 	public BgImage findById(Long id);
 	
-	public void persist(BgImage bgImage);
-	
-	public BgImage handleThumbnail(BgImage bgImage) throws YpException;
+	public BgImage generateThumbnail(BgImage bgImage) throws YpException;
 
 	public Collection<BgImage> findFirstBgImageByType(String type);
 }

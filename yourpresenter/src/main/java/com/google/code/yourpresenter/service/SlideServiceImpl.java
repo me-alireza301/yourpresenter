@@ -49,10 +49,10 @@ public class SlideServiceImpl implements ISlideService, Serializable {
 	}
 
 	@Transactional(readOnly = true)
-	public Slide findActiveSlide(String scheduleName) {
+	public Slide findActiveSlide(Long scheduleId) {
 		Query query = em
-				.createQuery("SELECT sl FROM Slide sl WHERE sl.active = true AND sl.presentation IN (SELECT p FROM Presentation p WHERE p.schedule IN (SELECT sch FROM Schedule sch WHERE sch.name = :name))");
-		query.setParameter("name", scheduleName);
+				.createQuery("SELECT sl FROM Slide sl WHERE sl.active = true AND sl.presentation IN (SELECT p FROM Presentation p WHERE p.schedule IN (SELECT sch FROM Schedule sch WHERE sch.id = :id))");
+		query.setParameter("id", scheduleId);
 		@SuppressWarnings("unchecked")
 		List<Slide> oldSelections = query.getResultList();
 		if (!CollectionUtils.isEmpty(oldSelections)) {
@@ -85,9 +85,7 @@ public class SlideServiceImpl implements ISlideService, Serializable {
 
 	@Transactional
 	@Override
-	public void setBgImage(Long slideId, BgImage bgImage) {
-		Slide slide = findById(slideId);
-
+	public void setBgImage(Slide slide, BgImage bgImage) {
 		if (null != slide.getBgImage()) {
 			// in case bgImage is fixed and can't be replaced
 			if (!slide.getBgImage().getMedia().getType().isBgImageReplacible()) {
@@ -103,6 +101,13 @@ public class SlideServiceImpl implements ISlideService, Serializable {
 
 		slide.setBgImage(bgImage);
 		this.persist(slide);
+	}
+	
+	@Transactional
+	@Override
+	public void setBgImage(Long slideId, BgImage bgImage) {
+		Slide slide = findById(slideId);
+		this.setBgImage(slide, bgImage);
 	}
 
 	@Transactional

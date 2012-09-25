@@ -34,7 +34,7 @@ public class SongServiceImpl implements ISongService, Serializable {
 	@Override
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
-	@Cacheable("allSongsCache")
+	@Cacheable("allSongs")
 	public List<Song> findAll() {
 		Query query = em.createQuery("SELECT s FROM Song s");
 		return query.getResultList();
@@ -62,7 +62,7 @@ public class SongServiceImpl implements ISongService, Serializable {
 	}
 
 	@Transactional
-	@CacheEvict(value = "allSongsCache", allEntries=true )
+	@CacheEvict(value = "allSongs", allEntries=true )
 	public void persist(Song song) {
 		if (null != song.getId()) {
 			em.merge(song);
@@ -73,14 +73,14 @@ public class SongServiceImpl implements ISongService, Serializable {
 
 	@Transactional
 	@Override
-	@CacheEvict(value = "allSongsCache", allEntries=true )
+	@CacheEvict(value = "allSongs", allEntries=true )
 	public void delete(Song song) {
 		deleteById(song.getId());
 	}
 
 	@Transactional
 	@Override
-	@CacheEvict(value = "allSongsCache", allEntries=true )
+	@CacheEvict(value = "allSongs", allEntries=true )
 	public void deleteById(long songId) {
 		Song song = em.find(Song.class, songId);
 		if (song != null) {
@@ -98,7 +98,7 @@ public class SongServiceImpl implements ISongService, Serializable {
 
 	@Transactional
 	@Override
-	@CacheEvict(value = "allSongsCache", allEntries=true )
+	@CacheEvict(value = "allSongs", allEntries=true )
 	public int deleteAll() {
 		Query query = em.createQuery("DELETE FROM Song s");
 		return query.executeUpdate();
@@ -126,7 +126,7 @@ public class SongServiceImpl implements ISongService, Serializable {
 	
 	@Override
 	@Transactional
-	@CacheEvict(value = "allSongsCache", allEntries=true )
+	@CacheEvict(value = "allSongs", allEntries=true )
 	public void update(Song song) {
 		this.persist(song);
 	}

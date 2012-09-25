@@ -27,7 +27,7 @@ public class StateChangedPropagatorImpl implements IStateChangedPropagator, Seri
 	private static ObjectMapper objectMapper = new ObjectMapper();
 	
 	@Override
-	public void stateChanged(String scheduleName, StateDTO stateDTO) throws YpException {
+	public void stateChanged(Long scheduleId, StateDTO stateDTO) throws YpException {
 		try {
             TopicKey topicKey = new TopicKey(STATE_PUSH_TOPIC);
             TopicsContext topicsContext = TopicsContext.lookup();

@@ -136,7 +136,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
-			<version>3.6.7.Final</version>
+			<version>4.1.5.SP1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-collections</groupId>
@@ -182,7 +182,7 @@
 		<dependency> 
 		  <groupId>ch.qos.logback</groupId>
 		  <artifactId>logback-classic</artifactId>
-		  <version>1.0.4</version>
+		  <version>1.0.7</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -232,7 +232,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>4.0.2.GA</version>
+			<version>4.3.0.Final</version>
 		</dependency>
 		<!-- JAXB is needed when running on Java 5. In this environment these dependencies 
 			have to be added (unless xml configuration is explicitly disabled via Configuration.ignoreXmlConfiguration) 
@@ -385,7 +385,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>0.11.0</version>
+			<version>0.11.4</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

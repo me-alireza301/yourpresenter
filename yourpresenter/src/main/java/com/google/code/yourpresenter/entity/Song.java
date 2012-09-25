@@ -44,18 +44,37 @@ public class Song implements Serializable {
 	private transient static final String HTML_LINE_SEPARATOR = "<br/>";
 
 	/** The id. */
+	@Id
+	@GeneratedValue
+	@Index(name = "SongIdIdx")
 	private Long id;
 
 	/** The name. */
+	@NotNull
 	private String name;
 
 	/** The verses. */
+	// @NotNull
+	// keep in mind to delete orphans:
+	// http://javablog.co.uk/2009/12/27/onetomany-fixes-in-jpa-2/
+	@OneToMany(mappedBy = "song", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	private List<Verse> verses;
 
 	/** The text without punctuation. */
+	@Basic(fetch = FetchType.LAZY)
+	@Column(columnDefinition = "VARCHAR(1000)")
+	@NotNull
 	private String noPunctuationText;
 
-	private/* transient */String text;
+	// to prevent: java.sql.SQLException: data exception: string data, right
+	// truncation at
+	// http://stackoverflow.com/questions/7565280/hsqlexception-data-exception
+	// JPA:
+	// http://stackoverflow.com/questions/2290727/jpa-hibernate-ddl-generation-char-vs-varchar
+	@Column(columnDefinition = "VARCHAR(1000)")
+	@Size(max = 1000)
+	@NotNull
+	private String text;
 
 	public Song(String name, String text) {
 		this.setName(name);
@@ -67,9 +86,6 @@ public class Song implements Serializable {
 	 * 
 	 * @return the id
 	 */
-	@Id
-	@GeneratedValue
-	@Index(name = "SongIdIdx")
 	public Long getId() {
 		return id;
 	}
@@ -89,7 +105,6 @@ public class Song implements Serializable {
 	 * 
 	 * @return the name
 	 */
-	@NotNull
 	public String getName() {
 		return name;
 	}
@@ -109,10 +124,6 @@ public class Song implements Serializable {
 	 * 
 	 * @return the text
 	 */
-	// @NotNull
-	// keep in mind to delete orphans:
-	// http://javablog.co.uk/2009/12/27/onetomany-fixes-in-jpa-2/
-	@OneToMany(mappedBy = "song", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	public List<Verse> getVerses() {
 		return verses;
 	}
@@ -133,9 +144,6 @@ public class Song implements Serializable {
 	 * 
 	 * @return the text without punctuation
 	 */
-	@Basic(fetch = FetchType.LAZY)
-	@Column(columnDefinition = "VARCHAR(1000)")
-	@NotNull
 	public String getNoPunctuationText() {
 		return noPunctuationText;
 	}
@@ -150,14 +158,6 @@ public class Song implements Serializable {
 		this.noPunctuationText = noPtext;
 	}
 
-	// to prevent: java.sql.SQLException: data exception: string data, right
-	// truncation at
-	// http://stackoverflow.com/questions/7565280/hsqlexception-data-exception
-	// JPA:
-	// http://stackoverflow.com/questions/2290727/jpa-hibernate-ddl-generation-char-vs-varchar
-	@Column(columnDefinition = "VARCHAR(1000)")
-	@Size(max = 1000)
-	@NotNull
 	public String getText() {
 		return this.text;
 	}

@@ -2,6 +2,7 @@ package com.google.code.yourpresenter.service;
 
 import java.util.List;
 
+import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.BgImage;
 import com.google.code.yourpresenter.entity.Media;
 import com.google.code.yourpresenter.entity.Presentation;
@@ -10,19 +11,19 @@ import com.google.code.yourpresenter.entity.Song;
 
 public interface IScheduleService {
 
-    public Schedule findByName(String name);
+	public Schedule findById(Long id);
+	
+	public Schedule findByName(String name);
 
-    public void persist(Schedule schedule);
+    public Schedule persist(Schedule schedule);
 
     public void delete(Schedule schedule);
     
-    public void addPresentation(Schedule schedule, long presentationId, Song song, Media mediaMisc);
+    public void addPresentation(Schedule schedule, long presentationId, Song song, Media mediaMisc) throws YpException;
 
     public void movePresentation(Schedule schedule, long presentationId,
-			Presentation presentation);
+			Presentation presentation) throws YpException;
     
-    public Schedule loadAllSlidesEager(Schedule schedule);
-
 	public void setBgImage(Schedule schedule, BgImage bgImage);
 
 	public List<Schedule> findAll();
@@ -35,6 +36,6 @@ public interface IScheduleService {
 
 	public int deleteAll();
 
-	public void deletePresentation(Schedule schedule, long presentationId);
+	public void deletePresentation(Schedule schedule, long presentationId) throws YpException;
 
 }

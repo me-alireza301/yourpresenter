@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import com.google.code.yourpresenter.YpError;
+import com.google.code.yourpresenter.YpException;
 import com.google.code.yourpresenter.entity.BgImage;
 import com.google.code.yourpresenter.entity.Media;
 import com.google.code.yourpresenter.entity.Presentation;
@@ -53,28 +55,40 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		return query.getResultList();
 	}
 
-	@Cacheable(value = { "scheduleCache" }) 
+	@Cacheable(value = { "scheduleById" })
+	@Override
+	public Schedule findById(Long id) {
+		return em.find(Schedule.class, id);
+	}
+	
 	@Transactional(readOnly = true)
 	public Schedule findByName(String name) {
-		if (null == name) {
-			return null;
+		Query query = em
+				.createQuery("SELECT s FROM Schedule s WHERE s.name = :name)");
+		query.setParameter("name", name);
+		@SuppressWarnings("unchecked")
+		List<Schedule> oldSelections = query.getResultList();
+		if (!CollectionUtils.isEmpty(oldSelections)) {
+			return oldSelections.iterator().next();
 		}
-		return em.find(Schedule.class, name);
+		return null;
 	}
 
+	// as it's called only inernally => @CacheEvict present on all the methods
+	// calling this one
+//	@CacheEvict (value = "scheduleById", key = "#root.args[0].id")
 	@Transactional
-	public void persist(Schedule schedule) {
-		// schedule = this.findScheduleById(schedule.getId());
-		if (null != schedule.getName()) {
+	public Schedule persist(Schedule schedule) {
+		if (null != schedule.getId()) {
 			em.merge(schedule);
 		} else {
 			em.persist(schedule);
-			// make sure identity field is generated prio to relation
-			em.flush();
 		}
+		return schedule;
+		
 	}
 
-	@CacheEvict(value = "scheduleCache", allEntries=true )
+	@CacheEvict(value = "scheduleById", key = "#root.args[0].id" )
 	@Transactional
 	@Override
 	public void delete(Schedule schedule) {
@@ -84,119 +98,80 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		}
 	}
 
+	@CacheEvict (value = "scheduleById", key = "#root.args[0].id")
 	@Transactional
 	@Override
 	public void addPresentation(final Schedule schedule, long presentationId,
-			final Song songTr, final Media mediaMiscTr) {
-		// to prevent:
-		// Exception: failed to lazily initialize a collection of role:
-		// com.google.code.yourpresenter.entity.Song.verses, no session or
-		// session was closed
-		String name = null;
-		Song song = null; 
-		if (null != songTr) {
-			song = songService.findById(songTr.getId());
-			name = song.getName();
-		}
-		
-		Media mediaMisc = null; 
-		if (null != mediaMiscTr) {
-			mediaMisc = mediaMiscService.findById(mediaMiscTr.getId());
-			name = mediaMisc.getName();
-		}
+			final Song songTr, final Media mediaMiscTr) throws YpException {
 
 		// make sure schedule is not detached object => do the merge
 		this.persist(schedule);
 
-		int position = shiftPresentation(presentationId, schedule, true);
-
 		Presentation presentation = presentationService.createOrEdit(null);
-		presentation.setName(name);
-		presentation.setPossition(position);
 		presentation.setSchedule(schedule);
-		
-		if (null != song) {
+
+		if (null != songTr) {
+			Song song = songService.findById(songTr.getId());
+			presentation.setName(song.getName());
 			presentation.setSong(song);
-		} else if (null != mediaMisc) {
+		} else if (null != mediaMiscTr) {
+			Media mediaMisc = mediaMiscService.findById(mediaMiscTr.getId());
+			presentation.setName(mediaMisc.getName());
 			presentation.setMedia(mediaMisc);
 		}
-		
-		this.presentationService.persist(presentation);
+
 		// make sure that also slides relevant for song are to be persisted
-		this.presentationService.persistSlides(presentation);
+		presentation = this.presentationService.addSlides(presentation);
 
 		BgImage bgImage = schedule.getBgImage();
 		if (null != bgImage) {
-			presentation = this.presentationService.findById(presentation
-					.getId());
-			this.presentationService.setBgImage(presentation, bgImage);
+			presentation.setBgImage(bgImage);
 		}
-	}
-
-	private int shiftPresentation(long presentationId, Schedule schedule,
-			boolean forward) {
+		
 		List<Presentation> presentations = schedule.getPresentations();
+		int toIdx = getPresentationIdx(presentations, presentationId);
 
+		// add to required idx, or if last idx => add to the end
+		if (toIdx < presentations.size()) {
+			presentations.add(++toIdx, presentation);	
+		} else {
+			presentations.add(presentation);	
+		}
+			
+		this.persist(schedule);
+	}
+
+	private int getPresentationIdx(List<Presentation> presentations, long presentationId) throws YpException {
 		// if new schedule
-		if (null == presentations) {
-			return 0;
+		if (null == presentations || -1 == presentationId) {
+			return -1;
 		}
 
-		int position = 0;
-		if (-1 != presentationId) {
-			position = presentationService.findPositionById(presentationId);
-			position++;
-		}
-
-		int maxIdx = presentations.size();
-		for (int idx = 0; idx < maxIdx; idx++) {
-			Presentation toShiftPres = presentations.get(idx);
-			// skip all the presentations not to be affected by shift (before
-			// target position)
-			if (toShiftPres.getPossition() < position) {
-				continue;
+		int idx = 0;
+		for (Presentation presentation : presentations) {
+			if (presentationId == presentation.getId()) {
+				return idx;
 			}
-
-			if (forward) {
-				toShiftPres.incrementPossition();
-			} else {
-				toShiftPres.decrementPossition();
-			}
-			this.presentationService.persist(toShiftPres);
+			idx++;
 		}
-		return position;
+		
+		throw new YpException(YpError.PRESENTAION_ID_INVALID);
 	}
 
-//	@CacheEvict(value = { "scheduleCache" }, key = "#root.args[0].name")
-//	@Cacheable(value = { "scheduleCache" }, key = "#root.args[0].name")
-	@Transactional(readOnly = true)
-	public Schedule loadAllSlidesEager(Schedule scheduleTr) {
-		Schedule schedule = null;
-		if (null != scheduleTr) {
-			schedule = findByName(scheduleTr.getName());
-		}
-
-		if (null != schedule) {
-			List<Presentation> presentations = schedule.getPresentations();
-			presentations.toString();
-			// the rest (slides are loaded via FetchType.EAGER on
-			// schedule.slides)
-		}
-		return schedule;
-	}
-
+	@CacheEvict (value = "scheduleById", key = "#root.args[0].id")
 	@Transactional
 	@Override
 	public void setBgImage(Schedule schedule, BgImage bgImage) {
 		schedule.setBgImage(bgImage);
-		this.persist(schedule);
 
 		List<Presentation> presentations = schedule.getPresentations();
 		if (!CollectionUtils.isEmpty(presentations)) {
 			for (Presentation presentation : presentations) {
-				this.presentationService.setBgImage(presentation, bgImage);
+				presentation.setBgImage(bgImage);
 			}
 		}
+		
+		this.persist(schedule);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -219,6 +194,7 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		return (List<String>) query.getResultList();
 	}
 
+	@CacheEvict (value = "scheduleById", key = "#root.args[0].id")
 	@Transactional
 	@Override
 	public void toggleBlank(Schedule schedule) {
@@ -226,6 +202,7 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		persist(schedule);
 	}
 
+	@CacheEvict (value = "scheduleById", key = "#root.args[0].id")
 	@Transactional
 	@Override
 	public void toggleClear(Schedule schedule) {
@@ -233,6 +210,7 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		persist(schedule);
 	}
 
+	@CacheEvict (value = "scheduleById", key = "#root.args[0].id")
 	@Transactional
 	@Override
 	public void toggleLive(Schedule schedule) {
@@ -240,50 +218,52 @@ public class ScheduleServiceImpl implements IScheduleService, Serializable {
 		persist(schedule);
 	}
 
+	@CacheEvict (value = "scheduleById", key = "#root.args[0].id")
 	@Transactional
 	@Override
 	public void movePresentation(Schedule schedule, long presentationId,
-			Presentation presentationTr) {
-		// to prevent:
-		// Exception: failed to lazily initialize a collection of role:
-		// com.google.code.yourpresenter.entity.Song.verses, no session or
-		// session was closed
-		Presentation presentation = presentationService.findById(presentationTr
-				.getId());
+			Presentation presentationTr) throws YpException {
 
-		// TODO tune performance detect cases where no update necessary and skip
-		// DB actions
-		// nothing to be done
-		// if (presentation.getPossition() == 1 && presentationId == -1) {
-		//
-		// }
+		// make sure schedule is not detached object => load it
+		schedule = this.findById(schedule.getId());
+				
+		List<Presentation> presentations = schedule.getPresentations();
+		int fromIdx = getPresentationIdx(presentations, presentationTr.getId());
+		int toIdx = getPresentationIdx(presentations, presentationId);
 
-		// make sure schedule is not detached object => do the merge
+		// if nothing to be done
+		 if (1 == presentations.size()) {
+			 return;
+		 }
+		
+		// add to required idx, or if last idx => add to the end
+		if (toIdx < presentations.size()) {
+			presentations.add(++toIdx, presentations.get(fromIdx));	
+		} else {
+			presentations.add(presentations.get(fromIdx));	
+		}
+		
+		// make sure we remove correct element, if we moved to the start
+		if (toIdx < fromIdx) {
+			fromIdx++;
+		}
+		
+		// then remove from the original one
+		presentations.remove(fromIdx);
+		
 		this.persist(schedule);
-
-		// move all the presentations after this one in schedule backward
-		shiftPresentation(presentation.getId(), schedule, false);
-
-		// move all the presentations before this one in schedule forward
-		int newPosition = shiftPresentation(presentationId, schedule, true);
-
-		presentation.setPossition(newPosition);
-		this.presentationService.persist(presentation);
 	}
 	
+	@CacheEvict (value = "scheduleById", key = "#root.args[0].id")
 	@Transactional
 	@Override
-	public void deletePresentation(Schedule schedule, long presentationId) {
-		// removing of presentation from schedule does the job of it's deletion from DB
-		schedule.getPresentations().remove(presentationService.findById(presentationId).getPossition());
-		
-		// make sure indexes get fixed for all the other presentations within schedule
-		shiftPresentation(presentationId, schedule, false);
-		
+	public void deletePresentation(Schedule schedule, long presentationId) throws YpException {
+		List<Presentation> presentations = schedule.getPresentations();
+		presentations.remove(getPresentationIdx(presentations, presentationId));
 		this.persist(schedule);
 	}
 
-
+	@CacheEvict (value = "scheduleById", allEntries = true)
 	@Transactional
 	@Override
 	public int deleteAll() {

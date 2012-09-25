@@ -12,8 +12,8 @@ public class ProjectorDataJSONRestTemplate {
 	@Autowired
 	RestTemplate restTemplate;
 
-	public StateDTO getState(String schedule) {
-		final String url = "http://localhost:8081/yourpresenter/mvc/state/{name}";
-		return restTemplate.getForObject(url, StateDTO.class, schedule);
+	public StateDTO getState(Long scheduleId) {
+		final String url = "http://localhost:8081/yourpresenter/mvc/state/{scheduleId}";
+		return restTemplate.getForObject(url, StateDTO.class, scheduleId);
 	}
 }

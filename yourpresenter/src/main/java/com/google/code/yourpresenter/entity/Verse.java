@@ -31,13 +31,22 @@ import org.hibernate.annotations.Index;
 public class Verse implements Serializable {
 
 	/** The id. */
+	@Id
+	@Index(name = "VerseIdIdx")
+	@GeneratedValue
 	private Long id;
 
 	/** The text. */
+	// keep in sync with song.text
+	@NotNull
+	@Column(columnDefinition = "VARCHAR(1000)")
+	@Size(max = 1000)
 	private String text;
 
 	/** The song. */
 	@JsonIgnore
+	@ManyToOne(optional = false)
+	@Index(name = "VerseSongIdx")
 	private Song song;
 
 	public Verse(String text, Song song) {
@@ -51,9 +60,6 @@ public class Verse implements Serializable {
 	 * 
 	 * @return the id
 	 */
-	@Id
-	@Index(name = "VerseIdIdx")
-	@GeneratedValue
 	public Long getId() {
 		return id;
 	}
@@ -73,10 +79,6 @@ public class Verse implements Serializable {
 	 * 
 	 * @return the text
 	 */
-	// keep in sync with song.text
-	@NotNull
-	@Column(columnDefinition = "VARCHAR(1000)")
-	@Size(max = 1000)
 	public String getText() {
 		return text;
 	}
@@ -96,8 +98,6 @@ public class Verse implements Serializable {
 	 * 
 	 * @return the song
 	 */
-	@ManyToOne(optional = false)
-	@Index(name = "VerseSongIdx")
 	public Song getSong() {
 		return song;
 	}

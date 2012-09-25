@@ -14,7 +14,9 @@ public interface ISlideService {
 
 	public void setBgImage(Long slideId, BgImage bgImage);
 	
-	public Slide findActiveSlide(String scheduleName);
+	public Slide findActiveSlide(Long scheduleId);
 
 	public int deleteAll();
+
+	public void setBgImage(Slide slide, BgImage bgImage);
 }

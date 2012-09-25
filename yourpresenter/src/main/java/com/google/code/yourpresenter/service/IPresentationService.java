@@ -7,13 +7,11 @@ public interface IPresentationService {
 
 	public Presentation findById(Long id);
 	
-	public int findPositionById(Long id);
-	
     public Presentation createOrEdit(Long id);
     
     public void persist(Presentation presentation);
     
-	public void persistSlides(Presentation presentation);
+	public Presentation addSlides(Presentation presentation);
 
 	public void setBgImage(long presentationId, BgImage bgImage);
 

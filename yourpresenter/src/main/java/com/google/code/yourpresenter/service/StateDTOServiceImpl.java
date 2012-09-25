@@ -12,10 +12,11 @@ import com.google.code.yourpresenter.ajaxpush.IStateChangedPropagator;
 import com.google.code.yourpresenter.dto.StateDTO;
 import com.google.code.yourpresenter.entity.Schedule;
 import com.google.code.yourpresenter.entity.Slide;
+import com.google.code.yourpresenter.view.IScheduleHolder;
 
 @SuppressWarnings("serial")
 @Service
-public class StateServiceImpl implements IStateService, Serializable {
+public class StateDTOServiceImpl implements IStateDTOService, Serializable {
 
 	@Autowired
 	private ISlideService slideService;
@@ -24,16 +25,16 @@ public class StateServiceImpl implements IStateService, Serializable {
 	@Autowired
 	private IStateChangedPropagator stateChangedPropagator;
 	
-	@CacheEvict(value = { "scheduleCache", "stateCache" }, beforeInvocation = true)
+	@CacheEvict(value = { "scheduleById", "stateDTOByScheduleId" }, key = "#root.args[0].id" , beforeInvocation = true)
 	@Override
-	public void stateChanged(String scheduleName) throws YpException {
-		stateChangedPropagator.stateChanged(scheduleName, getState(scheduleName));
+	public void stateChanged(Schedule schedule, IScheduleHolder scheduleHolder) throws YpException {
+		stateChangedPropagator.stateChanged(schedule.getId(), findByScheduleId(scheduleHolder.getSchedule().getId()));
 	}
 
-	@Cacheable(value = { "stateCache" })
-	public StateDTO getState(String scheduleName) {
-		Slide slide = slideService.findActiveSlide(scheduleName);
-		Schedule schedule = scheduleService.findByName(scheduleName);
+	@Cacheable(value = { "stateDTOByScheduleId" })
+	public StateDTO findByScheduleId(Long scheduleId) {
+		Schedule schedule = scheduleService.findById(scheduleId);
+		Slide slide = slideService.findActiveSlide(schedule.getId());
 		return new StateDTO(slide, schedule);		
 	}
 }

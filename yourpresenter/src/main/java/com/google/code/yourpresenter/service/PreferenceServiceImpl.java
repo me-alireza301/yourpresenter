@@ -40,7 +40,7 @@ public class PreferenceServiceImpl implements IPreferenceService, Serializable {
 	}
 
 	@Transactional(readOnly = true)
-	@Cacheable("preferenceCache")
+	@Cacheable("preferenceValueByName")
 	@Override
 	public String findStringById(String name) throws YpException {
 		Query query = em
@@ -56,7 +56,7 @@ public class PreferenceServiceImpl implements IPreferenceService, Serializable {
 	}
 
 	@Transactional(readOnly = true)
-	@Cacheable("preferenceCache")
+	@Cacheable("preferenceValueByName")
 	@Override
 	public String[] findStringArrayById(String name) throws YpException {
 		return findStringById(name).split(",");
@@ -64,11 +64,11 @@ public class PreferenceServiceImpl implements IPreferenceService, Serializable {
 
 	// make sure that cache is updated (old element removed)
 	@Transactional
-	@CacheEvict (value = "preferenceCache", key = "#root.args[0].name")
+	@CacheEvict (value = "preferenceValueByName", key = "#root.args[0].name")
 	// following threw exception:
 	// org.springframework.expression.spel.SpelEvaluationException: EL1008E:(pos 0): Field or property 'preference' cannot be found on object of type 'org.springframework.cache.interceptor.CacheExpressionRootObject'
 	// solution found: http://stackoverflow.com/questions/10085783/grails-using-spring-el-expressions-in-spring-3-1s-cacheable
-//	@CacheEvict (value = "preferenceCache", key = "preference.name")
+//	@CacheEvict (value = "preferenceValueByName", key = "preference.name")
 	public void persist(Preference preference) throws YpException {
 		em.merge(preference);
 		firePreferenceChangedListeners(preference);

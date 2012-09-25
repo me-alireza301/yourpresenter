@@ -1,13 +1,11 @@
 package com.google.code.yourpresenter.service;
 
 import java.io.Serializable;
-import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -39,25 +37,9 @@ public class PresentationServiceImpl implements IPresentationService,
 		this.em = em;
 	}
 
+	@Override
 	public Presentation findById(Long id) {
 		return em.find(Presentation.class, id);
-	}
-
-	public int findPositionById(Long id) {
-		Query query = em
-				.createQuery("SELECT p.possition FROM Presentation p WHERE p.id = :id");
-		query.setParameter("id", id);
-
-		// for some reason following string doesn't work ok and returns 0
-		// allways
-		// => rather iterate over list
-		// return query.getFirstResult();
-		@SuppressWarnings("unchecked")
-		List<Integer> positions = query.getResultList();
-		if (!CollectionUtils.isEmpty(positions)) {
-			return positions.iterator().next();
-		}
-		return -1;
 	}
 
 	public Presentation createOrEdit(Long id) {
@@ -80,26 +62,23 @@ public class PresentationServiceImpl implements IPresentationService,
 
 	@Transactional
 	@Override
-	public void persistSlides(Presentation presentation) {
+	public Presentation addSlides(Presentation presentation) {
 		Song song = null;
 		Media media = null;
 		if (null != (song = presentation.getSong())) {
-			int i = 0;
 			for (Verse verse : song.getVerses()) {
-				Slide slide = new Slide(verse.getText(), presentation, i++);
-				this.slideService.persist(slide);
+				Slide slide = new Slide(verse.getText(), presentation);
 				presentation.addSlide(slide);
 			}
 		} else if (null != (media = presentation.getMedia())) {
-			int i = 0;
 			for (BgImage bgImage : media.getBgImages()) {
 				// keep txt as empty string rather than null
-				Slide slide = new Slide(null, presentation, i++);
+				Slide slide = new Slide(null, presentation);
 				slide.setBgImage(bgImage);
-				this.slideService.persist(slide);
 				presentation.addSlide(slide);
 			}
 		}
+		return presentation;
 	}
 
 	@Transactional
@@ -112,10 +91,11 @@ public class PresentationServiceImpl implements IPresentationService,
 	@Override
 	public void setBgImage(Presentation presentation, BgImage bgImage) {
 		presentation.setBgImage(bgImage);
-		this.persist(presentation);
 		for (Slide slide : presentation.getSlides()) {
-			this.slideService.setBgImage(slide.getId(), bgImage);
+			this.slideService.setBgImage(slide, bgImage);
 		}
+		
+		this.persist(presentation);
 	}
 
 	@Transactional

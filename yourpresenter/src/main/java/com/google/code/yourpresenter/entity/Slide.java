@@ -4,8 +4,10 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
@@ -30,24 +32,32 @@ import org.hibernate.annotations.Index;
 public class Slide implements Serializable {
 
 	/** The id. */
+	@Id
+	@Index(name = "SlideIdIdx")
+	@GeneratedValue
 	private Long id;
 
 	/** The background. */
+	@OneToOne
+	@Index(name = "SlideBgImageIdx")
 	private BgImage bgImage;
 
+	@Column(columnDefinition = "VARCHAR(1000)")
+	@Size(max = 1000)
+	@NotNull
 	private String text;
 
 	/** The presentation. */
 	@JsonIgnore
+//	@ManyToOne(optional = false)
+//	@Index(name = "SlidePresentationIdx")
+//	@ManyToOne(optional = false)
+//	@Index(name = "SlidePresentationIdx")
+//	@JoinColumn(name="PRESENTATION_ID", nullable = false, updatable = false, insertable = false)
+//	@JoinColumn(name="PRESENTATION_ID")
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "presentation_id", insertable = false, updatable = false, nullable = true, unique = false)
 	private Presentation presentation;
-
-	@JsonIgnore
-	// in case of correct one: position => java.sql.SQLException: Table not
-	// found in statement [select schedule0_.name ...
-	// seems like position is reserved word => can't be used
-	// see:
-	// http://stackoverflow.com/questions/1442127/table-not-found-with-hibernate-and-hsqldb
-	private int possition;
 
 	/**
 	 * Whether slide is the active one.
@@ -55,10 +65,9 @@ public class Slide implements Serializable {
 	@JsonIgnore
 	private boolean active;
 
-	public Slide(String text, Presentation presentation, int possition) {
+	public Slide(String text, Presentation presentation/*, int possition*/) {
 		this.setText(text);
 		this.setPresentation(presentation);
-		this.setPossition(possition);
 	}
 
 	/**
@@ -66,9 +75,6 @@ public class Slide implements Serializable {
 	 * 
 	 * @return the id
 	 */
-	@Id
-	@Index(name = "SlideIdIdx")
-	@GeneratedValue
 	public Long getId() {
 		return id;
 	}
@@ -88,8 +94,6 @@ public class Slide implements Serializable {
 	 * 
 	 * @return the background
 	 */
-	@OneToOne
-	@Index(name = "SlideBgImageIdx")
 	public BgImage getBgImage() {
 		return bgImage;
 	}
@@ -109,8 +113,6 @@ public class Slide implements Serializable {
 	 * 
 	 * @return the presentation
 	 */
-	@ManyToOne(optional = false)
-	@Index(name = "SlidePresentationIdx")
 	public Presentation getPresentation() {
 		return presentation;
 	}
@@ -143,24 +145,6 @@ public class Slide implements Serializable {
 		return (active ? "active" : "inactive");
 	}
 
-	/**
-	 * @return the possition
-	 */
-	public int getPossition() {
-		return possition;
-	}
-
-	/**
-	 * @param possition
-	 *            the possition to set
-	 */
-	public void setPossition(int possition) {
-		this.possition = possition;
-	}
-
-	@Column(columnDefinition = "VARCHAR(1000)")
-	@Size(max = 1000)
-	@NotNull
 	public String getText() {
 		return text;
 	}
